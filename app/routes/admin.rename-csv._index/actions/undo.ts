@@ -8,9 +8,8 @@ import { DriveFilesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { DriveFile } from "~/types"
+import type { ActionType, DriveFile } from "~/types"
 
-import type { ActionType } from "../route"
 const FormDataScheme = z.object({
   driveFilesSerialized: z.string().optional(),
 })
@@ -40,14 +39,19 @@ export async function undoAction(request: Request, formData: FormData) {
   const raw = JSON.parse(driveFilesSerialized || "[]")
 
   const driveFiles = DriveFilesSchema.parse(raw) as DriveFile[]
-  if (!driveFiles) return json<ActionType>({ error: "ファイルがありません" })
+  if (!driveFiles)
+    return json<ActionType>({
+      ok: false,
+      type: "undo",
+      error: "ファイルがありません",
+    })
 
   const undoFunc = getUndoFunction("rename")
   const res = await undoFunc(request, driveFiles)
 
   if (res.error) {
     toast.error(res.error)
-    return json<ActionType>({ error: res.error })
+    return json<ActionType>({ ok: false, type: "undo", error: res.error })
   }
 
   toast.success("元に戻しました")
