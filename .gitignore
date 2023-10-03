@@ -13,3 +13,4 @@ _backup
 START*.md
 
 docs/
+.DS_Store
