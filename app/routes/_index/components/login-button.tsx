@@ -4,6 +4,7 @@ import {
   useNavigation,
   useSearchParams,
 } from "@remix-run/react"
+import { z } from "zod"
 
 // components
 import { LogoIcon } from "~/components/icons"
@@ -12,9 +13,19 @@ import Toast from "~/components/util/Toast"
 // context
 // hooks
 
+const userSchema = z.object({
+  role: z.string().optional(),
+})
+
 export default function LoginButton() {
-  const { role } = useMatches().filter((m) => m.id === "root")[0]
-    ?.data as unknown as { role: string }
+  const loaderData = useMatches().filter((m) => m.id === "root")[0]?.data
+
+  const result = userSchema.safeParse(loaderData)
+  let role: string | undefined = undefined
+
+  if (result.success) {
+    role = result.data.role
+  }
 
   const [params] = useSearchParams()
 
