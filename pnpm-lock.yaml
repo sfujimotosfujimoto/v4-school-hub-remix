@@ -41,9 +41,6 @@ dependencies:
   react-hot-toast:
     specifier: ^2.4.1
     version: 2.4.1(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
-  use-immer:
-    specifier: ^0.9.0
-    version: 0.9.0(immer@10.0.3)(react@18.2.0)
   winston:
     specifier: ^3.10.0
     version: 3.10.0
@@ -6620,16 +6617,6 @@ packages:
 
   /url-template@2.0.8:
     resolution: {integrity: sha512-XdVKMF4SJ0nP/O7XIPB0JwAEuT9lDIYnNsK8yGVe43y0AWoKeJNdv3ZNWh7ksJ6KqQFjOO6ox/VEitLnaVNufw==}
-    dev: false
-
-  /use-immer@0.9.0(immer@10.0.3)(react@18.2.0):
-    resolution: {integrity: sha512-/L+enLi0nvuZ6j4WlyK0US9/ECUtV5v9RUbtxnn5+WbtaXYUaOBoKHDNL9I5AETdurQ4rIFIj/s+Z5X80ATyKw==}
-    peerDependencies:
-      immer: '>=2.0.0'
-      react: ^16.8.0 || ^17.0.1 || ^18.0.0
-    dependencies:
-      immer: 10.0.3
-      react: 18.2.0
     dev: false
 
   /util-deprecate@1.0.2:

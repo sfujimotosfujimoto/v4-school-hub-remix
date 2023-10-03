@@ -1,7 +1,5 @@
 import React from "react"
 
-import { useImmerReducer } from "use-immer"
-
 // types
 import type { drive_v3 } from "googleapis"
 
@@ -31,7 +29,10 @@ const initialState: {
 function renameReducer(draft: RenamePageType, action: Action): RenamePageType {
   switch (action.type) {
     case "SET": {
-      draft.sourceFolder = action.payload.sourceFolder
+      return {
+        ...draft,
+        sourceFolder: action.payload.sourceFolder,
+      }
     }
 
     default:
@@ -55,7 +56,7 @@ function RenamePageProvider({ children }: { children: React.ReactNode }) {
     sourceFolder: drive_v3.Schema$File | null
   } = { sourceFolder: null }
 
-  const [renameState, dispatch] = useImmerReducer(renameReducer, initialState)
+  const [renameState, dispatch] = React.useReducer(renameReducer, initialState)
 
   return (
     <RenamePageContext.Provider value={renameState}>

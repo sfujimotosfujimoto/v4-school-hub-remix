@@ -1,6 +1,5 @@
 import type { drive_v3 } from "googleapis"
 import React from "react"
-import { useImmerReducer } from "use-immer"
 
 /**
  * TYPES
@@ -33,6 +32,10 @@ function renameCsvReducer(
   switch (action.type) {
     case "SET": {
       draft.sourceFolder = action.payload.sourceFolder
+      return {
+        ...draft,
+        sourceFolder: action.payload.sourceFolder,
+      }
     }
 
     default:
@@ -57,7 +60,7 @@ function RenameCsvPageProvider({ children }: { children: React.ReactNode }) {
     sourceFolder: drive_v3.Schema$File | null
   } = { sourceFolder: null }
 
-  const [renameState, dispatch] = useImmerReducer(
+  const [renameState, dispatch] = React.useReducer(
     renameCsvReducer,
     initialState,
   )
