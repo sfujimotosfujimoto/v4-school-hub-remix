@@ -75,7 +75,7 @@ export async function authenticate(
         return res.json()
       })
       .catch((err) => {
-        console.error(`❌ authenticate: fetch error`, err.message)
+        console.error(`❌ authenticate: fetch error`, err.message, err)
         return { error: "error in fetch" }
       })
 

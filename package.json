@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "remix build",
-    "dev": "remix dev --manual",
+    "dev": "PORT=3000 remix dev --manual",
     "start": "remix-serve ./build/index.js",
     "postinstall": "prisma generate"
   },
