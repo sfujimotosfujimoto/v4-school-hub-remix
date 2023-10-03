@@ -15,9 +15,9 @@ import {
   useRouteError,
 } from "@remix-run/react"
 
-import Footer from "./components/ui/footer"
+import Footer from "./components/ui/Footer"
 import LoadingModalProvider from "./components/ui/loading-modal/loading-modal"
-import Navigation from "./components/ui/navigation"
+import Navigation from "./components/ui/Navigation"
 import ErrorDocument from "./components/util/error-document"
 import { authenticate } from "./lib/authenticate.server"
 import { setSession } from "./lib/session.server"
