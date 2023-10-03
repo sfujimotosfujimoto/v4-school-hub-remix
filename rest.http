@@ -1,0 +1,18 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@authToken = ya29.a0Ael9sCOaQjbKIZYJlkVrImrLbZPL_pOA0GqiyHrDfB_V1GIDtWjNpoDmHtftqtoTOKMN5WGVOC4N9cBEzE7DPbfRN7PDev1ayiyRvMbGKl8ARwR2uu4YvB6I2OS9DKCHLQLbiC7tUHUCBgsMRJkKWgvPoZo5gQaCgYKAeYSARISFQF4udJhWIF-n8X4Nk_q4rtXN1lHng0165
+@cookie=__session=eyJ1c2VyVG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlKOS5leUpsYldGcGJDSTZJbk10Wm5WcWFXMXZkRzlBYzJWcFp5MWliM2x6TG1wd0lpd2laWGh3SWpveE5qZ3dOVEk0TmpFNWZRLlo2S0hDRTZuWWlKYWI2MzMyQWhyWWtNSVBSbkRoUjZhTmtqSkJnUGIzU0UifQ%3D%3D.Ym4wFqp2DpMlkaeBDHRKMo14aHrwm1Y1vnTUqGAh1wI
+
+###
+GET {{baseUrl}} HTTP/1.1
+
+###
+GET {{baseUrl}}/google/drive HTTP/1.1
+Cookie: {{cookie}}
+Content-Type: {{contentType}}
+
+###
+# @name login
+POST {{baseUrl}}/api/login HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+name=foo&password=bar

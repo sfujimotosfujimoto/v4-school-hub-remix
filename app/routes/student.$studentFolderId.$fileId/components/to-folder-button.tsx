@@ -1,0 +1,17 @@
+import { FolderIcon } from "~/components/icons"
+
+export default function ToFolderBtn({ parentId }: { parentId: string }) {
+  return (
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={`https://drive.google.com/drive/folders/${parentId}`}
+      className={`  h-full rounded-lg bg-sfgreen-300 px-2 py-1 shadow-md transition-all duration-500  hover:-translate-y-1 hover:bg-sfgreen-400`}
+    >
+      <div className="flex items-center justify-center">
+        <FolderIcon className="mr-2 h-6 w-6" />
+        フォルダへ
+      </div>
+    </a>
+  )
+}

@@ -1,0 +1,15 @@
+node_modules
+.vscode/
+
+_backup
+
+/.cache
+/build
+/public/build
+.env
+
+.env*
+
+START*.md
+
+docs/

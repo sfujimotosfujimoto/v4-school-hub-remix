@@ -1,0 +1,46 @@
+:root {
+  background-color: theme("colors.slate.200");
+  color: theme("colors.sftext.900");
+}
+
+html,
+body {
+  height: 100%;
+  /* width: 100%; */
+}
+
+ul.join > li > button {
+  border: none;
+  background-color: inherit;
+  color: inherit;
+}
+
+a:hover.join-item,
+a:focus.join-item,
+a:active.join-item,
+ul.join > li > button:focus,
+ul.join > li > button:hover,
+ul.join > li > button:active {
+  background-color: theme("colors.sfgreen.200");
+  color: inherit;
+}
+
+#sidebar > ul.menu > li > a:hover,
+#sidebar > ul.menu > li > a:active{
+  color: theme("colors.sfred.200");
+  background-color: inherit;
+}
+
+.btn-disabled {
+  @apply bg-slate-300;
+}
+
+button.nendo-active {
+  background-color: hsl(1, 64%, 72%);
+}
+button.tag-active {
+  background-color: #78C3C6;
+}
+div.flex.gap-2 > button.btn.btn-sm:hover {
+  background-color: hsl(1, 54%, 72%);
+}
