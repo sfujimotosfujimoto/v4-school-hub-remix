@@ -16,9 +16,25 @@ import { Form, NavLink, useLoaderData } from "@remix-run/react"
 import ImageIcon from "../../util/image-icon"
 
 import type { User } from "~/types"
+import { z } from "zod"
+
+const userSchema = z.object({
+  role: z.string().optional(),
+  picture: z.string().optional(),
+})
 
 export default function NavRight() {
-  const { role, picture } = useLoaderData<Partial<User>>()
+  const loaderData = useLoaderData<Partial<User>>()
+
+  const result = userSchema.safeParse(loaderData)
+
+  let role: string | undefined = undefined
+  let picture: string | undefined = undefined
+
+  if (result.success) {
+    role = result.data.role
+    picture = result.data.picture
+  }
 
   const [isOpen, setIsOpen] = React.useState(false)
   const [isHover, setIsHover] = React.useState(false)
