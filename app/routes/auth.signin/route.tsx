@@ -1,7 +1,7 @@
 import { initializeClient } from "~/lib/google/google.server"
 
 import { json, redirect } from "@remix-run/node"
-import { Link } from "@remix-run/react"
+// import { Link } from "@remix-run/react"
 
 import type { ActionFunctionArgs } from "@remix-run/node"
 // the default scopes are set in console.google
@@ -13,18 +13,18 @@ const scopes = [
   "https://www.googleapis.com/auth/userinfo.profile",
 ]
 
-export default function Signin() {
-  return (
-    <div>
-      <Link
-        to="/"
-        className={`btn btn-success btn-md hidden border-0 shadow-md hover:bg-opacity-70 sm:inline-flex`}
-      >
-        Back to Home
-      </Link>
-    </div>
-  )
-}
+// export default function Signin() {
+//   return (
+//     <div>
+//       <Link
+//         to="/"
+//         className={`btn btn-success btn-md hidden border-0 shadow-md hover:bg-opacity-70 sm:inline-flex`}
+//       >
+//         Back to Home
+//       </Link>
+//     </div>
+//   )
+// }
 
 /**
  * Action for signin
