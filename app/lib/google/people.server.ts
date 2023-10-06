@@ -50,6 +50,37 @@ export async function getAdmin(
   else return admin
 }
 
+export async function getUserInfo(accessToken: string) {
+  const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
+
+  const resp = await fetch(url)
+    .then((r) => r.json())
+    .catch((e) => {})
+
+  const person: Person = {
+    email: resp.email,
+    first: resp.given_name,
+    last: resp.family_name,
+    picture: resp.picture,
+  }
+
+  return person
+}
+
+/*
+{
+  sub: '106691296406499736818',
+  name: '藤本俊',
+  given_name: '俊',
+  family_name: '藤本',
+  picture: 'https://lh3.googleusercontent.com/a/ACg8ocL3BjvoSTEovM4HD1J6YIEZwEpSnyXY2xcuf1nL2GuiY2E=s96-c',
+  email: 's-fujimoto@seig-boys.jp',
+  email_verified: true,
+  locale: 'ja',
+  hd: 'seig-boys.jp'
+}
+*/
+
 /**
  * getPersonFromPeople
  *

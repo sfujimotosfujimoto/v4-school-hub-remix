@@ -17,7 +17,7 @@ import {
   getStudentByFolderId,
   getStudents,
 } from "~/lib/google/sheets.server"
-import { requireUserRole } from "~/lib/requireRoles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { destroyUserSession } from "~/lib/session.server"
 import { filterSegments, parseTags } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"

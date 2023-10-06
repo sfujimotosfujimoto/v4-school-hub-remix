@@ -16,7 +16,7 @@ import TaskCards from "~/components/ui/tasks/task-cards"
 
 // functions
 import { getDrive } from "~/lib/google/drive.server"
-import { requireAdminRole } from "~/lib/requireRoles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 import { setSession } from "~/lib/session.server"
 import { executeAction } from "./actions/execute"
 import { searchAction } from "./actions/search"

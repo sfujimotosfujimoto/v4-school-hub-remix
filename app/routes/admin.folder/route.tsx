@@ -1,8 +1,11 @@
 import type { MetaFunction } from "@remix-run/node"
-import { MoveTypeProvider } from "~/context/move-type-context"
-
 import { Outlet } from "@remix-run/react"
 
+import { MoveTypeProvider } from "~/context/move-type-context"
+
+/**
+ * AdminFolderLayout
+ */
 export default function AdminFolderLayout() {
   return (
     <section
@@ -16,6 +19,9 @@ export default function AdminFolderLayout() {
   )
 }
 
+/**
+ * Meta Function
+ */
 export const meta: MetaFunction = () => {
   return [{ title: `移動 | SCHOOL HUB` }]
 }

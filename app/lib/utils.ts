@@ -1,4 +1,4 @@
-import type { DriveFile, Permission, RawUser, Student, User } from "~/types"
+import type { DriveFile, RawUser, Student, User } from "~/types"
 
 export function filterStudentDataByGakunen(
   gakunen: string,
@@ -133,41 +133,41 @@ export function getGakusekiFromString(filename: string): number | null {
   return Number(extracted)
 }
 
-export function getGakusekiFromPermissions(permissions?: Permission[]) {
-  if (!permissions) return null
-  const emails = permissions
-    .map((p) => {
-      if (p.type === "user" && ["owner", "writer", "reader"].includes(p.role)) {
-        return p.emailAddress
-      } else {
-        return null
-      }
-    })
-    .filter((e): e is string => e !== null)
+// export function getGakusekiFromPermissions(permissions?: Permission[]) {
+//   if (!permissions) return null
+//   const emails = permissions
+//     .map((p) => {
+//       if (p.type === "user" && ["owner", "writer", "reader"].includes(p.role)) {
+//         return p.emailAddress
+//       } else {
+//         return null
+//       }
+//     })
+//     .filter((e): e is string => e !== null)
 
-  const gakusekis = emails
-    .map((e) => {
-      return getGakusekiFromEmail(e)
-    })
-    .filter((e): e is number => e !== null)
+//   const gakusekis = emails
+//     .map((e) => {
+//       return getGakusekiFromEmail(e)
+//     })
+//     .filter((e): e is number => e !== null)
 
-  return gakusekis.at(0) || null
-}
+//   return gakusekis.at(0) || null
+// }
 
-function getGakusekiFromEmail(email: string): number | null {
-  try {
-    const gakusekiParts = email.split("@")
-    const gakuseki = gakusekiParts[0].replace("b", "")
+// function getGakusekiFromEmail(email: string): number | null {
+//   try {
+//     const gakusekiParts = email.split("@")
+//     const gakuseki = gakusekiParts[0].replace("b", "")
 
-    const gakusekiNumber = Number(gakuseki)
+//     const gakusekiNumber = Number(gakuseki)
 
-    if (gakusekiNumber === 0 || isNaN(gakusekiNumber)) return null
+//     if (gakusekiNumber === 0 || isNaN(gakusekiNumber)) return null
 
-    return gakusekiNumber
-  } catch (error) {
-    return null
-  }
-}
+//     return gakusekiNumber
+//   } catch (error) {
+//     return null
+//   }
+// }
 
 export function formatDate(date: Date, locals = "ja-JP"): string {
   const formatter = Intl.DateTimeFormat(locals, {

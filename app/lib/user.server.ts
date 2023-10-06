@@ -3,7 +3,7 @@ import type { User, PrismaUser } from "~/types"
 import type { Role } from "@prisma/client"
 
 import { prisma } from "./db.server"
-import { returnUser } from "./returnUser"
+import { returnUser } from "./return-user"
 
 const selectUser = {
   id: true,

@@ -7,7 +7,6 @@ import type { ActionFunctionArgs } from "@remix-run/node"
 // the default scopes are set in console.google
 const scopes = [
   "https://www.googleapis.com/auth/drive",
-  "https://www.googleapis.com/auth/contacts",
   "https://www.googleapis.com/auth/spreadsheets",
   "https://www.googleapis.com/auth/userinfo.email",
   "https://www.googleapis.com/auth/userinfo.profile",

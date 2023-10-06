@@ -1,6 +1,5 @@
 import { redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
-import type { Role } from "@prisma/client"
 import type { LoaderFunctionArgs } from "@remix-run/node"
 
 import type { DriveFile } from "~/types"
@@ -14,8 +13,9 @@ import {
   queryMultipleStudentsAndFilename,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { requireUserRole } from "~/lib/requireRoles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { setSelected } from "~/lib/utils.server"
+import { Role } from "@prisma/client"
 
 /**
  * loader function

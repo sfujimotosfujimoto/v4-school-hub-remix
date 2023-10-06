@@ -13,7 +13,7 @@ import SourceFolderHeader from "./components/source-folder-header"
 import TaskCards from "~/components/ui/tasks/task-cards"
 
 // functions
-import { requireAdminRole } from "~/lib/requireRoles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 import { executeAction } from "../admin.rename._index/actions/execute"
 import { searchRenameAction } from "../admin.rename._index/actions/search"
 import { undoAction } from "../admin.rename._index/actions/undo"

@@ -6,7 +6,7 @@ import { logger } from "~/logger"
 
 // functions
 import { getRefreshedToken } from "~/lib/google/google.server"
-import { returnUser } from "~/lib/returnUser"
+import { returnUser } from "~/lib/return-user"
 import { parseVerifyUserJWT, sessionStorage } from "~/lib/session.server"
 import { updateUserJWT } from "~/lib/signinout.server"
 
@@ -45,6 +45,10 @@ export async function action({ request }: ActionFunctionArgs) {
   } = await getRefreshedToken(accessToken, refreshToken)
   if (!newAccessToken || !expiry_date)
     return json({ ok: false }, { status: 400 })
+
+  // TODO: !!DELETE expiry date: delete after testing
+  // const expiryDateDummy = Date.now() + 1000 * 20 // 20 seconds
+  // expiry_date = expiryDateDummy
 
   logger.debug(
     `✅ in auth.refresh action: expiry ${new Date(

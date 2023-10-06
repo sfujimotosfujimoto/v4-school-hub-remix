@@ -6,8 +6,6 @@ import { DriveLogo, LogoIcon, LogoTextIcon } from "~/components/icons"
 import LoginButton from "./components/login-button"
 // functions
 import { getUserJWTFromSession } from "~/lib/session.server"
-// context
-// hooks
 
 export default function Index() {
   return (
@@ -60,7 +58,6 @@ function Explanation() {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   // check if there is __session cookie
-  // await checkUser(request)
   const userJWT = await getUserJWTFromSession(request)
   // if no cookie return nothing
   if (userJWT) {

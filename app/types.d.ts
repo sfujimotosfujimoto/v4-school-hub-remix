@@ -1,4 +1,5 @@
 import type { Role } from "@prisma/client"
+import type { drive_v3 } from "googleapis"
 
 export type Tokens = {
   access_token: string

@@ -1,7 +1,6 @@
 import { useLoaderData } from "@remix-run/react"
 import { redirect } from "@remix-run/node"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node"
-import { z } from "zod"
 
 import type { User } from "~/types"
 
@@ -9,7 +8,8 @@ import type { User } from "~/types"
 import Tables from "./components/tables"
 // functions
 import { getUsers } from "~/lib/user.server"
-import { requireAdminRole } from "~/lib/requireRoles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
+import { z } from "zod"
 // context
 // hooks
 

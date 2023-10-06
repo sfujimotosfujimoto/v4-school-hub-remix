@@ -7,7 +7,7 @@ import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node"
 import GakunenButtons from "~/components/ui/buttons/gakunen-buttons"
 import HrButtons from "~/components/ui/buttons/hr-buttons"
 // functions
-import { requireUserRole } from "~/lib/requireRoles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 // hooks
 import { useGakunen } from "../student/route"
 

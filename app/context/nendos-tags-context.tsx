@@ -7,6 +7,7 @@ interface NendoTagsContext {
   setTag: React.Dispatch<React.SetStateAction<string>>
 }
 
+// TODO: REFACTOR - make this simpler
 const defaultValue: NendoTagsContext = {
   nendo: "",
   setNendo: () => {},

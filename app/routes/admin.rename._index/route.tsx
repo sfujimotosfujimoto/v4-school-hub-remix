@@ -20,7 +20,7 @@ import TaskCards from "~/components/ui/tasks/task-cards"
 import { executeAction } from "./actions/execute"
 import { searchRenameAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
-import { requireAdminRole } from "~/lib/requireRoles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 
 // context
 import { useDriveFilesContext } from "~/context/drive-files-context"

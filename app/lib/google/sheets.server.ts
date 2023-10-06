@@ -6,6 +6,7 @@ import { getClient } from "./google.server"
 
 import type { sheets_v4 } from "googleapis"
 import type { Gakunen, Hr, Student } from "~/types"
+
 /*********************************************************
  * # getSheets()
  * - gets Drive instance

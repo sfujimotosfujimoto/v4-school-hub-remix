@@ -16,7 +16,7 @@ import {
   querySampledStudent,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { requireUserRole } from "~/lib/requireRoles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { filterStudentNameSegments } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
 

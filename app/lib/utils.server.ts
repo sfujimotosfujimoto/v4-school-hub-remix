@@ -1,15 +1,14 @@
+import { logger } from "~/logger"
 import type { DriveFile } from "~/types"
 
-import { logger } from "~/logger"
+// import { json } from "@remix-run/node"
 
-import { json } from "@remix-run/node"
-
-export function errorResponse(message: string, statusCode: number): Response {
-  return new Response(message, {
-    status: statusCode,
-    statusText: message,
-  })
-}
+// export function errorResponse(message: string, statusCode: number): Response {
+//   return new Response(message, {
+//     status: statusCode,
+//     statusText: message,
+//   })
+// }
 
 export function setSelected(driveFiles: DriveFile[], selected: boolean) {
   return driveFiles.map((df) => {
@@ -27,8 +26,8 @@ function _setSelected(df: DriveFile, selected: boolean) {
   }
 }
 
-export const badRequest = <T>(data: T) => json<T>(data, { status: 400 })
-export const okRequest = <T>(data: T) => json<T>(data, { status: 200 })
+// export const badRequest = <T>(data: T) => json<T>(data, { status: 400 })
+// export const okRequest = <T>(data: T) => json<T>(data, { status: 200 })
 
 // Check expiration
 export function isExpired(expire: number): boolean {

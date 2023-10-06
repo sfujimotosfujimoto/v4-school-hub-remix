@@ -1,21 +1,28 @@
 import React from "react"
-import { z } from "zod"
-import Toast from "~/components/util/Toast"
-import { MoveTypeContext } from "~/context/move-type-context"
-import { getDrive, undoMoveDriveFiles } from "~/lib/google/drive.server"
-import { requireAdminRole } from "~/lib/requireRoles.server"
-import { getUserFromSession } from "~/lib/session.server"
-import { getIdFromUrl } from "~/lib/utils"
-
 import { redirect } from "@remix-run/node"
 import { useActionData, useNavigation } from "@remix-run/react"
+import { z } from "zod"
 
+// components
 import AdminFolderForm from "./components/admin-folder-form"
 import MoveCards from "./components/move-cards"
+import Toast from "~/components/util/Toast"
+
+// context
+import { MoveTypeContext } from "~/context/move-type-context"
+
+// functions
+import { getDrive, undoMoveDriveFiles } from "~/lib/google/drive.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
+import { getUserFromSession } from "~/lib/session.server"
+import { getIdFromUrl } from "~/lib/utils"
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import type { MoveDataType, MoveType, State, User } from "~/types"
 
+/**
+ * AdminFolderPage
+ */
 export default function AdminFolderPage() {
   const { getAllItems } = React.useContext(MoveTypeContext)
   const navState = useNavigation() // idle, loading, submitting

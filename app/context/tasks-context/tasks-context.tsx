@@ -1,8 +1,5 @@
 import React from "react"
-import {
-  undoMoveDataExecute,
-  undoRenameDataExecute,
-} from "~/lib/actions/move/undo"
+import { undoMoveDataExecute, undoRenameDataExecute } from "./undo"
 
 import type { DriveFile, Task } from "~/types"
 

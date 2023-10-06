@@ -15,7 +15,7 @@ import ToFolderButton from "./components/to-folder-button"
 
 // functions
 import { callPermissions, getDrive } from "~/lib/google/drive.server"
-import { requireUserRole } from "~/lib/requireRoles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { destroyUserSession } from "~/lib/session.server"
 
 /**

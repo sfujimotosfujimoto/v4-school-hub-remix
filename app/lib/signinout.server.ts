@@ -6,7 +6,7 @@ import { redirect } from "@remix-run/node"
 
 import { prisma } from "./db.server"
 import { getClientFromCode } from "./google/google.server"
-import { getPersonFromPeople } from "./google/people.server"
+import { getUserInfo } from "./google/people.server"
 import { createUserSession } from "./session.server"
 import { checkValidSeigEmail } from "./utils"
 
@@ -31,6 +31,7 @@ export async function signin({
 }: {
   code: string
 }): Promise<TypedResponse<never>> {
+  console.log("✅ -- signin: start")
   const { tokens } = await getClientFromCode(code)
 
   // verify token with zod
@@ -45,8 +46,8 @@ export async function signin({
     result.data
 
   // TODO: !!DELETE: setting expiryDateDummy to 10 seconds
-  const expiryDummy = new Date().getTime() + 1000 * 15
-  expiry_date = expiryDummy
+  // const expiryDummy = new Date().getTime() + 1000 * 15
+  // expiry_date = expiryDummy
 
   // let refreshTokenExpiryDummy = Date.now() + 1000 * 30 // 30 seconds
   // let refreshTokenExpiry = refreshTokenExpiryDummy
@@ -68,7 +69,7 @@ export async function signin({
     throw redirect(`/?authstate=unauthorized-002`)
   }
 
-  const person = await getPersonFromPeople(access_token)
+  const person = await getUserInfo(access_token)
 
   if (!person) {
     throw redirect(`/?authstate=unauthenticated`)

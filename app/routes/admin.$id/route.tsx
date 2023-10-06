@@ -13,7 +13,7 @@ import { UserSchema } from "~/schemas"
 // components
 import AdminForm from "./components/admin-form"
 // functions
-import { requireAdminRole } from "~/lib/requireRoles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 import { destroyUserSession } from "~/lib/session.server"
 import { deleteUserById, getUserById, updateUserById } from "~/lib/user.server"
 

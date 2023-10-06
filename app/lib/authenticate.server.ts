@@ -1,9 +1,9 @@
 import { logger } from "~/logger"
-import { User } from "~/types"
+import type { User } from "~/types"
 
 import { prisma } from "./db.server"
 import { getRefreshedToken } from "./google/google.server"
-import { returnUser } from "./returnUser"
+import { returnUser } from "./return-user"
 import { getUserJWTFromSession, parseVerifyUserJWT } from "./session.server"
 import { getUserByEmail } from "./user.server"
 import { isExpired } from "./utils.server"

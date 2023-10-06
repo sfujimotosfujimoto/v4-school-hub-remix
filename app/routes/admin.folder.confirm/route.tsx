@@ -11,7 +11,7 @@ import {
   undoMoveDriveFiles,
 } from "~/lib/google/drive.server"
 import { getSheets } from "~/lib/google/sheets.server"
-import { requireAdminRole } from "~/lib/requireRoles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { dateFormat } from "~/lib/utils"
 
@@ -26,6 +26,10 @@ import type {
   MetaFunction,
 } from "@remix-run/node"
 import type { MoveType, State } from "~/types"
+
+/**
+ * AdminFolderconfirmPage
+ */
 export default function AdminFolderConfirmPage() {
   let { driveFileData, sourceFolder, undoMoveDataTime, role } =
     useLoaderData<typeof loader>()
@@ -94,6 +98,9 @@ export default function AdminFolderConfirmPage() {
   )
 }
 
+/**
+ * Loader
+ */
 export async function loader({ request }: LoaderFunctionArgs) {
   const { user, error } = await requireAdminRole(request)
   if (!user || !user.credential || error)
@@ -143,7 +150,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 // Zod Data Type
-const FormD = z.object({
+const FormSchema = z.object({
   sourceFolderId: z.string().optional(),
   jsonInput: z.any().optional(),
   undoMoveData: z.string().optional(),
@@ -172,7 +179,7 @@ export async function action({ request }: ActionFunctionArgs) {
       if (!drive) throw redirect("/?authstate=unauthorized-007")
 
       // parse data in form
-      const parsedData = FormD.parse({
+      const parsedData = FormSchema.parse({
         sourceFolderId,
       })
 
@@ -209,7 +216,7 @@ export async function action({ request }: ActionFunctionArgs) {
       const drive = await getDrive(user.credential.accessToken)
       if (!drive) throw redirect("/?authstate=unauthorized-008")
 
-      const parsedData = FormD.parse({
+      const parsedData = FormSchema.parse({
         undoMoveData: moveData,
       })
       const undoMoveData = parsedData.undoMoveData
@@ -227,6 +234,9 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
+/**
+ * Meta Function
+ */
 export const meta: MetaFunction = () => {
   return [{ title: `移動確認 | SCHOOL HUB` }]
 }

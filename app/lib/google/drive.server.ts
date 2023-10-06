@@ -12,14 +12,11 @@ import type { drive_v3, sheets_v4 } from "googleapis"
 
 import type { DriveFile, Permission, Student } from "~/types"
 import type { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport"
+
 /**
  * Create a Google Drive Query with given folderId
  * - "trashed=false"
  * - "[folderId] in parents"
- *
- * @export
- * @param {string} folderId
- * @return {*}  {(string | null)}
  */
 export function queryFolderId(folderId: string): string | null {
   const outputQuery = []
@@ -34,12 +31,9 @@ export function queryFolderId(folderId: string): string | null {
 }
 
 /**
- * createBaseQuery
- *
- * @export
- * @param {string} folderId
- * @return {*}  {(string | null)}
+ * Create a Google Drive Query with given folderId
  */
+// TODO: DELETE: used in admin.folder but not used in other routes
 export function createBaseQuery(folderId: string): string | null {
   const outputQuery = []
 
@@ -55,34 +49,29 @@ export function createBaseQuery(folderId: string): string | null {
   return outputQuery.join(" and ")
 }
 
-export function queryMimeType({
-  folderId,
-  mimeType,
-}: {
-  folderId: string
-  mimeType: string
-}) {
-  const baseQuery = queryFolderId(folderId)
-  if (!baseQuery) return null
-  const outputQuery = []
+// export function queryMimeType({
+//   folderId,
+//   mimeType,
+// }: {
+//   folderId: string
+//   mimeType: string
+// }) {
+//   const baseQuery = queryFolderId(folderId)
+//   if (!baseQuery) return null
+//   const outputQuery = []
 
-  let mimeTypeQuery: string
-  if (mimeType) {
-    mimeTypeQuery = `mimeType='${mimeType.trim()}'`
-    outputQuery.push(mimeTypeQuery)
-  }
+//   let mimeTypeQuery: string
+//   if (mimeType) {
+//     mimeTypeQuery = `mimeType='${mimeType.trim()}'`
+//     outputQuery.push(mimeTypeQuery)
+//   }
 
-  return outputQuery.join(" and ")
-}
+//   return outputQuery.join(" and ")
+// }
 
 /**
- *
- * @export
- * @param {Student[]} studentData
- * @param {string} gakunen
- * @param {string} hr
- * @param {string[]} q
- * @return {*}  {string}
+ * Create a Google Drive Query with given folderId for multiple students
+ * used in `files.$gakunen.$hr._index
  */
 export function queryMultipleStudentsAndFilename(
   studentData: Student[],
@@ -119,13 +108,11 @@ export function queryMultipleStudentsAndFilename(
 // because the file name segments are almost all the same for most students
 // so just sampling some will be enough
 /**
- *
- * @export
- * @param {Student[]} studentData
- * @param {string} gakunen
- * @param {string} hr
- * @return {*}  {string}
+ * Create a Google Drive Query
+ * Sampled students to get segments out of file names
+ * used in `files.$gakunen.$hr
  */
+
 export function querySampledStudent(
   studentData: Student[],
   gakunen: string,
@@ -157,9 +144,6 @@ export function querySampledStudent(
 
 /**
  * Convert File[] to DriveFileData[]
- *
- * @param {drive_v3.Schema$File[]} files
- * @return {*}  {DriveFileData[]}
  */
 function mapFilesToDriveFiles(files: drive_v3.Schema$File[]): DriveFile[] {
   const driveFiles: DriveFile[] = files.map((d) => {
@@ -169,7 +153,7 @@ function mapFilesToDriveFiles(files: drive_v3.Schema$File[]): DriveFile[] {
   return driveFiles
 }
 
-export function mapFilesToDriveFile(file: drive_v3.Schema$File): DriveFile {
+function mapFilesToDriveFile(file: drive_v3.Schema$File): DriveFile {
   const permissions = convertPermissions(file.permissions)
 
   return {
@@ -223,12 +207,9 @@ function isRole(x: unknown): x is "owner" | "writer" | "reader" {
 
 /**
  * Get Folder metadata by folder id
- *
- * @export
- * @param {string} accessToken
- * @param {string} folderId
- * @return {*}  {Promise<drive_v3.Schema$File>}
+ * used in `admin.folder.confirm`
  */
+// TODO: DELETE? only used in admin.folder.confirm
 export async function getFolder(
   accessToken: string,
   folderId: string,
@@ -245,13 +226,7 @@ export async function getFolder(
 
 /**
  * getDriveFilesWithStudentFolder get files in Google Drive
- *
- * @export
- * @param {string} accessToken
- * @param {string} query
- * @return {*}  {(Promise<DriveFileData[] | null>)}
  */
-
 export async function getDriveFilesWithStudentFolder(
   drive: drive_v3.Drive,
   sheets: sheets_v4.Sheets,
@@ -285,6 +260,9 @@ export async function getDriveFilesWithStudentFolder(
   return driveFileData
 }
 
+/**
+ * getDriveFiles get files in Google Drive
+ */
 export async function getDriveFiles(
   drive: drive_v3.Drive,
   query: string,
@@ -299,10 +277,6 @@ export async function getDriveFiles(
 /**
  * moveDriveFiles moves the given files based on their gakuseki
  * which is in the name of the file.
- *
- * @export
- * @param {string} accessToken
- * @param {DriveFile[]} driveFileData
  */
 export async function moveDriveFiles(
   drive: drive_v3.Drive,
