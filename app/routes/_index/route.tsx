@@ -1,11 +1,10 @@
-import { redirect } from "@remix-run/node"
 import type { LoaderFunctionArgs } from "@remix-run/node"
 
 // components
 import { DriveLogo, LogoIcon, LogoTextIcon } from "~/components/icons"
 import LoginButton from "./components/login-button"
 // functions
-import { getUserJWTFromSession } from "~/lib/session.server"
+import { logger } from "~/logger"
 
 export default function Index() {
   return (
@@ -57,12 +56,14 @@ function Explanation() {
  * Loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
+  logger.debug(`✅ in _index loader: - ${new URL(request.url).pathname}`)
   // check if there is __session cookie
-  const userJWT = await getUserJWTFromSession(request)
+  // TODO:
+  // const userJWT = await getUserJWTFromSession(request)
   // if no cookie return nothing
-  if (userJWT) {
-    return redirect("/student")
-  }
+  // if (userJWT) {
+  //   return redirect("/student")
+  // }
 
   // if cookie, move to `/student` page
   return null

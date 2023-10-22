@@ -19,8 +19,7 @@ import Footer from "./components/ui/Footer"
 import LoadingModalProvider from "./components/ui/loading-modal/loading-modal"
 import Navigation from "./components/ui/Navigation"
 import ErrorDocument from "./components/util/error-document"
-import { authenticate } from "./lib/authenticate.server"
-import { setSession } from "./lib/session.server"
+import { getUserFromSession } from "./lib/session.server"
 import { logger } from "./logger"
 
 import type {
@@ -96,18 +95,19 @@ export default function App() {
 export async function loader({ request }: LoaderFunctionArgs) {
   // if (new URL(request.url).pathname !== "/") return null
   try {
-    logger.debug(`✅ in root loader: ${request.url}`)
-    const { user, error, userJWT } = await authenticate(request)
+    logger.debug(`✅ in root loader: - ${new URL(request.url).pathname}`)
+    // const { user, error, userJWT } = await authenticate(request)
 
-    if (error) throw new Error(error)
+    // if (error) throw new Error(error)
 
-    // const user = await getUserFromSession(request)
-    if (userJWT) {
-      return setSession(userJWT, {
-        role: user?.role || null,
-        picture: user?.picture || null,
-      })
-    }
+    const user = await getUserFromSession(request)
+    // TODO:
+    // if (userJWT) {
+    //   return setSession(userJWT, {
+    //     role: user?.role || null,
+    //     picture: user?.picture || null,
+    //   })
+    // }
     return json({
       role: user?.role || null,
       picture: user?.picture || null,

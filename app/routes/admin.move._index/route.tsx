@@ -16,7 +16,7 @@ import TaskCards from "~/components/ui/tasks/task-cards"
 
 // functions
 import { getDrive } from "~/lib/google/drive.server"
-import { requireAdminRole } from "~/lib/require-roles.server"
+import { requireAdminRole, requireAdminRole2 } from "~/lib/require-roles.server"
 import { setSession } from "~/lib/session.server"
 import { executeAction } from "./actions/execute"
 import { searchAction } from "./actions/search"
@@ -29,6 +29,7 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 // hooks
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
+import { authenticate2 } from "~/lib/authenticate.server"
 
 /**
  * Move Page
@@ -76,22 +77,21 @@ export default function MovePage() {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`✅ loader: /admin/move`)
-  const { user, error, userJWT } = await requireAdminRole(request)
-
-  logger.debug(`✅ loader: /admin/move: userJWT: ${userJWT}`)
-  if (!user || !user.credential || error)
+  await authenticate2(request)
+  const user = await requireAdminRole2(request)
+  if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")
-
-  if (!user?.credential) throw redirect("/?authstate=unauthorized-009")
+  }
 
   try {
     const drive = await getDrive(user.credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-010")
 
-    if (!userJWT) throw redirect("/?authstate=unauthorized-move-003")
+    if (!user.credential.accessToken)
+      throw redirect("/?authstate=unauthorized-move-003")
 
     // TODO: setting cookies here
-    return setSession(userJWT, { user })
+    return setSession(user.credential.accessToken, { user })
   } catch (error) {
     console.error(error)
     throw redirect("/?authstate=unauthorized-011")

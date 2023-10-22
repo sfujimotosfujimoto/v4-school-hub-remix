@@ -19,6 +19,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return signin({ code })
 }
 
-export default function Redirect() {
-  return <div>Redirect</div>
-}
+// export default function Redirect() {
+//   return <div>Redirect</div>
+// }

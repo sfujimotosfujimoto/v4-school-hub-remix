@@ -7,27 +7,36 @@ import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node"
 import GakunenButtons from "~/components/ui/buttons/gakunen-buttons"
 import HrButtons from "~/components/ui/buttons/hr-buttons"
 // functions
-import { requireUserRole } from "~/lib/require-roles.server"
 // hooks
 import { useGakunen } from "../student/route"
+import { destroyUserSession } from "~/lib/session.server"
+import { authenticate2 } from "~/lib/authenticate.server"
+import { requireUserRole2 } from "~/lib/require-roles.server"
 
 /**
  * loader function
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { user, error } = await requireUserRole(request)
+  await authenticate2(request)
+  const user = await requireUserRole2(request)
+  // const user = await getUserFromSession(request)
+  if (!user || !user.credential) {
+    return destroyUserSession(request, `/?authstate=unauthenticated`)
+  }
+
+  // const { user, error } = await requireUserRole(request)
   // get userWithCreds
 
-  if (error) {
-    return json(
-      {
-        error: error,
-      },
-      {
-        status: 401,
-      },
-    )
-  }
+  // if (error) {
+  //   return json(
+  //     {
+  //       error: error,
+  //     },
+  //     {
+  //       status: 401,
+  //     },
+  //   )
+  // }
 
   return json(
     {
@@ -55,7 +64,7 @@ export const headers: HeadersFunction = ({ loaderHeaders, parentHeaders }) => {
 }
 
 export default function StudentPage() {
-  const { role } = useLoaderData()
+  const { role } = useLoaderData<typeof loader>()
   const { gakunen, setGakunen, hr, setHr, drawerRef } = useGakunen()
 
   React.useEffect(() => {

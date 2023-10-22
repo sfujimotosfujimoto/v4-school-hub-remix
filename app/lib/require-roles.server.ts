@@ -1,6 +1,8 @@
 import { logger } from "~/logger"
 
 import { authenticate } from "./authenticate.server"
+import { getUserFromSession } from "./session.server"
+import { redirect } from "@remix-run/node"
 
 export async function requireUserRole(request: Request) {
   logger.debug("✅ requireUserRole start")
@@ -25,6 +27,17 @@ export async function requireUserRole(request: Request) {
   }
   logger.debug("✅ requireUserRole: returning user", user)
   return { user, userJWT }
+}
+export async function requireUserRole2(request: Request) {
+  logger.debug("✅ requireUserRole2 start")
+
+  const user = await getUserFromSession(request)
+
+  if (user && !["SUPER", "ADMIN", "MODERATOR", "USER"].includes(user.role)) {
+    throw redirect("/?authstate=unauthorized")
+  }
+  logger.debug("✅ requireUserRole2: returning user", user)
+  return user
 }
 
 export async function requireModeratorRole(request: Request) {
@@ -72,6 +85,17 @@ export async function requireAdminRole(request: Request) {
     return { error: `unauthorized-${id}` }
   }
   return { user, userJWT }
+}
+export async function requireAdminRole2(request: Request) {
+  logger.debug("✅ requireAdminRole2 start")
+
+  const user = await getUserFromSession(request)
+
+  if (user && !["SUPER", "ADMIN"].includes(user.role)) {
+    throw redirect("/?authstate=unauthorized")
+  }
+  logger.debug("✅ requireAdminRole2: returning user", user)
+  return user
 }
 
 export async function requireSuperRole(request: Request) {

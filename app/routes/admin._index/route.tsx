@@ -1,6 +1,9 @@
 import { useLoaderData } from "@remix-run/react"
-import { redirect } from "@remix-run/node"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node"
+import {
+  redirect,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "@remix-run/node"
 
 import type { User } from "~/types"
 
@@ -8,8 +11,9 @@ import type { User } from "~/types"
 import Tables from "./components/tables"
 // functions
 import { getUsers } from "~/lib/user.server"
-import { requireAdminRole } from "~/lib/require-roles.server"
+import { requireAdminRole2 } from "~/lib/require-roles.server"
 import { z } from "zod"
+import { authenticate2 } from "~/lib/authenticate.server"
 // context
 // hooks
 
@@ -66,11 +70,12 @@ export default function AdminPage() {
  * Loader
  */
 // activtated,last, first, stats.count, stats.lastVisited
-export async function loader({ request }: LoaderFunctionArgs): Promise<{
-  users: Partial<User>[] | null
-}> {
-  const { user, error } = await requireAdminRole(request)
-  if (!user || error) throw redirect("/?authstate=unauthenticated")
+export async function loader({ request }: LoaderFunctionArgs) {
+  await authenticate2(request)
+  const user = await requireAdminRole2(request)
+  if (!user || !user.credential) {
+    throw redirect("/?authstate=unauthenticated")
+  }
 
   const users = await getUsers()
 

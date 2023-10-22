@@ -14,8 +14,8 @@ import { UserSchema } from "~/schemas"
 import AdminForm from "./components/admin-form"
 // functions
 import { requireAdminRole } from "~/lib/require-roles.server"
-import { destroyUserSession } from "~/lib/session.server"
 import { deleteUserById, getUserById, updateUserById } from "~/lib/user.server"
+import { logger } from "~/logger"
 
 /**
  * Page
@@ -53,10 +53,12 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   targetUser: User
   id: string
 }> {
+  logger.debug(`✅ in admin.$id loader: - ${new URL(request.url).pathname}`)
   const { user, error } = await requireAdminRole(request)
 
   if (!user || !user.credential || error) {
-    throw await destroyUserSession(request, `/?authstate=unauthenticated`)
+    throw redirect("/?authstate=unauthenticated")
+    // throw await destroyUserSession(request, `/?authstate=unauthenticated`)
   }
 
   const { id } = params

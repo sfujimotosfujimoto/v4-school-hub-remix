@@ -1,5 +1,5 @@
 import React from "react"
-import { json } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react"
 import type {
   HeadersFunction,
@@ -13,9 +13,9 @@ import Sidebar from "./components/sidebar"
 import { MenuIcon } from "~/components/icons"
 // functions
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { requireUserRole } from "~/lib/require-roles.server"
-import { destroyUserSession } from "~/lib/session.server"
 import { filterStudentDataByGakunen } from "~/lib/utils"
+import { authenticate2 } from "~/lib/authenticate.server"
+import { requireUserRole2 } from "~/lib/require-roles.server"
 
 /**
  * Student Layout
@@ -86,17 +86,23 @@ export default function StudentLayout() {
  * loader function
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { user, error } = await requireUserRole(request)
+  await authenticate2(request)
+  const user = await requireUserRole2(request)
 
-  if (!user || !user.credential || error) {
-    return destroyUserSession(request, `/?authstate=unauthenticated`)
+  // const { user, error } = await requireUserRole(request)
+
+  // if (!user || !user.credential || error) {
+  if (!user || !user.credential) {
+    throw redirect("/?authstate=unauthenticated")
+    // return destroyUserSession(request, `/?authstate=unauthenticated`)
   }
   const accessToken = user.credential.accessToken
 
   // get sheets
   const sheets = await getSheets(accessToken)
   if (!sheets) {
-    return destroyUserSession(request, `/?authstate=unauthenticated`)
+    throw redirect("/?authstate=unauthenticated")
+    // return destroyUserSession(request, `/?authstate=unauthenticated`)
   }
 
   // get StudentData[]

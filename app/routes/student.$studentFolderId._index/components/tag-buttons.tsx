@@ -21,7 +21,7 @@ export default function TagButtons({
   }, [setTag])
 
   return (
-    <div data-name="TagsButtons.tsx" className={`flex gap-2`}>
+    <div data-name="TagsButtons.tsx" className={`flex flex-wrap gap-2`}>
       <button
         onClick={() => {
           driveFilesDispatch({
