@@ -12,13 +12,15 @@ import { useGakunen } from "../student/route"
 import { destroyUserSession } from "~/lib/session.server"
 import { authenticate2 } from "~/lib/authenticate.server"
 import { requireUserRole2 } from "~/lib/require-roles.server"
+import { logger } from "~/logger"
 
 /**
  * loader function
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  await authenticate2(request)
-  const user = await requireUserRole2(request)
+  logger.debug(`✅ loader: student._index ${request.url}`)
+  const { user } = await authenticate2(request)
+  await requireUserRole2(user)
   // const user = await getUserFromSession(request)
   if (!user || !user.credential) {
     return destroyUserSession(request, `/?authstate=unauthenticated`)

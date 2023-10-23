@@ -94,14 +94,13 @@ export default function App() {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   // if (new URL(request.url).pathname !== "/") return null
+  logger.debug(`✅ loader: root ${request.url}`)
   try {
-    logger.debug(`✅ in root loader: - ${new URL(request.url).pathname}`)
     // const { user, error, userJWT } = await authenticate(request)
 
     // if (error) throw new Error(error)
 
     const user = await getUserFromSession(request)
-    // TODO:
     // if (userJWT) {
     //   return setSession(userJWT, {
     //     role: user?.role || null,

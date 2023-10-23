@@ -13,9 +13,10 @@ import { UserSchema } from "~/schemas"
 // components
 import AdminForm from "./components/admin-form"
 // functions
-import { requireAdminRole } from "~/lib/require-roles.server"
+import { requireAdminRole2 } from "~/lib/require-roles.server"
 import { deleteUserById, getUserById, updateUserById } from "~/lib/user.server"
 import { logger } from "~/logger"
+import { authenticate2 } from "~/lib/authenticate.server"
 
 /**
  * Page
@@ -53,10 +54,11 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   targetUser: User
   id: string
 }> {
-  logger.debug(`✅ in admin.$id loader: - ${new URL(request.url).pathname}`)
-  const { user, error } = await requireAdminRole(request)
+  logger.debug(`✅ loader: admin.$id ${request.url}`)
+  const { user } = await authenticate2(request)
+  await requireAdminRole2(user)
 
-  if (!user || !user.credential || error) {
+  if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")
     // throw await destroyUserSession(request, `/?authstate=unauthenticated`)
   }
@@ -80,8 +82,10 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
  * Action
  */
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { user, error } = await requireAdminRole(request)
-  if (!user || error) throw redirect("/?authstate=unauthenticated")
+  const { user } = await authenticate2(request)
+  await requireAdminRole2(user)
+  if (!user) throw redirect("/?authstate=unauthenticated")
+
   const formData = await request.formData()
 
   const { id } = params

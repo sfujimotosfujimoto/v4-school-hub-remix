@@ -12,10 +12,10 @@ import type { Gakunen, Hr } from "~/types"
 import Sidebar from "./components/sidebar"
 import { MenuIcon } from "~/components/icons"
 // functions
-import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import { filterStudentDataByGakunen } from "~/lib/utils"
-import { authenticate2 } from "~/lib/authenticate.server"
-import { requireUserRole2 } from "~/lib/require-roles.server"
+import { logger } from "~/logger"
+import { getUserFromSession } from "~/lib/session.server"
+import { getSheets, getStudents } from "~/lib/google/sheets.server"
 
 /**
  * Student Layout
@@ -85,13 +85,12 @@ export default function StudentLayout() {
 /**
  * loader function
  */
+
 export async function loader({ request }: LoaderFunctionArgs) {
-  await authenticate2(request)
-  const user = await requireUserRole2(request)
+  logger.debug(`✅ loader: student ${request.url}`)
 
-  // const { user, error } = await requireUserRole(request)
+  const user = await getUserFromSession(request)
 
-  // if (!user || !user.credential || error) {
   if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")
     // return destroyUserSession(request, `/?authstate=unauthenticated`)
@@ -102,12 +101,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const sheets = await getSheets(accessToken)
   if (!sheets) {
     throw redirect("/?authstate=unauthenticated")
-    // return destroyUserSession(request, `/?authstate=unauthenticated`)
   }
 
   // get StudentData[]
   const studentData = await getStudents(sheets)
-  // studentS.getStudentDataResponse(user)
   return json(
     {
       studentData,

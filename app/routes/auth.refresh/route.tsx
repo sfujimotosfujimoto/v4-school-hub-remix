@@ -7,14 +7,14 @@ import { logger } from "~/logger"
 // functions
 import { getRefreshedToken } from "~/lib/google/google.server"
 import { returnUser } from "~/lib/return-user"
-import { parseVerifyUserJWT, sessionStorage } from "~/lib/session.server"
+import { parseVerifyUserJWT } from "~/lib/session.server"
 import { updateUserJWT } from "~/lib/signinout.server"
 
 /**
  * Loader function
  */
 export async function loader({ request }: ActionFunctionArgs) {
-  logger.debug(`✅ in auth.refresh loader ${request.url}`)
+  logger.debug(`✅ loader: auth.refresh ${request.url}`)
 
   return json({ ok: true }, 200)
 }
@@ -99,8 +99,9 @@ export async function action({ request }: ActionFunctionArgs) {
     )
 
     // 4. update session
-    const session = await sessionStorage.getSession()
-    session.set("userJWT", userJWT)
+    // TODO: Does this have any meaning
+    // const session = await sessionStorage.getSession()
+    // session.set("userJWT", userJWT)
     // return json({ ok: true })
 
     // const val = session.get("userJWT")

@@ -65,7 +65,7 @@ export async function getUserFromSession(
     `✅ getUserFromSession: request ${request.url}, ${request.method}`,
   )
   const userJWT = await getUserJWTFromSession(request)
-  logger.debug(`✅ getUserFromSession: userJWT ${userJWT?.slice(0, 20)}...`)
+  // logger.debug(`✅ getUserFromSession: userJWT ${userJWT?.slice(0, 20)}...`)
 
   if (!userJWT) return null
 
@@ -73,15 +73,13 @@ export async function getUserFromSession(
     userJWT,
     // Number(user?.credential?.expiryDate),
   )
-  logger.debug(`✅ getUserFromSession: payload ${payload?.email}...`)
   if (!payload) return null
+  // logger.debug(`✅ getUserFromSession: payload ${payload?.email}...`)
   // get UserBase from Prisma
   const user = await getUserByEmail(payload.email)
 
   logger.debug(
-    `---- getUserFromSession: exp ${new Date(payload.exp).toLocaleString()}`,
-    `requrest.url`,
-    request.url,
+    `-- getUserFromSession: exp ${new Date(payload.exp).toLocaleString()} -- requrest.url ${request.url}`
   )
 
   // if no user, create in prisma db
@@ -116,16 +114,14 @@ export async function setSession(userJWT: string, returnObj: any) {
 export async function getUserJWTFromSession(
   request: Request,
 ): Promise<string | null> {
-  // logger.debug(
-  //   '✅ getUserJWTFromSession: request.headers.get("Cookie")',
-  //   request.headers.get("Cookie"),
-  // )
+  logger.debug("✅ getUserJWTFromSession")
+
   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
   // logger.debug(`✅ session:  ${session.get("userJWT")}`)
 
   const userJWT = session.get("userJWT") as string | null | undefined
 
-  logger.debug(`✅ getUserJWTFromSession: userJWT: ${userJWT?.slice(0, 20)}...`)
+  // logger.debug(`✅ getUserJWTFromSession: userJWT: ${userJWT?.slice(0, 20)}...`)
 
   if (!userJWT) {
     return null

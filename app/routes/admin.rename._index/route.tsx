@@ -20,7 +20,7 @@ import TaskCards from "~/components/ui/tasks/task-cards"
 import { executeAction } from "./actions/execute"
 import { searchRenameAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
-import { requireAdminRole } from "~/lib/require-roles.server"
+import { requireAdminRole2 } from "~/lib/require-roles.server"
 
 // context
 import { useDriveFilesContext } from "~/context/drive-files-context"
@@ -28,6 +28,7 @@ import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 
 // hooks
 import { useToast } from "~/hooks/useToast"
+import { authenticate2 } from "~/lib/authenticate.server"
 
 /**
  * Rename Page
@@ -73,8 +74,10 @@ export default function RenamePage() {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { user, error } = await requireAdminRole(request)
-  if (!user || !user.credential || error)
+  logger.debug(`✅ loader: admin.rename._index ${request.url}`)
+  const { user } = await authenticate2(request)
+  await requireAdminRole2(user)
+  if (!user || !user.credential)
     throw redirect("/?authstate=unauthenticated-rename-001")
   // const { folderId } = params
 
@@ -104,9 +107,9 @@ const FormDataScheme = z.object({
  * Action
  */
 export async function action({ request }: ActionFunctionArgs) {
-  const { user, error } = await requireAdminRole(request)
-  if (!user || !user.credential || error)
-    throw redirect("/?authstate=unauthenticated")
+  const { user } = await authenticate2(request)
+  await requireAdminRole2(user)
+  if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))

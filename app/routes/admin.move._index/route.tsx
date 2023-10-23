@@ -15,9 +15,7 @@ import MoveForm from "./components/move-form"
 import TaskCards from "~/components/ui/tasks/task-cards"
 
 // functions
-import { getDrive } from "~/lib/google/drive.server"
 import { requireAdminRole, requireAdminRole2 } from "~/lib/require-roles.server"
-import { setSession } from "~/lib/session.server"
 import { executeAction } from "./actions/execute"
 import { searchAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
@@ -76,26 +74,27 @@ export default function MovePage() {
  * /admin/move
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: /admin/move`)
-  await authenticate2(request)
-  const user = await requireAdminRole2(request)
+  logger.debug(`✅ loader: admin.move._index ${request.url}`)
+  const { user } = await authenticate2(request)
+  await requireAdminRole2(user)
+
   if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")
   }
+  return null
 
-  try {
-    const drive = await getDrive(user.credential.accessToken)
-    if (!drive) throw redirect("/?authstate=unauthorized-010")
+  // try {
+  //   const drive = await getDrive(user.credential.accessToken)
+  //   if (!drive) throw redirect("/?authstate=unauthorized-010")
 
-    if (!user.credential.accessToken)
-      throw redirect("/?authstate=unauthorized-move-003")
+  //   if (!user.credential.accessToken)
+  //     throw redirect("/?authstate=unauthorized-move-003")
 
-    // TODO: setting cookies here
-    return setSession(user.credential.accessToken, { user })
-  } catch (error) {
-    console.error(error)
-    throw redirect("/?authstate=unauthorized-011")
-  }
+  //   return setSession(user.credential.accessToken, { user })
+  // } catch (error) {
+  //   console.error(error)
+  //   throw redirect("/?authstate=unauthorized-011")
+  // }
 }
 
 // Zod Data Type

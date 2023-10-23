@@ -5,6 +5,7 @@ import { DriveLogo, LogoIcon, LogoTextIcon } from "~/components/icons"
 import LoginButton from "./components/login-button"
 // functions
 import { logger } from "~/logger"
+import { getUserFromSession } from "~/lib/session.server"
 
 export default function Index() {
   return (
@@ -56,17 +57,13 @@ function Explanation() {
  * Loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ in _index loader: - ${new URL(request.url).pathname}`)
-  // check if there is __session cookie
-  // TODO:
-  // const userJWT = await getUserJWTFromSession(request)
-  // if no cookie return nothing
-  // if (userJWT) {
-  //   return redirect("/student")
-  // }
+  logger.debug(`✅ loader: _index ${request.url}`)
 
-  // if cookie, move to `/student` page
-  return null
+  // check if there is __session cookie
+  const user = await getUserFromSession(request)
+  if (!user) return { role: undefined, picture: undefined }
+
+  return { role: user.role, picture: user.picture }
 }
 
 // export const headers: HeadersFunction = ({ loaderHeaders }) => {

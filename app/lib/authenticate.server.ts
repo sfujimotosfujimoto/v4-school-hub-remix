@@ -1,8 +1,6 @@
 import { logger } from "~/logger"
 import type { User } from "~/types"
 
-import { prisma } from "./db.server"
-import { getRefreshedToken } from "./google/google.server"
 import { returnUser } from "./return-user"
 import {
   getUserJWTFromSession,
@@ -103,107 +101,6 @@ export async function authenticate(
   }
 }
 
-/**
- *
- */
-export async function updateRefreshedAccessToken(
-  user: User,
-): Promise<User | null> {
-  logger.debug("✅ updateRefreshedAccessToken")
-
-  // get refreshToken and when it was created
-  const refreshToken = user.credential?.refreshToken
-  // get accessToken
-  const accessToken = user.credential?.accessToken
-
-  logger.debug("✅ updateRefreshAccessToken: accessToken", accessToken)
-
-  if (!refreshToken || !accessToken) return null
-
-  const isRefreshTokenOk = checkRefreshTokenExpiry(user)
-  if (!isRefreshTokenOk) return null
-
-  let { access_token: newAccessToken, expiry_date } = await getRefreshedToken(
-    accessToken,
-    refreshToken,
-  )
-
-  // TODO: !!DELETE expiry date: delete after testing
-  // const expiryDateDummy = Date.now() + 1000 * 20 // 20 seconds
-  // expiry_date = expiryDateDummy
-
-  logger.debug(
-    `---- updateRefreshAccessToken:expiry_date ${new Date(
-      expiry_date || 0,
-    ).toLocaleString()}
-  `,
-  )
-  if (!newAccessToken || !expiry_date) return null
-
-  const updatedUser = await prisma.user.update({
-    where: {
-      email: user.email,
-    },
-    data: {
-      credential: {
-        update: {
-          accessToken: newAccessToken,
-          expiry: Number(expiry_date),
-        },
-      },
-    },
-    select: {
-      ...selectUser,
-    },
-  })
-
-  if (!updatedUser) {
-    return null
-  }
-
-  // returns redirect
-  // await updateUserSession(email, expiry_date, request.url)
-
-  return returnUser(updatedUser)
-}
-
-function checkRefreshTokenExpiry(user: User) {
-  const expiry = user.credential?.refreshTokenExpiry || 0
-  const now = Date.now()
-
-  if (expiry < now) {
-    return false
-  }
-  return true
-}
-
-const selectUser = {
-  id: true,
-  first: true,
-  last: true,
-  picture: true,
-  email: true,
-  activated: true,
-  role: true,
-  createdAt: true,
-  updatedAt: true,
-  credential: {
-    select: {
-      accessToken: true,
-      expiry: true,
-      refreshToken: true,
-      createdAt: true,
-      refreshTokenExpiry: true,
-    },
-  },
-  stats: {
-    select: {
-      count: true,
-      lastVisited: true,
-    },
-  },
-}
-
 class AuthorizationError extends Error {
   constructor(message: string) {
     super(message)
@@ -214,7 +111,7 @@ class AuthorizationError extends Error {
 export async function authenticate2(
   request: Request,
   headers = new Headers(),
-): Promise<string> {
+): Promise<{ user: User; userJWT: string }> {
   logger.debug(`✅ authenticate2: start - ${new URL(request.url).pathname}`)
 
   // get data from session
@@ -243,8 +140,20 @@ export async function authenticate2(
 
     // 4-1. if rexp expired, return error
     if (rexpExpired) {
-      logger.debug("✅ authenticate2: rexpExpired")
-      throw redirect("/?authstate=unauthorized-rexpExpired")
+      logger.debug("✅ authenticate2: in rexpExpired")
+
+      // update the session with the new values
+      const session = await sessionStorage.getSession()
+      // commit the session and append the Set-Cookie header
+      headers.append("Set-Cookie", await sessionStorage.destroySession(session))
+
+      // redirect to the same URL if the request was a GET (loader)
+      if (request.method === "GET") {
+        logger.debug("✅ authenticate2: request GET redirect for rexpExpired")
+        throw redirect("/?authstate=unauthorized-rexpExpired", { headers })
+      }
+
+      // throw redirect("/?authstate=unauthorized-rexpExpired")
     } else if (expExpired) {
       // 4-2. if exp expired, try to refresh token
       logger.debug("✅ authenticate2: expired")
@@ -252,8 +161,8 @@ export async function authenticate2(
     }
 
     // if not expired, return the access token
-    logger.debug("✅ authenticate: not expired")
-    return userJWT
+    logger.debug("✅ authenticate2: not expired")
+    return { user, userJWT }
   } catch (error) {
     // here, check if the error is an AuthorizationError (the one we throw above)
     if (error instanceof AuthorizationError) {
@@ -272,11 +181,11 @@ export async function authenticate2(
         }),
       })
         .then((res) => {
-          logger.debug("✅ authenticate: fetch res")
+          logger.debug("✅ authenticate2: fetch res")
           return res.json()
         })
         .catch((err) => {
-          console.error(`❌ authenticate: fetch error`, err.message, err)
+          console.error(`❌ authenticate2: fetch error`, err.message, err)
           return { error: "error in fetch" }
         })
 
@@ -290,7 +199,7 @@ export async function authenticate2(
       }
       // update the session with the new values
       const session = await sessionStorage.getSession()
-      session.set("userJWT", userJWT)
+      session.set("userJWT", jsn.data.userJWT)
       // commit the session and append the Set-Cookie header
       headers.append("Set-Cookie", await sessionStorage.commitSession(session))
 
@@ -301,10 +210,112 @@ export async function authenticate2(
       }
 
       // return the access token so you can use it in your action
-      return jsn.data.userJWT
-      // return { user: newUser, userJWT: jsn.data.userJWT }
+      // return jsn.data.userJWT
+      const newUser = returnUser(jsn.data.user)
+      return { user: newUser, userJWT: jsn.data.userJWT }
     }
 
     throw error
   }
 }
+
+/**
+ *
+ */
+// export async function updateRefreshedAccessToken(
+//   user: User,
+// ): Promise<User | null> {
+//   logger.debug("✅ updateRefreshedAccessToken")
+
+//   // get refreshToken and when it was created
+//   const refreshToken = user.credential?.refreshToken
+//   // get accessToken
+//   const accessToken = user.credential?.accessToken
+
+//   logger.debug("✅ updateRefreshAccessToken: accessToken", accessToken)
+
+//   if (!refreshToken || !accessToken) return null
+
+//   const isRefreshTokenOk = checkRefreshTokenExpiry(user)
+//   if (!isRefreshTokenOk) return null
+
+//   let { access_token: newAccessToken, expiry_date } = await getRefreshedToken(
+//     accessToken,
+//     refreshToken,
+//   )
+
+//   // TOD: !!DELETE expiry date: delete after testing
+//   // const expiryDateDummy = Date.now() + 1000 * 20 // 20 seconds
+//   // expiry_date = expiryDateDummy
+
+//   logger.debug(
+//     `---- updateRefreshAccessToken:expiry_date ${new Date(
+//       expiry_date || 0,
+//     ).toLocaleString()}
+//   `,
+//   )
+//   if (!newAccessToken || !expiry_date) return null
+
+//   const updatedUser = await prisma.user.update({
+//     where: {
+//       email: user.email,
+//     },
+//     data: {
+//       credential: {
+//         update: {
+//           accessToken: newAccessToken,
+//           expiry: Number(expiry_date),
+//         },
+//       },
+//     },
+//     select: {
+//       ...selectUser,
+//     },
+//   })
+
+//   if (!updatedUser) {
+//     return null
+//   }
+
+//   // returns redirect
+//   // await updateUserSession(email, expiry_date, request.url)
+
+//   return returnUser(updatedUser)
+// }
+
+// function checkRefreshTokenExpiry(user: User) {
+//   const expiry = user.credential?.refreshTokenExpiry || 0
+//   const now = Date.now()
+
+//   if (expiry < now) {
+//     return false
+//   }
+//   return true
+// }
+
+// const selectUser = {
+//   id: true,
+//   first: true,
+//   last: true,
+//   picture: true,
+//   email: true,
+//   activated: true,
+//   role: true,
+//   createdAt: true,
+//   updatedAt: true,
+//   credential: {
+//     select: {
+//       accessToken: true,
+//       expiry: true,
+//       refreshToken: true,
+//       createdAt: true,
+//       refreshTokenExpiry: true,
+//     },
+//   },
+//   stats: {
+//     select: {
+//       count: true,
+//       lastVisited: true,
+//     },
+//   },
+// }

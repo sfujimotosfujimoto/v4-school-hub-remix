@@ -33,10 +33,11 @@ function _setSelected(df: DriveFile, selected: boolean) {
 export function isExpired(expire: number): boolean {
   if (expire < 10_000_000_000 && expire > 0)
     throw Error(`expire is incorrect: ${expire}`)
-  logger.debug(`--- in expired ----`)
-  logger.debug(`---- expire\t ${new Date(expire).toLocaleString()}`)
-  logger.debug(`---- now\t${new Date(Date.now()).toLocaleString()}`)
-  logger.debug(`---- expired: \t${expire < Date.now()}`)
+  logger.debug(
+    `-- isExpired: expire ${new Date(expire).toLocaleString()}, now ${new Date(
+      Date.now(),
+    ).toLocaleString()}, expired: ${expire < Date.now()}`,
+  )
 
   const now = Date.now()
 

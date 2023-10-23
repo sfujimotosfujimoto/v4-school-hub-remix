@@ -11,7 +11,7 @@ import {
   undoMoveDriveFiles,
 } from "~/lib/google/drive.server"
 import { getSheets } from "~/lib/google/sheets.server"
-import { requireAdminRole } from "~/lib/require-roles.server"
+import { requireAdminRole2 } from "~/lib/require-roles.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { dateFormat } from "~/lib/utils"
 
@@ -26,6 +26,8 @@ import type {
   MetaFunction,
 } from "@remix-run/node"
 import type { MoveType, State } from "~/types"
+import { authenticate2 } from "~/lib/authenticate.server"
+import { logger } from "~/logger"
 
 /**
  * AdminFolderconfirmPage
@@ -102,9 +104,10 @@ export default function AdminFolderConfirmPage() {
  * Loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { user, error } = await requireAdminRole(request)
-  if (!user || !user.credential || error)
-    throw redirect("/?authstate=unauthenticated")
+  logger.debug(`✅ loader: admin.folder.confirm ${request.url}`)
+  const { user } = await authenticate2(request)
+  await requireAdminRole2(user)
+  if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
   const url = new URL(request.url)
 
@@ -160,7 +163,8 @@ const FormSchema = z.object({
  * Action
  */
 export async function action({ request }: ActionFunctionArgs) {
-  await requireAdminRole(request)
+  const { user } = await authenticate2(request)
+  await requireAdminRole2(user)
   const formData = await request.formData()
 
   let { _action, sourceFolderId, moveData } = Object.fromEntries(formData)

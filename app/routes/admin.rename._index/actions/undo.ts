@@ -63,7 +63,7 @@ export async function undoAction(request: Request, formData: FormData) {
 
   const driveFiles = result2.data as unknown as DriveFile[]
 
-  logger.debug(`✅ driveFiles: ${JSON.stringify(driveFiles, null, 2)}`)
+  // logger.debug(`✅ driveFiles: ${JSON.stringify(driveFiles, null, 2)}`)
 
   if (!driveFiles)
     return json<ActionType>({

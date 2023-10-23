@@ -1,7 +1,6 @@
 import type { PrismaUser } from "~/types"
 
 // used in session.server.ts
-// requireUserSession()
 //-------------------------------------------
 // LOCAL FUNCTIONS
 //-------------------------------------------
