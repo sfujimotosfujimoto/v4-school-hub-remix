@@ -34,9 +34,9 @@ export function isExpired(expire: number): boolean {
   if (expire < 10_000_000_000 && expire > 0)
     throw Error(`expire is incorrect: ${expire}`)
   logger.debug(
-    `-- isExpired: expire ${new Date(expire).toLocaleString()}, now ${new Date(
-      Date.now(),
-    ).toLocaleString()}, expired: ${expire < Date.now()}`,
+    `🍇 isExpired: ${expire < Date.now()}, expire ${new Date(
+      expire,
+    ).toLocaleString()}, now ${new Date(Date.now()).toLocaleString()}`,
   )
 
   const now = Date.now()

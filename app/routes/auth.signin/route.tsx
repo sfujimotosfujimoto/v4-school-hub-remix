@@ -4,6 +4,7 @@ import { redirect } from "@remix-run/node"
 // import { Link } from "@remix-run/react"
 
 import type { ActionFunctionArgs } from "@remix-run/node"
+import { logger } from "~/logger"
 // the default scopes are set in console.google
 const scopes = [
   "https://www.googleapis.com/auth/drive",
@@ -31,7 +32,7 @@ const scopes = [
  * @returns
  */
 export async function action({ request }: ActionFunctionArgs) {
-  console.log("✅ in auth.signin action")
+  logger.debug(`🍺 action: auth.signin ${request.url}`)
 
   // create OAuth2 client with id and secret
   const oauth2Client = initializeClient()

@@ -11,6 +11,13 @@ import { getUserByEmail } from "./user.server"
 import { isExpired } from "./utils.server"
 import { redirect } from "@remix-run/node"
 
+class AuthorizationError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "AuthorizationError"
+  }
+}
+
 /**
  * authenticate
  * 1. get session from cookies
@@ -25,94 +32,9 @@ import { redirect } from "@remix-run/node"
  */
 export async function authenticate(
   request: Request,
-): Promise<{ user?: User; error?: string; userJWT?: string }> {
-  logger.debug(`✅ authenticate: start - ${new URL(request.url).pathname}`)
-  // 1. get session from cookies
-  const userJWT = await getUserJWTFromSession(request)
-
-  if (!userJWT) {
-    return { error: "Could not get userJWT from session" }
-  }
-
-  // 2. parse end verify userJWT (checks if expired)
-  let payload = await parseVerifyUserJWT(userJWT)
-
-  if (!payload) {
-    return { error: "Could not parse userJWT" }
-  }
-
-  // 3. get user from session
-  const user = await getUserByEmail(payload.email)
-  if (!user) {
-    return { error: "Could not find user" }
-  }
-
-  logger.debug(`✅ authenticate: expExpired`)
-  const expExpired = isExpired(payload.exp)
-  logger.debug(`✅ authenticate: rexpExpired`)
-  const rexpExpired = isExpired(payload.rexp)
-
-  // 4-1. if rexp expired, return error
-  if (rexpExpired) {
-    logger.debug("✅ authenticate: rexpExpired")
-    return { error: "rexp is expired" }
-  } else if (expExpired) {
-    // 4-2. if exp expired, try to refresh token
-    logger.debug("✅ authenticate: expired")
-
-    // 4-2-1. fetch endpoint to refresh token
-    const jsn = await fetch(`${process.env.BASE_URL}/auth/refresh`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user,
-        email: payload.email,
-        accessToken: user.credential?.accessToken,
-        refreshToken: user.credential?.refreshToken,
-      }),
-    })
-      .then((res) => {
-        logger.debug("✅ authenticate: fetch res")
-        return res.json()
-      })
-      .catch((err) => {
-        console.error(`❌ authenticate: fetch error`, err.message, err)
-        return { error: "error in fetch" }
-      })
-
-    logger.debug(
-      `✅ authenticate: expiry: ${new Date(
-        Number(jsn.data.user.credential.expiry || 0),
-      ).toLocaleString()}`,
-    )
-    if (!jsn.ok) {
-      return { error: "Could not get response" }
-    }
-
-    const newUser = returnUser(jsn.data.user)
-
-    // 4-2-2. updated payload
-    return { user: newUser, userJWT: jsn.data.userJWT }
-  } else {
-    logger.debug("✅ authenticate: not expired")
-    return { user, userJWT }
-  }
-}
-
-class AuthorizationError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = "AuthorizationError"
-  }
-}
-
-export async function authenticate2(
-  request: Request,
   headers = new Headers(),
 ): Promise<{ user: User; userJWT: string }> {
-  logger.debug(`✅ authenticate2: start - ${new URL(request.url).pathname}`)
+  logger.debug(`👑 authenticate: start - ${new URL(request.url).pathname}`)
 
   // get data from session
   const userJWT = await getUserJWTFromSession(request)
@@ -133,14 +55,14 @@ export async function authenticate2(
   }
 
   try {
-    logger.debug(`✅ authenticate2: expExpired`)
+    logger.debug(`👑 authenticate: expExpired`)
     const expExpired = isExpired(payload.exp)
-    logger.debug(`✅ authenticate2: rexpExpired`)
+    logger.debug(`👑 authenticate: rexpExpired`)
     const rexpExpired = isExpired(payload.rexp)
 
     // 4-1. if rexp expired, return error
     if (rexpExpired) {
-      logger.debug("✅ authenticate2: in rexpExpired")
+      logger.debug("👑 authenticate: in rexpExpired")
 
       // update the session with the new values
       const session = await sessionStorage.getSession()
@@ -149,19 +71,19 @@ export async function authenticate2(
 
       // redirect to the same URL if the request was a GET (loader)
       if (request.method === "GET") {
-        logger.debug("✅ authenticate2: request GET redirect for rexpExpired")
+        logger.debug("👑 authenticate: request GET redirect for rexpExpired")
         throw redirect("/?authstate=unauthorized-rexpExpired", { headers })
       }
 
       // throw redirect("/?authstate=unauthorized-rexpExpired")
     } else if (expExpired) {
       // 4-2. if exp expired, try to refresh token
-      logger.debug("✅ authenticate2: expired")
+      logger.debug("👑 authenticate: expired")
       throw new AuthorizationError("exp is expired")
     }
 
     // if not expired, return the access token
-    logger.debug("✅ authenticate2: not expired")
+    logger.debug("👑 authenticate: not expired")
     return { user, userJWT }
   } catch (error) {
     // here, check if the error is an AuthorizationError (the one we throw above)
@@ -181,16 +103,16 @@ export async function authenticate2(
         }),
       })
         .then((res) => {
-          logger.debug("✅ authenticate2: fetch res")
+          logger.debug("👑 authenticate: fetch res")
           return res.json()
         })
         .catch((err) => {
-          console.error(`❌ authenticate2: fetch error`, err.message, err)
+          console.error(`❌ authenticate: fetch error`, err.message, err)
           return { error: "error in fetch" }
         })
 
       logger.debug(
-        `✅ authenticate2: expiry: ${new Date(
+        `👑 authenticate: expiry: ${new Date(
           Number(jsn.data.user.credential.expiry || 0),
         ).toLocaleString()}`,
       )
@@ -205,7 +127,7 @@ export async function authenticate2(
 
       // redirect to the same URL if the request was a GET (loader)
       if (request.method === "GET") {
-        logger.debug("✅ authenticate2: request GET redirect")
+        logger.debug("👑 authenticate: request GET redirect")
         throw redirect(request.url, { headers })
       }
 
@@ -219,20 +141,104 @@ export async function authenticate2(
   }
 }
 
+/*
+
+
+export async function authenticate(
+  request: Request,
+): Promise<{ user?: User; error?: string; userJWT?: string }> {
+  logger.debug(`👑 authenticate: start - ${new URL(request.url).pathname}`)
+  // 1. get session from cookies
+  const userJWT = await getUserJWTFromSession(request)
+
+  if (!userJWT) {
+    return { error: "Could not get userJWT from session" }
+  }
+
+  // 2. parse end verify userJWT (checks if expired)
+  let payload = await parseVerifyUserJWT(userJWT)
+
+  if (!payload) {
+    return { error: "Could not parse userJWT" }
+  }
+
+  // 3. get user from session
+  const user = await getUserByEmail(payload.email)
+  if (!user) {
+    return { error: "Could not find user" }
+  }
+
+  logger.debug(`👑 authenticate: expExpired`)
+  const expExpired = isExpired(payload.exp)
+  logger.debug(`👑 authenticate: rexpExpired`)
+  const rexpExpired = isExpired(payload.rexp)
+
+  // 4-1. if rexp expired, return error
+  if (rexpExpired) {
+    logger.debug("👑 authenticate: rexpExpired")
+    return { error: "rexp is expired" }
+  } else if (expExpired) {
+    // 4-2. if exp expired, try to refresh token
+    logger.debug("👑 authenticate: expired")
+
+    // 4-2-1. fetch endpoint to refresh token
+    const jsn = await fetch(`${process.env.BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user,
+        email: payload.email,
+        accessToken: user.credential?.accessToken,
+        refreshToken: user.credential?.refreshToken,
+      }),
+    })
+      .then((res) => {
+        logger.debug("👑 authenticate: fetch res")
+        return res.json()
+      })
+      .catch((err) => {
+        console.error(`❌ authenticate: fetch error`, err.message, err)
+        return { error: "error in fetch" }
+      })
+
+    logger.debug(
+      `👑 authenticate: expiry: ${new Date(
+        Number(jsn.data.user.credential.expiry || 0),
+      ).toLocaleString()}`,
+    )
+    if (!jsn.ok) {
+      return { error: "Could not get response" }
+    }
+
+    const newUser = returnUser(jsn.data.user)
+
+    // 4-2-2. updated payload
+    return { user: newUser, userJWT: jsn.data.userJWT }
+  } else {
+    logger.debug("👑 authenticate: not expired")
+    return { user, userJWT }
+  }
+}
+
+
+*/
+
 /**
  *
  */
 // export async function updateRefreshedAccessToken(
 //   user: User,
 // ): Promise<User | null> {
-//   logger.debug("✅ updateRefreshedAccessToken")
+//   logger.debug("👑 updateRefreshedAccessToken")
 
 //   // get refreshToken and when it was created
 //   const refreshToken = user.credential?.refreshToken
 //   // get accessToken
 //   const accessToken = user.credential?.accessToken
 
-//   logger.debug("✅ updateRefreshAccessToken: accessToken", accessToken)
+//   logger.debug("👑 updateRefreshAccessToken: accessToken", accessToken)
 
 //   if (!refreshToken || !accessToken) return null
 

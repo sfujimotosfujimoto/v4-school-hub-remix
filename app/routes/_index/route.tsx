@@ -57,7 +57,7 @@ function Explanation() {
  * Loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: _index ${request.url}`)
+  logger.debug(`🍿 loader: _index ${request.url}`)
 
   // check if there is __session cookie
   const user = await getUserFromSession(request)

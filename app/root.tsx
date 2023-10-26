@@ -94,7 +94,7 @@ export default function App() {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   // if (new URL(request.url).pathname !== "/") return null
-  logger.debug(`✅ loader: root ${request.url}`)
+  logger.debug(`🍿 loader: root ${request.url}`)
   try {
     // const { user, error, userJWT } = await authenticate(request)
 

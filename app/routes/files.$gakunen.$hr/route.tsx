@@ -16,10 +16,10 @@ import {
   querySampledStudent,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { requireUserRole2 } from "~/lib/require-roles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { filterStudentNameSegments } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
-import { authenticate2 } from "~/lib/authenticate.server"
+import { authenticate } from "~/lib/authenticate.server"
 
 /**
  * Layout for files.$gakunen.$hr
@@ -146,8 +146,8 @@ function Segments({
  * loader function
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { user } = await authenticate2(request)
-  await requireUserRole2(user)
+  const { user } = await authenticate(request)
+  await requireUserRole(user)
 
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 

@@ -15,6 +15,7 @@ const FormDataScheme = z.object({
 })
 
 export async function undoAction(request: Request, formData: FormData) {
+  logger.debug("🍎 rename-csv: undoAction()")
   // get user
   const user = await getUserFromSession(request)
   if (!user || !user.credential)

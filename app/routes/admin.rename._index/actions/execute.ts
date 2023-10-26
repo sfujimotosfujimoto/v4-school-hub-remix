@@ -20,7 +20,7 @@ const FormDataScheme = z.object({
  * executeAction
  */
 export async function executeAction(request: Request, formData: FormData) {
-  logger.debug(`✅ in executeAction()`)
+  logger.debug(`🍎 rename: executeAction()`)
   const user = await getUserFromSession(request)
   if (!user || !user.credential)
     throw redirect("/?authstate=unauthenticated-rename-001", 302)

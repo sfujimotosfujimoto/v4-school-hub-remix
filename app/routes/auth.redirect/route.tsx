@@ -9,7 +9,7 @@ import { logger } from "~/logger"
  * Loader function
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: auth.redirect ${request.url}`)
+  logger.debug(`🍿 loader: auth.redirect ${request.url}`)
   // get code from url query
   const parsedUrl = new URL(request.url)
   const code = parsedUrl.searchParams.get("code")

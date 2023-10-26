@@ -13,13 +13,13 @@ import { MoveTypeContext } from "~/context/move-type-context"
 
 // functions
 import { getDrive, undoMoveDriveFiles } from "~/lib/google/drive.server"
-import { requireAdminRole2 } from "~/lib/require-roles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { getIdFromUrl } from "~/lib/utils"
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import type { MoveDataType, MoveType, State, User } from "~/types"
-import { authenticate2 } from "~/lib/authenticate.server"
+import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 
 /**
@@ -103,9 +103,10 @@ export default function AdminFolderPage() {
 export async function loader({ request }: LoaderFunctionArgs): Promise<{
   user: User
 }> {
-  logger.debug(`✅ loader: admin.folder._index ${request.url}`)
-  const { user } = await authenticate2(request)
-  await requireAdminRole2(user)
+  logger.debug(`🍿 loader: admin.folder._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireAdminRole(user)
+
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
   return {
@@ -124,8 +125,10 @@ const FormD = z.object({
  * Action
  */
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { user } = await authenticate2(request)
-  await requireAdminRole2(user)
+  logger.debug(`🍺 action: admin.folder._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireAdminRole(user)
+
   const formData = await request.formData()
 
   let { _action, undoMoveDataTime, jsonInput, sourceFolderId } =

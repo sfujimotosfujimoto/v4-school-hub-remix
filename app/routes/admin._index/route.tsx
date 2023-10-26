@@ -13,8 +13,8 @@ import Tables from "./components/tables"
 import { getUsers } from "~/lib/user.server"
 import { z } from "zod"
 import { logger } from "~/logger"
-import { authenticate2 } from "~/lib/authenticate.server"
-import { requireAdminRole2 } from "~/lib/require-roles.server"
+import { authenticate } from "~/lib/authenticate.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 // context
 // hooks
 
@@ -72,9 +72,9 @@ export default function AdminPage() {
  */
 // activtated,last, first, stats.count, stats.lastVisited
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: admin._index ${request.url}`)
-  const { user } = await authenticate2(request)
-  await requireAdminRole2(user)
+  logger.debug(`🍿 loader: admin._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireAdminRole(user)
 
   if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")

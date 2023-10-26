@@ -15,7 +15,7 @@ import MoveForm from "./components/move-form"
 import TaskCards from "~/components/ui/tasks/task-cards"
 
 // functions
-import { requireAdminRole, requireAdminRole2 } from "~/lib/require-roles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 import { executeAction } from "./actions/execute"
 import { searchAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
@@ -27,7 +27,7 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 // hooks
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
-import { authenticate2 } from "~/lib/authenticate.server"
+import { authenticate } from "~/lib/authenticate.server"
 
 /**
  * Move Page
@@ -74,9 +74,9 @@ export default function MovePage() {
  * /admin/move
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: admin.move._index ${request.url}`)
-  const { user } = await authenticate2(request)
-  await requireAdminRole2(user)
+  logger.debug(`🍿 loader: admin.move._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireAdminRole(user)
 
   if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")
@@ -112,8 +112,11 @@ const FormDataScheme = z.object({
  * /admin/move
  */
 export async function action({ request }: ActionFunctionArgs) {
-  const { user, error } = await requireAdminRole(request)
-  if (!user || !user.credential || error)
+  logger.debug(`🍺 action: admin.move._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireAdminRole(user)
+
+  if (!user || !user.credential)
     throw redirect("/?authstate=unauthenticated-move-001")
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))

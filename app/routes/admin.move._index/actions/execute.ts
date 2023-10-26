@@ -14,6 +14,7 @@ const FormDataScheme = z.object({
 })
 
 export async function executeAction(request: Request, formData: FormData) {
+  logger.debug(`🍎 move: executeAction()`)
   const user = await getUserFromSession(request)
   if (!user || !user.credential)
     throw redirect("/?authstate=unauthenticated", 302)
@@ -27,7 +28,7 @@ export async function executeAction(request: Request, formData: FormData) {
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
   if (!result.success) {
-    logger.debug(`✅ result.error ${result.error.errors.join(",")}`)
+    logger.debug(`🍎 result.error ${result.error.errors.join(",")}`)
     throw json<ActionType>(
       {
         ok: false,

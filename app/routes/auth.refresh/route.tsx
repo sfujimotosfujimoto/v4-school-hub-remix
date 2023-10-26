@@ -14,7 +14,7 @@ import { updateUserJWT } from "~/lib/signinout.server"
  * Loader function
  */
 export async function loader({ request }: ActionFunctionArgs) {
-  logger.debug(`✅ loader: auth.refresh ${request.url}`)
+  logger.debug(`🍿 loader: auth.refresh ${request.url}`)
 
   return json({ ok: true }, 200)
 }
@@ -23,7 +23,7 @@ export async function loader({ request }: ActionFunctionArgs) {
  * Action for refresh token
  */
 export async function action({ request }: ActionFunctionArgs) {
-  logger.debug("✅ in auth.refresh action")
+  logger.debug(`🍺 action: auth.refresh ${request.url}`)
 
   if (request.method !== "POST") {
     return json({ ok: false, message: "method error" }, { status: 400 })

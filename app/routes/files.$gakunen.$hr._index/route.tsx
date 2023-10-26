@@ -13,10 +13,10 @@ import {
   queryMultipleStudentsAndFilename,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { requireUserRole2 } from "~/lib/require-roles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { setSelected } from "~/lib/utils.server"
 import type { Role } from "@prisma/client"
-import { authenticate2 } from "~/lib/authenticate.server"
+import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 
 /**
@@ -61,9 +61,9 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   driveFiles: DriveFile[]
   role: Role
 }> {
-  logger.debug(`✅ loader: files.$gakunen.$hu._index ${request.url}`)
-  const { user } = await authenticate2(request)
-  await requireUserRole2(user)
+  logger.debug(`🍿 loader: files.$gakunen.$hu._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireUserRole(user)
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
   if (!user?.credential) throw redirect("/?authstate-025")

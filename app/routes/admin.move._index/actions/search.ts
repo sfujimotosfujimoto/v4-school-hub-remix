@@ -28,7 +28,7 @@ export async function searchAction(
   // sourceFolderId?: string,
   // tags?: string,
 ) {
-  logger.debug("✅ move: in searchAction")
+  logger.debug("🍎 move: searchAction()")
   const user = await getUserFromSession(request)
   if (!user) throw redirect("/?authstate=unauthenticated", 302)
 

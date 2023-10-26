@@ -13,7 +13,7 @@ import SourceFolderHeader from "./components/source-folder-header"
 import TaskCards from "~/components/ui/tasks/task-cards"
 
 // functions
-import { requireAdminRole2 } from "~/lib/require-roles.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
 import { executeAction } from "../admin.rename._index/actions/execute"
 import { searchRenameAction } from "../admin.rename._index/actions/search"
 import { undoAction } from "../admin.rename._index/actions/undo"
@@ -25,7 +25,7 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 // hooks
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
-import { authenticate2 } from "~/lib/authenticate.server"
+import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 
 /**
@@ -86,9 +86,10 @@ export default function RenameCsvPage() {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: admin.rename-csv._index ${request.url}`)
-  const { user } = await authenticate2(request)
-  await requireAdminRole2(user)
+  logger.debug(`🍿 loader: admin.rename-csv._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireAdminRole(user)
+
   if (!user || !user.credential)
     throw redirect("/?authstate=unauthenticated-rename-001")
   // const { folderId } = params
@@ -105,8 +106,10 @@ const FormDataScheme = z.object({
  * Action
  */
 export async function action({ request }: ActionFunctionArgs) {
-  const { user } = await authenticate2(request)
-  await requireAdminRole2(user)
+  logger.debug(`🍺 action: admin.rename-csv._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireAdminRole(user)
+
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
   const formData = await request.formData()

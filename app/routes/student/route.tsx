@@ -87,7 +87,7 @@ export default function StudentLayout() {
  */
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: student ${request.url}`)
+  logger.debug(`🍿 loader: student ${request.url}`)
 
   const user = await getUserFromSession(request)
 

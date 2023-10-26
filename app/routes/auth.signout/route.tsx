@@ -9,10 +9,9 @@ import type { ActionFunctionArgs } from "@remix-run/node"
  * Action for signout
  */
 export async function action({ request }: ActionFunctionArgs) {
-  logger.debug(`✅ in auth.signout action`)
+  logger.debug(`🍺 action: auth.signout ${request.url}`)
   if (request.method !== "POST") {
     throw json({ message: "Invalid request method" }, { status: 400 })
   }
-
   return await destroyUserSession(request, "/")
 }

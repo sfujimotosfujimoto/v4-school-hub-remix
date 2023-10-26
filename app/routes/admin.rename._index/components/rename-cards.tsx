@@ -8,38 +8,43 @@ export default function RenameCards({
   driveFiles,
   size,
 }: {
-  driveFiles: DriveFile[]
   size: "small" | "big"
+  driveFiles: DriveFile[]
 }) {
   return (
-    <>
+    <div className="relative">
       {/* <!-- NUMBER OF FILES --> */}
       {driveFiles?.length > 0 && (
         <div
           data-name="file count"
-          className="absolute right-0 top-0 ml-1 inline-block"
+          className="absolute right-0 top-0 ml-1 flex gap-1"
         >
           <span className="text-md rounded-md bg-slate-300 px-2 py-1">
             {driveFiles?.length} files
           </span>
-          <span className="text-md ml-2 rounded-md bg-slate-300 px-2 py-1">
+
+          <span className="text-md justify-content ml-2 flex items-center gap-1 rounded-md bg-slate-300 px-2 py-1">
             {driveFiles?.filter((df) => df.meta?.selected === true).length}{" "}
             selected
           </span>
         </div>
       )}
-      <div
-        data-name="ReanmeCards.tsx"
-        className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-200 md:grid-cols-2 xl:grid-cols-3"
-      >
-        {driveFiles &&
-          driveFiles.map((d) => {
-            if (d.parents && d.parents?.length > 0) {
-              return <RenameCard key={d.id} driveFile={d} size={size} />
-            }
-          })}
-      </div>
-    </>
+      <article className="mx-auto max-w-5xl p-12">
+        <div
+          data-name="ReanmeCards.tsx"
+          className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-200 md:grid-cols-2 xl:grid-cols-3"
+        >
+          {driveFiles &&
+            driveFiles.map((d) => {
+              if (d.parents && d.parents?.length > 0) {
+                return <RenameCard key={d.id} driveFile={d} size={size} />
+              } else {
+                return null
+              }
+            })}
+        </div>
+      </article>
+    </div>
   )
 }
 

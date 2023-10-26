@@ -6,7 +6,7 @@ import { redirect } from "@remix-run/node"
 
 import { prisma } from "./db.server"
 import { getClientFromCode } from "./google/google.server"
-import { getUserInfo } from "./google/people.server"
+import { getUserInfo } from "../../_backup/people.server"
 import { createUserSession } from "./session.server"
 import { checkValidSeigEmail } from "./utils"
 

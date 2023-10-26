@@ -17,7 +17,7 @@ import {
   getStudentByFolderId,
   getStudents,
 } from "~/lib/google/sheets.server"
-import { requireUserRole2 } from "~/lib/require-roles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { destroyUserSession } from "~/lib/session.server"
 import { filterSegments, parseTags } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
@@ -25,7 +25,7 @@ import { setSelected } from "~/lib/utils.server"
 // context
 import DriveFilesProvider from "~/context/drive-files-context"
 import NendoTagsProvider from "~/context/nendos-tags-context"
-import { authenticate2 } from "~/lib/authenticate.server"
+import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 
 /**
@@ -59,9 +59,9 @@ export default function StudentFolderIdLayout() {
  * - student: StudentData
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: student.$studentFolderId ${request.url}`)
-  const { user } = await authenticate2(request)
-  await requireUserRole2(user)
+  logger.debug(`🍿 loader: student.$studentFolderId ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireUserRole(user)
 
   if (!user || !user.credential) {
     return destroyUserSession(request, `/?authstate=unauthenticated`)

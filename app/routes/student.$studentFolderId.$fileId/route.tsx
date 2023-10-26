@@ -15,9 +15,9 @@ import ToFolderButton from "./components/to-folder-button"
 
 // functions
 import { callPermissions, getDrive } from "~/lib/google/drive.server"
-import { requireUserRole2 } from "~/lib/require-roles.server"
+import { requireUserRole } from "~/lib/require-roles.server"
 import { destroyUserSession } from "~/lib/session.server"
-import { authenticate2 } from "~/lib/authenticate.server"
+import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 
 /**
@@ -72,9 +72,9 @@ export default function StudentFolderIdFileIdPage() {
  * Loader Function
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  logger.debug(`✅ loader: student.$studentFolderId.$fileId  ${request.url}`)
-  const { user } = await authenticate2(request)
-  await requireUserRole2(user)
+  logger.debug(`🍿 loader: student.$studentFolderId.$fileId  ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireUserRole(user)
 
   if (!user || !user.credential) {
     return destroyUserSession(request, `/?authstate=unauthenticated`)
