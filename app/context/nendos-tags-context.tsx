@@ -7,20 +7,13 @@ interface NendoTagsContext {
   setTag: React.Dispatch<React.SetStateAction<string>>
 }
 
-// TODO: REFACTOR - make this simpler
-const defaultValue: NendoTagsContext = {
-  nendo: "",
-  setNendo: () => {},
-  tag: "",
-  setTag: () => {},
-}
-
-export const NendoTagsContext =
-  React.createContext<NendoTagsContext>(defaultValue)
+export const NendoTagsContext = React.createContext<
+  NendoTagsContext | undefined
+>(undefined)
 
 function NendoTagsProvider({ children }: { children: React.ReactNode }) {
-  const [nendo, setNendo] = React.useState<string>(defaultValue.nendo)
-  const [tag, setTag] = React.useState<string>(defaultValue.tag)
+  const [nendo, setNendo] = React.useState<string>("")
+  const [tag, setTag] = React.useState<string>("")
 
   return (
     <NendoTagsContext.Provider
@@ -36,6 +29,14 @@ function NendoTagsProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export const useNendoTags = () => React.useContext(NendoTagsContext)
+export function useNendoTags() {
+  const nendoTags = React.useContext(NendoTagsContext)
+
+  if (nendoTags === undefined) {
+    throw new Error(`useNendoTags must be used within a NendoTagsProvider`)
+  }
+  return nendoTags
+}
+// export const useNendoTags = () => React.useContext(NendoTagsContext)
 
 export default NendoTagsProvider

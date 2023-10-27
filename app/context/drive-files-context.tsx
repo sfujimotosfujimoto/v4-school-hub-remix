@@ -180,19 +180,24 @@ function driveFilesReducer(dfs: DriveFile[], action: Action): DriveFile[] {
       const id = action.payload.id
       const checked = action.payload.checked
       const foundId = dfs.findIndex((df) => df.id === id)
+
       if (foundId < 0) {
         return dfs
       } else {
-        // draft[foundId].meta?.selected == checked
-        const found = dfs[foundId]
-        dfs[foundId] = {
-          ...found,
-          meta: {
-            ...found.meta,
-            selected: checked,
-          },
-        }
-        return dfs
+        return dfs.map((df) => {
+          if (df.id === id) {
+            const tmpdf = {
+              ...df,
+              meta: {
+                ...df.meta,
+                selected: checked,
+              },
+            }
+            return tmpdf
+          } else {
+            return df
+          }
+        })
       }
     }
     default:

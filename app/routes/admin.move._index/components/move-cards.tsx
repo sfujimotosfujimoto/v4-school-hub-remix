@@ -60,6 +60,7 @@ function MoveCard({
 }) {
   const { driveFilesDispatch } = useDriveFilesContext()
   const selected = driveFile.meta?.selected
+
   return (
     <div className="relative">
       <article className="mx-auto max-w-5xl p-1">
@@ -72,12 +73,16 @@ function MoveCard({
           <input
             type="checkbox"
             checked={selected}
-            onChange={() =>
+            onChange={() => {
+              console.log(
+                "✅ components/move-cards.tsx ~ 	😀 input.check",
+                selected,
+              )
               driveFilesDispatch({
                 type: "SET_CHECK",
                 payload: { id: driveFile.id, checked: !selected },
               })
-            }
+            }}
             className="checkbox-info checkbox checkbox-lg absolute -right-4 -top-4 border-none bg-slate-300 shadow-lg"
           />
           <div

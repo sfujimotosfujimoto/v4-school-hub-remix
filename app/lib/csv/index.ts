@@ -2,7 +2,15 @@ import Papa from "papaparse"
 
 import type { DriveFile, DriveFileMove, DriveFileTask, Task } from "~/types"
 
-// receive File and return array of objects
+// readCsvFileToObj reads csv file and returns an array of objects
+// the first line is header
+// the rest of the lines are data
+// the header is trimmed
+// the data is trimmed
+// the data is converted to object
+// the object keys are trimmed
+// the object keys that are empty or starts with _ are deleted
+// the object values are trimmed
 export async function readCsvFileToObj(
   file: File,
 ): Promise<{ [key: string]: string }[]> {
@@ -33,14 +41,28 @@ export async function readCsvFileToObj(
   return objs
 }
 
+// parseCsvObjToDriveFileRename converts csv object to DriveFile[]
+// csv object is an array of objects
+// the first object is header
+// the rest of the objects are data
+// the header is trimmed
+// the data is trimmed
+// the data is converted to object
+// the object keys are trimmed
+// the object keys that are empty or starts with _ are deleted
+// the object values are trimmed
+// the object is converted to DriveFile
+// the DriveFile is saved to DriveFile[]
 export function parseCsvObjToDriveFileRename(
   csvObjs: { [key: string]: any }[],
-) {
+): DriveFile[] {
   const tmps: DriveFile[] = []
 
+  // convert csv object to DriveFile[]
   csvObjs.forEach((d) => {
     const keys = Object.keys(d) as (keyof typeof d)[]
 
+    // create a DriveFile
     const tmp = {
       id: "",
       name: "",
@@ -74,7 +96,21 @@ export function parseCsvObjToDriveFileRename(
   return tmps
 }
 
-export function parseCsvObjToDriveFileMove(csvObjs: { [key: string]: any }[]) {
+// parseCsvObjToDriveFileMove converts csv object to DriveFileMove[]
+// csv object is an array of objects
+// the first object is header
+// the rest of the objects are data
+// the header is trimmed
+// the data is trimmed
+// the data is converted to object
+// the object keys are trimmed
+// the object keys that are empty or starts with _ are deleted
+// the object values are trimmed
+// the object is converted to DriveFileMove
+// the DriveFileMove is saved to DriveFileMove[]
+export function parseCsvObjToDriveFileMove(
+  csvObjs: { [key: string]: any }[],
+): DriveFileMove[] {
   const tmps: DriveFileMove[] = []
 
   csvObjs.forEach((d) => {
@@ -122,8 +158,20 @@ export function parseCsvObjToDriveFileMove(csvObjs: { [key: string]: any }[]) {
   return tmps
 }
 
-// @note csv/index.ts
-export function convertDriveFileToCsv(df: DriveFile[], type: Task["type"]) {
+// convertDriveFileToCsv converts DriveFile[] to csv
+// DriveFile[] is an array of DriveFile
+// DriveFile is an object
+// DriveFile has id, parents, meta
+// DriveFile.meta has file, destination, last
+// DriveFile.meta.file has name, formerName
+// DriveFile.meta.destination has folderId, name
+// DriveFile.meta.last has folderId
+// csv is a string
+// csv is created from DriveFile[]
+export function convertDriveFileToCsv(
+  df: DriveFile[],
+  type: Task["type"],
+): string | undefined {
   const objs: DriveFileTask[] = df.map((d) => {
     return parseDriveFileToObj(d)
   })
@@ -159,7 +207,7 @@ export function convertDriveFileToCsv(df: DriveFile[], type: Task["type"]) {
 }
 
 // receive DriveFile and strip it down to  {"id": ..., "meta": file: ...} object
-function parseDriveFileToObj(df: DriveFile) {
+function parseDriveFileToObj(df: DriveFile): DriveFileTask {
   let tmp: DriveFileTask = {
     id: "",
     parents: [],
