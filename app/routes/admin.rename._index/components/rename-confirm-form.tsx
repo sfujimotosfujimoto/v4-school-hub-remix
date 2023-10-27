@@ -26,14 +26,15 @@ export default function RenameConfirmForm() {
 
   if (!sourceFolder) return null
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // filter only selected files
+    const dfs = driveFiles.filter((df) => df.meta?.selected === true)
     tasksDispatch({
       type: "SET",
       payload: {
-        driveFiles: driveFiles,
+        driveFiles: dfs,
         taskType: "rename",
       },
     })
-    // logger.debug("✅ dialogEl.current", dialogEl.current)
     if (dialogEl.current !== null) dialogEl.current.close()
   }
 
@@ -60,7 +61,7 @@ export default function RenameConfirmForm() {
           <input
             type="hidden"
             name="driveFilesString"
-            value={JSON.stringify(driveFiles)}
+            value={JSON.stringify(driveFiles.filter((df) => df.meta?.selected))}
           />
 
           <button
@@ -95,10 +96,7 @@ function Button({ loading, text }: { loading: boolean; text: string }) {
         loading ? "btn-disabled animate-pulse !bg-slate-300" : "btn-primary"
       }`}
     >
-      {loading && (
-        // <span className="loading loading-spinner loading-xs" />
-        <LoadingIcon size={4} />
-      )}
+      {loading && <LoadingIcon size={4} />}
       {text}
     </button>
   )

@@ -30,6 +30,8 @@ export default function RenameForm() {
   React.useEffect(() => {
     if (!actionData?.data || !("sourceFolder" in actionData.data)) return
 
+    if (!actionData.data.sourceFolder) return
+
     renamePageDispatch({
       type: "SET",
       payload: { sourceFolder: actionData?.data?.sourceFolder },

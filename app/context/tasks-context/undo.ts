@@ -1,5 +1,5 @@
 import type { drive_v3 } from "googleapis"
-import { CHUNK_SIZE } from "~/lib/config"
+import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
@@ -11,7 +11,7 @@ export async function undoMoveDataExecute(
   request: Request,
   driveFiles: DriveFile[],
 ) {
-  logger.debug("✅ in undoMoveDataExecute")
+  logger.debug("✅ undoMoveDataExecute")
 
   const user = await getUserFromSession(request)
   if (!user || !user.credential) {
@@ -75,9 +75,13 @@ export async function _undoMoveDriveFiles(
       continue
     }
 
+    // 23/10/27/(Fri) 12:03:27  ----------------------
+    // added `fields` to get the new state of the file
+    // in order to get driveFiles for after undoing the move
     const file = await drive.files.update({
       fileId: d.id,
       addParents: folderId,
+      fields: QUERY_FILE_FIELDS,
     })
     files.push(file.data)
   }
@@ -156,6 +160,7 @@ export async function _undoRenameDriveFiles(
     if (d.meta.file?.name) {
       const file = await drive.files.update({
         fileId: d.id,
+        fields: QUERY_FILE_FIELDS,
         requestBody: {
           name: d.meta.file?.formerName,
         },

@@ -10,7 +10,7 @@ import type { DriveFile, Permission, Student } from "~/types"
 import { getClient } from "./google.server"
 import { getStudentDataWithAccessToken } from "./sheets.server"
 
-import { QUERY_FILE_FIELDS } from "../config"
+import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"
 import { getFolderId, getGakusekiFromString, getIdFromUrl } from "../utils"
 
 /**
@@ -124,7 +124,9 @@ export function querySampledStudent(
 /**
  * Convert File[] to DriveFileData[]
  */
-function mapFilesToDriveFiles(files: drive_v3.Schema$File[]): DriveFile[] {
+export function mapFilesToDriveFiles(
+  files: drive_v3.Schema$File[],
+): DriveFile[] {
   const driveFiles: DriveFile[] = files.map((d) => {
     return mapFilesToDriveFile(d)
   })
@@ -254,62 +256,6 @@ export async function getDriveFiles(
 }
 
 /**
- * moveDriveFiles moves the given files based on their gakuseki
- * which is in the name of the file.
- */
-export async function moveDriveFiles(
-  drive: drive_v3.Drive,
-  driveFiles: DriveFile[],
-) {
-  const promises: GaxiosPromise<drive_v3.Schema$File>[] = []
-
-  // loop through driveFileData
-  driveFiles.forEach((d) => {
-    if (!d.meta?.studentFolder?.folderLink || !d.id) return
-
-    // get folderId from folderLink
-    const folderId = getIdFromUrl(d.meta.studentFolder.folderLink)
-    if (!folderId) return
-
-    // create promise using `update`
-    const promise = drive.files.update({
-      fileId: d.id,
-      addParents: folderId,
-    })
-
-    promises.push(promise)
-  })
-
-  try {
-    // run Promises
-    const perChunk = 20
-
-    const batchedPromises: GaxiosPromise<drive_v3.Schema$File>[][] =
-      promises.reduce(
-        (resultArray: GaxiosPromise<drive_v3.Schema$File>[][], item, index) => {
-          const chunkIndex = Math.floor(index / perChunk)
-
-          if (!resultArray[chunkIndex]) {
-            resultArray[chunkIndex] = [] // start a new chunk
-          }
-
-          resultArray[chunkIndex].push(item)
-
-          return resultArray
-        },
-        [],
-      )
-
-    batchedPromises.forEach(async (ps) => {
-      await Promise.all(ps)
-    })
-  } catch (err) {
-    console.error(`In moveDriveFiles(): ${err}`)
-    throw json({ message: `Could not move: ${err}` }, 500)
-  }
-}
-
-/**
  * undoMoveDriveFiles receives either a JSON file created in `履歴`
  * or clicked object data that was outputted when running
  * `moveDriveFiles`
@@ -420,10 +366,10 @@ async function callFilesList(drive: drive_v3.Drive, query: string) {
       pageSize: 300,
       pageToken: nextPageToken,
       q: query,
-      fields:
-        "nextPageToken, files(id,name,mimeType,webViewLink,thumbnailLink,hasThumbnail,iconLink,createdTime,modifiedTime,webContentLink,parents,appProperties)",
+      fields: QUERY_FILES_FIELDS,
+      // fields:
+      //   "nextPageToken, files(id,name,mimeType,webViewLink,thumbnailLink,hasThumbnail,iconLink,createdTime,modifiedTime,webContentLink,parents,appProperties)",
     })
-
     if (list.data.files) {
       files = files.concat(list.data.files)
     }

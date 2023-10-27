@@ -1,7 +1,6 @@
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { getUndoFunction } from "~/context/tasks-context/tasks-context"
-import { getDrive } from "~/lib/google/drive.server"
+import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
 import { DriveFilesSchema } from "~/schemas"
@@ -9,6 +8,8 @@ import { DriveFilesSchema } from "~/schemas"
 import { json, redirect } from "@remix-run/node"
 
 import type { ActionType, DriveFile } from "~/types"
+import { undoMoveDataExecute } from "./undo"
+
 const FormDataScheme = z.object({
   driveFilesString: z.string().optional(),
 })
@@ -16,7 +17,7 @@ const FormDataScheme = z.object({
 /**
  * Undo CSV Action
  */
-export async function undoCSvAction(
+export async function undoCsvAction(
   request: Request,
   formData: FormData,
   // dataString?: string
@@ -62,12 +63,23 @@ export async function undoCSvAction(
   }
 
   const driveFiles = result2.data as unknown as DriveFile[]
-  const undoFunc = getUndoFunction("move")
-  const res = await undoFunc(request, driveFiles)
+  // const undoFunc = getUndoFunction("move")
+  // const res = await undoFunc(request, driveFiles)
+  const res = await undoMoveDataExecute(request, driveFiles)
+
   if (res.error) {
     toast.error(res.error)
     return json<ActionType>({ ok: false, type: "undo-csv", error: res.error })
   }
 
-  return json<ActionType>({ ok: true, type: "undo-csv" })
+  // 23/10/27/(Fri) 12:03:09  ----------------------
+  const dfs = mapFilesToDriveFiles(res.data?.files || [])
+
+  return json<ActionType>({
+    ok: true,
+    type: "undo-csv",
+    data: {
+      driveFiles: dfs,
+    },
+  })
 }

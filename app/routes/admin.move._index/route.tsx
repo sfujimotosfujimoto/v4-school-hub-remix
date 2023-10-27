@@ -19,7 +19,7 @@ import { requireAdminRole } from "~/lib/require-roles.server"
 import { executeAction } from "./actions/execute"
 import { searchAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
-import { undoCSvAction } from "./actions/undo-csv"
+import { undoCsvAction } from "./actions/undo-csv"
 
 // context
 import { useDriveFilesContext } from "~/context/drive-files-context"
@@ -100,11 +100,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 // Zod Data Type
 const FormDataScheme = z.object({
   _action: z.string(),
-  // sourceFolderId: z.string().optional(),
-  // tagsString: z.string().optional(),
-  // driveFilesString: z.string().optional(),
-  // driveFileMovesString: z.string().optional(),
-  // driveFilesSerialized: z.string().optional(),
 })
 
 /**
@@ -130,15 +125,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
   let { _action } = result.data
 
-  // let {
-  //   _action,
-  //   sourceFolderId,
-  //   tagsString,
-  //   driveFilesString,
-  //   driveFileMovesString,
-  //   driveFilesSerialized,
-  // } = FormDataScheme.parse(Object.fromEntries(formData))
-
   switch (_action) {
     /*
        SEARCH ACTION
@@ -162,7 +148,7 @@ export async function action({ request }: ActionFunctionArgs) {
     case "undo-csv": {
       logger.debug('✅ action: "undo-csv"')
       // get user
-      return await undoCSvAction(request, formData)
+      return await undoCsvAction(request, formData)
     }
 
     /**

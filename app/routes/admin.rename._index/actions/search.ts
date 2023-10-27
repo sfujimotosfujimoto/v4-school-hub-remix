@@ -166,7 +166,7 @@ async function addPermissionToDriveFiles(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
 ) {
-  console.log("✅ addPermissionToDriveFiles: start")
+  logger.debug("✅ addPermissionToDriveFiles: start")
   driveFiles.forEach(async (d) => {
     const permissions = await callPermissions(drive, d.id)
 
@@ -261,15 +261,15 @@ async function _findStudentDataFromSegments(
 
   // get joined segments
   const joinedSegments = segments.join("")
-  logger.debug(
-    `✅ _findStudentDataFromSegments: joinedSegments ${joinedSegments}`,
-  )
+  // logger.debug(
+  //   `✅ _findStudentDataFromSegments: joinedSegments ${joinedSegments}`,
+  // )
   // logger.debug(`✅ df.meta: ${JSON.stringify(df.meta, null, 2)}}`)
 
   // look up if studentEmail is set in meta.file
   // is so, find students from studentEmail
   if (df.meta.file?.studentEmail) {
-    logger.debug(`✅ _findStudentDataFromSegments: in studentEmail`)
+    // logger.debug(`✅ _findStudentDataFromSegments: in studentEmail`)
     const student = students.find(
       (sd) => sd.email === df.meta?.file?.studentEmail,
     )
@@ -300,18 +300,18 @@ async function _findStudentDataFromSegments(
   const gMatches = gakusekiString?.match(/[0-9]{7}|b([0-9]{7})/)
   const gakuseki = gMatches?.at(1) ?? gMatches?.at(0)
 
-  logger.debug(
-    `✅ _findStudentDataFromSegments: gakusekiString ${gakusekiString}`,
-  )
-  logger.debug(`✅ _findStudentDataFromSegments: gMatches ${gMatches}`)
-  logger.debug(`✅ _findStudentDataFromSegments: gakuseki ${gakuseki}`)
+  // logger.debug(
+  //   `✅ _findStudentDataFromSegments: gakusekiString ${gakusekiString}`,
+  // )
+  // logger.debug(`✅ _findStudentDataFromSegments: gMatches ${gMatches}`)
+  // logger.debug(`✅ _findStudentDataFromSegments: gakuseki ${gakuseki}`)
 
   if (gakuseki) {
     const student = students.find((sd) => String(sd.gakuseki) === gakuseki)
 
-    logger.debug(
-      `✅ _findStudentDataFromSegments: student ${student?.email}, students ${students.length}`,
-    )
+    // logger.debug(
+    //   `✅ _findStudentDataFromSegments: student ${student?.email}, students ${students.length}`,
+    // )
 
     if (student) {
       df.meta = {
@@ -334,10 +334,10 @@ async function _findStudentDataFromSegments(
     }
   }
 
-  logger.debug(
-    `✅ _findStudentDataFromSegments: {joinedSegments}	
-    ✨ ${JSON.stringify({ joinedSegments }, null, 2)}`,
-  )
+  // logger.debug(
+  //   `✅ _findStudentDataFromSegments: {joinedSegments}
+  //   ✨ ${JSON.stringify({ joinedSegments }, null, 2)}`,
+  // )
 
   // look up student by Hr, HrNo, and Gakunen
   if (gakunen !== `ALL`) {
@@ -439,24 +439,24 @@ function createNewName(
 
   const hrNoPadded = students.hrNo.toString().padStart(2, "0")
 
-  logger.debug(`✅ createNewName: gakunenHrHrNoStart ${gakunenHrHrNoStart}`)
-  logger.debug(`✅ createNewName: includeGakunenHrHrNo ${includeGakunenHrHrNo}`)
+  // logger.debug(`✅ createNewName: gakunenHrHrNoStart ${gakunenHrHrNoStart}`)
+  // logger.debug(`✅ createNewName: includeGakunenHrHrNo ${includeGakunenHrHrNo}`)
 
   if (gakunenHrHrNoStart) {
     newName = `${students.gakunen}_${students.hr}${hrNoPadded}_${newName}_${students.last}${students.first}`
-    logger.debug(
-      `✅ createNewName: in gakunenHrHrNoStart 001 newName ${newName}`,
-    )
+    // logger.debug(
+    //   `✅ createNewName: in gakunenHrHrNoStart 001 newName ${newName}`,
+    // )
   } else if (includeGakunenHrHrNo) {
     newName = `${newName}_${students.gakunen}_${students.hr}${hrNoPadded}_${students.last}${students.first}`
-    logger.debug(
-      `✅ createNewName: in gakunenHrHrNoStart 002 newName ${newName}`,
-    )
+    // logger.debug(
+    //   `✅ createNewName: in gakunenHrHrNoStart 002 newName ${newName}`,
+    // )
   } else {
     newName = `${newName}_${students.last}${students.first}`
-    logger.debug(
-      `✅ createNewName: in gakunenHrHrNoStart 003 newName ${newName}`,
-    )
+    // logger.debug(
+    //   `✅ createNewName: in gakunenHrHrNoStart 003 newName ${newName}`,
+    // )
   }
 
   if (segment) {

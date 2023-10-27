@@ -206,7 +206,7 @@ export type ActionType = {
   error?: string
   data?:
     | {
-        sourceFolder: drive_v3.Schema$File
+        sourceFolder?: drive_v3.Schema$File
         driveFiles: DriveFile[]
       }
     | { files: drive_v3.Schema$File[] }

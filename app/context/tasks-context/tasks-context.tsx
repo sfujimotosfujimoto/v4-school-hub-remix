@@ -1,5 +1,5 @@
 import React from "react"
-import { undoMoveDataExecute, undoRenameDataExecute } from "./undo"
+// import { undoMoveDataExecute, undoRenameDataExecute } from "./undo"
 
 import type { DriveFile, Task } from "~/types"
 
@@ -156,17 +156,17 @@ function checkTimeAndLength(tasks: Task[]) {
   return _tasks
 }
 
-// Get undo function based on the Task type
-export function getUndoFunction(type: Task["type"]) {
-  switch (type) {
-    case "move": {
-      return undoMoveDataExecute
-    }
-    case "rename": {
-      return undoRenameDataExecute
-    }
-    default: {
-      throw new Error("Invalid type")
-    }
-  }
-}
+// // Get undo function based on the Task type
+// export function getUndoFunction(type: Task["type"]) {
+//   switch (type) {
+//     case "move": {
+//       return undoMoveDataExecute
+//     }
+//     case "rename": {
+//       return undoRenameDataExecute
+//     }
+//     default: {
+//       throw new Error("Invalid type")
+//     }
+//   }
+// }
