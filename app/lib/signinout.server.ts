@@ -5,8 +5,7 @@ import { logger } from "~/logger"
 import { redirect } from "@remix-run/node"
 
 import { prisma } from "./db.server"
-import { getClientFromCode } from "./google/google.server"
-import { getUserInfo } from "../../_backup/people.server"
+import { getClientFromCode, getUserInfo } from "./google/google.server"
 import { createUserSession } from "./session.server"
 import { checkValidSeigEmail } from "./utils"
 

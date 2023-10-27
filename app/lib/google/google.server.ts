@@ -1,6 +1,7 @@
 import { google } from "googleapis"
 
 import type { Auth } from "googleapis"
+import type { Person } from "~/types"
 
 export async function getClientFromCode(code: string): Promise<{
   client: Auth.OAuth2Client
@@ -54,4 +55,21 @@ export function initializeClient(): Auth.OAuth2Client {
     process.env.GOOGLE_API_REDIRECT_URI,
   )
   return client
+}
+
+export async function getUserInfo(accessToken: string) {
+  const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
+
+  const resp = await fetch(url)
+    .then((r) => r.json())
+    .catch((e) => {})
+
+  const person: Person = {
+    email: resp.email,
+    first: resp.given_name,
+    last: resp.family_name,
+    picture: resp.picture,
+  }
+
+  return person
 }
