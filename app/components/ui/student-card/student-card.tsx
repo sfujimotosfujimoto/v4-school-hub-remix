@@ -32,7 +32,11 @@ export default function StudentCard({
     <>
       <div
         data-name="StudentCard.tsx"
-        className="card bg-sfgreen-200 shadow-lg transition-all duration-500 lg:card-side hover:-translate-y-1 hover:bg-sfgreen-300"
+        className={`card shadow-lg transition-all duration-500 lg:card-side hover:-translate-y-1  ${
+          driveFile.meta?.selected
+            ? "bg-sfgreen-200 hover:bg-sfgreen-300"
+            : "bg-slate-300 hover:bg-slate-400"
+        }`}
       >
         <div
           className={`card-body ${

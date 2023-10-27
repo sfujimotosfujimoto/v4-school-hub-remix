@@ -20,6 +20,8 @@ import { requireUserRole } from "~/lib/require-roles.server"
 import { filterStudentNameSegments } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
 import { authenticate } from "~/lib/authenticate.server"
+import NendoTagsProvider from "~/context/nendos-tags-context"
+import DriveFilesProvider from "~/context/drive-files-context"
 
 /**
  * Layout for files.$gakunen.$hr
@@ -51,17 +53,11 @@ export default function FilesGakunenHrLayout() {
           {query ? `- ${query}` : null}
         </h1>
       </div>
+
       <div className="mb-4 flex items-center gap-4">
+        {/* Back Button */}
         <BackButton isLink={true} to={`/files`} />
-      </div>
-      <div data-name="segments">
-        <Segments
-          checkedSegments={checkedSegments}
-          setCheckedSegments={setCheckedSegments}
-          segments={segments}
-        />
-      </div>
-      <div data-name="GO button" className="mt-4">
+        {/* GO button */}
         <NavLink
           to={`/files/${gakunen}/${hr}?${searchParams}`}
           className={`btn btn-success btn-sm w-24 shadow-lg  ${
@@ -72,7 +68,20 @@ export default function FilesGakunenHrLayout() {
           <span className=" ml-2 sm:ml-4 sm:inline">GO</span>
         </NavLink>
       </div>
-      <Outlet />
+
+      {/* Segments */}
+      <div data-name="segments">
+        <Segments
+          checkedSegments={checkedSegments}
+          setCheckedSegments={setCheckedSegments}
+          segments={segments}
+        />
+      </div>
+      <DriveFilesProvider>
+        <NendoTagsProvider>
+          <Outlet />
+        </NendoTagsProvider>
+      </DriveFilesProvider>
     </div>
   )
 }

@@ -29,6 +29,8 @@ export default function MoveForm() {
   const load = React.useRef(false)
   React.useEffect(() => {
     if (!actionData?.data || !("sourceFolder" in actionData.data)) return
+    if (!actionData?.data?.sourceFolder) return
+
     movePageDispatch({
       type: "SET",
       payload: { sourceFolder: actionData?.data?.sourceFolder },

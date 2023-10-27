@@ -82,19 +82,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw redirect("/?authstate=unauthenticated")
   }
   return null
-
-  // try {
-  //   const drive = await getDrive(user.credential.accessToken)
-  //   if (!drive) throw redirect("/?authstate=unauthorized-010")
-
-  //   if (!user.credential.accessToken)
-  //     throw redirect("/?authstate=unauthorized-move-003")
-
-  //   return setSession(user.credential.accessToken, { user })
-  // } catch (error) {
-  //   console.error(error)
-  //   throw redirect("/?authstate=unauthorized-011")
-  // }
 }
 
 // Zod Data Type
