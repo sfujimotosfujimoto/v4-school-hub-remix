@@ -184,52 +184,46 @@ export function ErrorBoundary() {
     }
 
     return (
-      <Document>
-        <main data-name="root">
-          <ErrorDocument>
-            <h1 className="text-xl">
-              {`${errorMessage} : ${error.status}` ||
-                "Something went wrong. Please try again later."}
-            </h1>
+      <main data-name="root">
+        <ErrorDocument>
+          <h1 className="text-xl">
+            {`${errorMessage} : ${error.status}` ||
+              "Something went wrong. Please try again later."}
+          </h1>
 
-            <p className="text-lg">
-              Contact:
-              <a
-                href="mailto:s-fujimoto@seig-boys.jp"
-                className="ml-2 font-semibold underline hover:text-sfred-200 "
-              >
-                s-fujimoto[at]seig-boys.jp
-              </a>
-            </p>
-            <BackToHomeButton />
-          </ErrorDocument>
-        </main>
-      </Document>
+          <p className="text-lg">
+            Contact:
+            <a
+              href="mailto:s-fujimoto@seig-boys.jp"
+              className="ml-2 font-semibold underline hover:text-sfred-200 "
+            >
+              s-fujimoto[at]seig-boys.jp
+            </a>
+          </p>
+          <BackToHomeButton />
+        </ErrorDocument>
+      </main>
     )
   } else if (error instanceof Error) {
     return (
-      <Document>
-        <main>
-          <ErrorDocument>
-            <p className="text-2xl">
-              {`${error.message} : Error` ||
-                "Something went wrong. Please try again later."}
-            </p>
-            <BackToHomeButton />
-          </ErrorDocument>
-        </main>
-      </Document>
+      <main>
+        <ErrorDocument>
+          <p className="text-2xl">
+            {`${error.message} : Error` ||
+              "Something went wrong. Please try again later."}
+          </p>
+          <BackToHomeButton />
+        </ErrorDocument>
+      </main>
     )
   } else {
     return (
-      <Document>
-        <main>
-          <ErrorDocument>
-            <h1 className="text-2xl">Unknown Error</h1>
-            <BackToHomeButton />
-          </ErrorDocument>
-        </main>
-      </Document>
+      <main>
+        <ErrorDocument>
+          <h1 className="text-2xl">Unknown Error</h1>
+          <BackToHomeButton />
+        </ErrorDocument>
+      </main>
     )
   }
 }
