@@ -79,9 +79,10 @@ export async function getUserFromSession(
   const user = await getUserByEmail(payload.email)
 
   logger.debug(
-    `👑 getUserFromSession: exp ${new Date(
-      payload.exp,
-    ).toLocaleString()} -- requrest.url ${request.url}`,
+    `👑 getUserFromSession: exp ${new Date(payload.exp).toLocaleString(
+      "ja-JP",
+      { timeZone: "Asia/Tokyo" },
+    )} -- requrest.url ${request.url}`,
   )
 
   // if no user, create in prisma db

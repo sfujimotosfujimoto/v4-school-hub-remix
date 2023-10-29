@@ -53,13 +53,16 @@ export async function signin({
   let refreshTokenExpiry = Date.now() + 1000 * 60 * 60 * 24 * 14 // 14 days
 
   logger.info(
-    `🍓 signin: new expiry_date ${new Date(expiry_date || 0).toLocaleString()}`,
+    `🍓 signin: new expiry_date ${new Date(expiry_date || 0).toLocaleString(
+      "ja-JP",
+      { timeZone: "Asia/Tokyo" },
+    )}`,
   )
 
   logger.info(
     `🍓 signin: new refreshTokenExpiry ${new Date(
       refreshTokenExpiry || 0,
-    ).toLocaleString()}`,
+    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
   )
 
   if (!access_token) {

@@ -63,7 +63,11 @@ export default function TaskCard({ task }: { task: Task }) {
             <div className="flex items-center gap-2 text-sm">
               <TimeIcon className="h-3 w-4" />
               <span>
-                {dateFormat(new Date(task.time).toLocaleString()) || ""}
+                {dateFormat(
+                  new Date(task.time).toLocaleString("ja-JP", {
+                    timeZone: "Asia/Tokyo",
+                  }),
+                ) || ""}
               </span>
             </div>
           </div>

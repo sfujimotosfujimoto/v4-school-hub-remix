@@ -53,7 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
   logger.debug(
     `✅ in auth.refresh action: expiry ${new Date(
       Number(expiry_date),
-    ).toLocaleString()}`,
+    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
   )
 
   // 2. update user.credential in db
@@ -95,7 +95,7 @@ export async function action({ request }: ActionFunctionArgs) {
     logger.debug(
       `✅ in auth.refresh action: new payload.exp ${new Date(
         Number(payload.exp),
-      ).toLocaleString()}`,
+      ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
     )
 
     // 4. update session
@@ -111,7 +111,7 @@ export async function action({ request }: ActionFunctionArgs) {
     // logger.debug(
     //   `✅ in auth.refresh action: valJWT.exp ${new Date(
     //     Number(valJWT?.exp || 0),
-    //   ).toLocaleString()}`,
+    //   ).toLocaleString("ja-JP", {timeZone: "Asia/Tokyo"})}`,
     // )
     const newUser = returnUser(updatedUser)
 

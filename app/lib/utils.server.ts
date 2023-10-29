@@ -24,7 +24,9 @@ export function isExpired(expire: number): boolean {
   logger.info(
     `🍇 isExpired: ${expire < Date.now()}, expire ${new Date(
       expire,
-    ).toLocaleString()}, now ${new Date(Date.now()).toLocaleString()}`,
+    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}, now ${new Date(
+      Date.now(),
+    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
   )
 
   const now = Date.now()

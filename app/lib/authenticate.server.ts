@@ -114,7 +114,7 @@ export async function authenticate(
       logger.info(
         `👑 authenticate: expiry: ${new Date(
           Number(jsn.data.user.credential.expiry || 0),
-        ).toLocaleString()}`,
+        ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
       )
       if (!jsn.ok) {
         throw redirect("/?authstate=unauthorized-refresherror")
@@ -206,7 +206,7 @@ export async function authenticate(
     logger.debug(
       `👑 authenticate: expiry: ${new Date(
         Number(jsn.data.user.credential.expiry || 0),
-      ).toLocaleString()}`,
+      ).toLocaleString("ja-JP", {timeZone: "Asia/Tokyo"})}`,
     )
     if (!jsn.ok) {
       return { error: "Could not get response" }
@@ -257,7 +257,7 @@ export async function authenticate(
 //   logger.debug(
 //     `---- updateRefreshAccessToken:expiry_date ${new Date(
 //       expiry_date || 0,
-//     ).toLocaleString()}
+//     ).toLocaleString("ja-JP", {timeZone: "Asia/Tokyo"})}
 //   `,
 //   )
 //   if (!newAccessToken || !expiry_date) return null
