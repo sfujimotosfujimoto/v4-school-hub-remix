@@ -30,7 +30,7 @@ export async function signin({
 }: {
   code: string
 }): Promise<TypedResponse<never>> {
-  console.log("🍓 signin")
+  logger.debug("🍓 signin")
   const { tokens } = await getClientFromCode(code)
 
   // verify token with zod
@@ -52,11 +52,11 @@ export async function signin({
   // let refreshTokenExpiry = refreshTokenExpiryDummy
   let refreshTokenExpiry = Date.now() + 1000 * 60 * 60 * 24 * 14 // 14 days
 
-  logger.debug(
+  logger.info(
     `🍓 signin: new expiry_date ${new Date(expiry_date || 0).toLocaleString()}`,
   )
 
-  logger.debug(
+  logger.info(
     `🍓 signin: new refreshTokenExpiry ${new Date(
       refreshTokenExpiry || 0,
     ).toLocaleString()}`,
