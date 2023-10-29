@@ -110,12 +110,6 @@ export const DriveFileMoveSchema = z.object({
       .optional(),
   }),
 })
-// export const DriveFileMoveSchema = z.object({
-//   id: z.string(),
-//   parentId: z.string(),
-//   lastFolderId: z.string(),
-//   folderId: z.string(),
-// })
 
 export const DriveFileRenameSchema = z.object({
   id: z.string(),

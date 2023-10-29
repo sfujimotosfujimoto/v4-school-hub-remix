@@ -1,6 +1,6 @@
 import { Link, useNavigation } from "@remix-run/react"
 
-import { LogoIcon, LogoTextIcon } from "../../icons"
+import { LogoIcon, LogoTextIcon } from "../icons"
 
 export default function LogoLeft() {
   let navigation = useNavigation()

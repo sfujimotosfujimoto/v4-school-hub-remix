@@ -13,7 +13,7 @@ import {
 
 import { Form, NavLink, useLoaderData } from "@remix-run/react"
 
-import ImageIcon from "../../util/image-icon"
+import ImageIcon from "../util/image-icon"
 
 import type { User } from "~/types"
 import { z } from "zod"

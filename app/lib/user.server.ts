@@ -4,6 +4,7 @@ import type { Role } from "@prisma/client"
 
 import { prisma } from "./db.server"
 import { returnUser } from "./return-user"
+import { logger } from "~/logger"
 
 const selectUser = {
   id: true,
@@ -35,6 +36,7 @@ const selectUser = {
 // Get UserBase
 // used in `getUserBaseFromSession`
 export async function getUserByEmail(email: string): Promise<User | null> {
+  logger.debug(`✅ getUserByEmail: email ${email}`)
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -57,6 +59,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 export async function getUserById(id: number): Promise<User | null> {
+  logger.debug(`✅ getUserById: id ${id}`)
   const user = await prisma.user.findUnique({
     where: {
       id,
@@ -77,6 +80,7 @@ export async function updateUserById(
   id: number,
   data: { activated: boolean; role: Role },
 ): Promise<boolean> {
+  logger.debug(`✅ updateUserById: id ${id}`)
   try {
     const user = await prisma.user.update({
       where: {
@@ -101,6 +105,7 @@ export async function updateUserById(
 }
 
 export async function deleteUserById(id: number): Promise<boolean> {
+  logger.debug(`✅ deleteUserById: id ${id}`)
   try {
     const deleteUser = await prisma.user.delete({
       where: {
@@ -120,6 +125,7 @@ export async function deleteUserById(id: number): Promise<boolean> {
 }
 
 export async function getUsers(): Promise<User[] | null> {
+  logger.debug(`✅ getUsers`)
   try {
     const users = await prisma.user.findMany({
       orderBy: [

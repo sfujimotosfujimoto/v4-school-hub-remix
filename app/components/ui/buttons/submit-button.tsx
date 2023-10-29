@@ -17,10 +17,7 @@ export default function SubmitButton({
         loading ? "btn-disabled animate-pulse !bg-slate-300" : "btn-primary"
       }`}
     >
-      {loading && (
-        // <span className="loading loading-spinner loading-xs" />
-        <LoadingIcon size={4} />
-      )}
+      {loading && <LoadingIcon size={4} />}
       {text}
     </button>
   )

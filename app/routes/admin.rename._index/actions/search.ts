@@ -1,7 +1,7 @@
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
 import {
-  callPermissions,
+  execPermissions,
   getDrive,
   getDriveFilesWithStudentFolder,
   getFileById,
@@ -168,7 +168,7 @@ async function addPermissionToDriveFiles(
 ) {
   logger.debug("✅ addPermissionToDriveFiles: start")
   driveFiles.forEach(async (d) => {
-    const permissions = await callPermissions(drive, d.id)
+    const permissions = await execPermissions(drive, d.id)
 
     const studentPermission = permissions.find((p) =>
       getStudentEmail(p.emailAddress),

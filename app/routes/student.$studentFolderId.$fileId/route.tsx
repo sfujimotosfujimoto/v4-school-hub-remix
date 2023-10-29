@@ -14,7 +14,7 @@ import PermissionTags from "./components/permission-tags"
 import ToFolderButton from "./components/to-folder-button"
 
 // functions
-import { callPermissions, getDrive } from "~/lib/google/drive.server"
+import { execPermissions, getDrive } from "~/lib/google/drive.server"
 import { requireUserRole } from "~/lib/require-roles.server"
 import { destroyUserSession } from "~/lib/session.server"
 import { authenticate } from "~/lib/authenticate.server"
@@ -88,7 +88,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!drive) throw redirect("/?authstate=unauthorized-28")
 
   // call drive
-  const permissions = await callPermissions(drive, fileId)
+  const permissions = await execPermissions(drive, fileId)
 
   return {
     permissions,

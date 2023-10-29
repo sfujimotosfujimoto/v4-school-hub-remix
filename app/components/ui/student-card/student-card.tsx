@@ -6,7 +6,7 @@ import {
   stripText,
 } from "~/lib/utils"
 
-import Tags from "../tags/tags"
+import Tags from "../tags"
 import CheckBox from "./checkbox"
 
 import type { Role } from "@prisma/client"

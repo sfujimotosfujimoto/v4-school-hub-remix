@@ -6,14 +6,16 @@ import { getClient } from "./google.server"
 
 import type { sheets_v4 } from "googleapis"
 import type { Gakunen, Hr, Student } from "~/types"
+import { logger } from "~/logger"
 
-/*********************************************************
+/**
  * # getSheets()
  * - gets Drive instance
  */
 export async function getSheets(
   accessToken: string,
 ): Promise<sheets_v4.Sheets | null> {
+  logger.debug(`✅ getSheets`)
   const client = await getClient(accessToken)
 
   if (client) {
@@ -31,6 +33,7 @@ export async function getStudents(
   gakunen: Gakunen = "ALL",
   hr: Hr = "ALL",
 ) {
+  logger.debug(`✅ getStudents`)
   const meiboSheetId = process.env.GOOGLE_API_MEIBO_SHEET_URI
   invariant(meiboSheetId, "No meibo sheet id")
 
@@ -82,6 +85,7 @@ export function getStudentByFolderId(
   folderId: string,
   studentData: Student[],
 ): Student | null {
+  logger.debug(`✅ getStudentByFolderId`)
   const studentD = studentData.find(
     (d) => d.folderLink && folderId === getFolderId(d.folderLink),
   )
@@ -94,6 +98,7 @@ export function getStudentByFolderId(
 export async function getStudentDataWithAccessToken(
   sheets: sheets_v4.Sheets,
 ): Promise<Student[]> {
+  logger.debug(`✅ getStudentDataWithAccessToken`)
   const meiboSheetId = process.env.GOOGLE_API_MEIBO_SHEET_URI
   invariant(meiboSheetId, "No meibo sheet id")
 
@@ -136,6 +141,7 @@ export function getStudentByGakunenHrHrNo(
   hrNo: number,
   students: Student[],
 ): Student | null {
+  logger.debug(`✅ getStudentByGakunenHrHrNo`)
   const studentD = students.find(
     (sd) => sd.gakunen === gakunen && sd.hr === hr && sd.hrNo === hrNo,
   )

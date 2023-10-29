@@ -8,7 +8,7 @@ import { z } from "zod"
 
 // components
 import { LogoIcon } from "~/components/icons"
-import Toast from "~/components/util/Toast"
+import Toast from "~/components/util/toast"
 // functions
 // context
 // hooks

@@ -8,8 +8,8 @@ import type { ActionType } from "~/types"
 import SubmitButton from "~/components/ui/buttons/submit-button"
 import CsvUndoFileInput from "./csv-undo-file-input"
 // context
-import { useLoadingModal } from "~/components/ui/loading-modal/loading-modal"
-import { useTasksContext } from "~/context/tasks-context/tasks-context"
+import { useLoadingModal } from "~/components/ui/loading-modal"
+import { useTasksContext } from "~/context/tasks-context"
 import { useMovePageContext } from "~/routes/admin.move._index/context/move-page-context"
 
 /**

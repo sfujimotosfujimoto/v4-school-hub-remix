@@ -3,10 +3,10 @@ import { Form, useNavigation } from "@remix-run/react"
 
 // components
 import { LoadingIcon } from "~/components/icons"
-import { useLoadingModal } from "~/components/ui/loading-modal/loading-modal"
+import { useLoadingModal } from "~/components/ui/loading-modal"
 // context
 import { useDriveFilesContext } from "~/context/drive-files-context"
-import { useTasksContext } from "~/context/tasks-context/tasks-context"
+import { useTasksContext } from "~/context/tasks-context"
 import { useRenamePageContext } from "~/routes/admin.rename/context/rename-page-context"
 
 export default function RenameConfirmForm() {

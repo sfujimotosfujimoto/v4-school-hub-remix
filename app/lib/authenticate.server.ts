@@ -34,7 +34,7 @@ export async function authenticate(
   request: Request,
   headers = new Headers(),
 ): Promise<{ user: User; userJWT: string }> {
-  logger.debug(`👑 authenticate: start - ${new URL(request.url).pathname}`)
+  logger.info(`👑 authenticate: start - ${new URL(request.url).pathname}`)
 
   // get data from session
   const userJWT = await getUserJWTFromSession(request)
@@ -62,7 +62,7 @@ export async function authenticate(
 
     // 4-1. if rexp expired, return error
     if (rexpExpired) {
-      logger.debug("👑 authenticate: in rexpExpired")
+      logger.info("👑 authenticate: in rexpExpired")
 
       // update the session with the new values
       const session = await sessionStorage.getSession()
@@ -111,7 +111,7 @@ export async function authenticate(
           return { error: "error in fetch" }
         })
 
-      logger.debug(
+      logger.info(
         `👑 authenticate: expiry: ${new Date(
           Number(jsn.data.user.credential.expiry || 0),
         ).toLocaleString()}`,

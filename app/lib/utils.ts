@@ -1,4 +1,4 @@
-import type { DriveFile, RawUser, Student, User } from "~/types"
+import type { DriveFile, Student } from "~/types"
 
 export function filterStudentDataByGakunen(
   gakunen: string,
@@ -133,42 +133,6 @@ export function getGakusekiFromString(filename: string): number | null {
   return Number(extracted)
 }
 
-// export function getGakusekiFromPermissions(permissions?: Permission[]) {
-//   if (!permissions) return null
-//   const emails = permissions
-//     .map((p) => {
-//       if (p.type === "user" && ["owner", "writer", "reader"].includes(p.role)) {
-//         return p.emailAddress
-//       } else {
-//         return null
-//       }
-//     })
-//     .filter((e): e is string => e !== null)
-
-//   const gakusekis = emails
-//     .map((e) => {
-//       return getGakusekiFromEmail(e)
-//     })
-//     .filter((e): e is number => e !== null)
-
-//   return gakusekis.at(0) || null
-// }
-
-// function getGakusekiFromEmail(email: string): number | null {
-//   try {
-//     const gakusekiParts = email.split("@")
-//     const gakuseki = gakusekiParts[0].replace("b", "")
-
-//     const gakusekiNumber = Number(gakuseki)
-
-//     if (gakusekiNumber === 0 || isNaN(gakusekiNumber)) return null
-
-//     return gakusekiNumber
-//   } catch (error) {
-//     return null
-//   }
-// }
-
 export function formatDate(date: Date, locals = "ja-JP"): string {
   const formatter = Intl.DateTimeFormat(locals, {
     dateStyle: "short",
@@ -185,28 +149,6 @@ export function stripText(name: string): string | null {
   const str = name.replace(regex, "")
   if (str) return str
   return null
-}
-
-export function rawUserToUser(rawUser: RawUser): User {
-  let stats = null
-  if (rawUser.stats) {
-    stats = {
-      count: rawUser.stats.count,
-      lastVisited: new Date(rawUser.stats.lastVisited),
-    }
-  }
-
-  const tUser: User = {
-    ...rawUser,
-    createdAt: rawUser?.createdAt ? new Date(rawUser.createdAt) : new Date(),
-    updatedAt: rawUser?.updatedAt ? new Date(rawUser.updatedAt) : new Date(),
-    stats,
-  }
-  return tUser
-}
-
-export function rawUsersToUsers(rawUsers: RawUser[]): User[] {
-  return rawUsers.map((rawUser) => rawUserToUser(rawUser))
 }
 
 export function parseTags(genres: string) {

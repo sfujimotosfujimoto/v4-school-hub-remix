@@ -30,7 +30,7 @@ export async function signin({
 }: {
   code: string
 }): Promise<TypedResponse<never>> {
-  console.log("✅ -- signin: start")
+  console.log("🍓 signin")
   const { tokens } = await getClientFromCode(code)
 
   // verify token with zod
@@ -53,13 +53,11 @@ export async function signin({
   let refreshTokenExpiry = Date.now() + 1000 * 60 * 60 * 24 * 14 // 14 days
 
   logger.debug(
-    `✅ -- signin: new expiry_date ${new Date(
-      expiry_date || 0,
-    ).toLocaleString()}`,
+    `🍓 signin: new expiry_date ${new Date(expiry_date || 0).toLocaleString()}`,
   )
 
   logger.debug(
-    `✅ -- signin: new refreshTokenExpiry ${new Date(
+    `🍓 signin: new refreshTokenExpiry ${new Date(
       refreshTokenExpiry || 0,
     ).toLocaleString()}`,
   )
@@ -183,6 +181,7 @@ export async function updateUserJWT(
   expiry: number,
   refreshTokenExpiry: number,
 ): Promise<string> {
+  logger.debug(`🍓 signin: updateUserJWT: email ${email}`)
   const secret = process.env.SESSION_SECRET
   const secretEncoded = new TextEncoder().encode(secret)
   const userJWT = await new jose.SignJWT({ email, rexp: refreshTokenExpiry })
@@ -191,22 +190,3 @@ export async function updateUserJWT(
     .sign(secretEncoded)
   return userJWT
 }
-
-/*
-Type '
-{ activated: true; 
-  stats: { 
-    update: { 
-      count: { 
-        increment: number; 
-      }; 
-      lastVisited: Date; 
-    }; 
-  }; 
-}' 
-
-
-is not assignable to type '(Without<UserUpdateInput, UserUncheckedUpdateInput> & UserUncheckedUpdateInput) | (Without<...> & UserUpdateInput)'.
-  Object literal may only specify known properties, but 'stats' does not exist in type '(Without<UserUpdateInput, UserUncheckedUpdateInput> & UserUncheckedUpdateInput) | (Without<...> & UserUpdateInput)'. Did you mean to write 'Stats'?
-
-*/

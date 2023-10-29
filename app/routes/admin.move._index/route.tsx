@@ -37,6 +37,7 @@ export default function MovePage() {
 
   const actionData = useActionData<ActionType>()
 
+  // validate raw driveFiles and set to driveFilesContext
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
 
   useToast(`ファイルを移動しました。`, `ファイルを元に戻しました。`, actionData)

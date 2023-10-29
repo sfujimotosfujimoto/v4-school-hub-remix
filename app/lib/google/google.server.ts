@@ -1,12 +1,14 @@
 import { google } from "googleapis"
 
 import type { Auth } from "googleapis"
+import { logger } from "~/logger"
 import type { Person } from "~/types"
 
 export async function getClientFromCode(code: string): Promise<{
   client: Auth.OAuth2Client
   tokens: Auth.Credentials
 }> {
+  logger.debug(`✅ getClientFromCode`)
   // creates oauth2Client from client_id and client_secret
   const client = initializeClient()
 
@@ -26,6 +28,7 @@ export async function getRefreshedToken(
   accessToken: string,
   refreshToken: string,
 ): Promise<Auth.Credentials> {
+  logger.debug(`✅ getRefreshedToken`)
   const client = initializeClient()
   client.setCredentials({
     access_token: accessToken,
@@ -42,6 +45,7 @@ export async function getRefreshedToken(
 export async function getClient(
   accessToken: string,
 ): Promise<Auth.OAuth2Client> {
+  logger.debug(`✅ getClient`)
   const client = initializeClient()
   client.setCredentials({ access_token: accessToken })
 
@@ -49,6 +53,7 @@ export async function getClient(
 }
 
 export function initializeClient(): Auth.OAuth2Client {
+  logger.debug(`✅ initializeClient`)
   const client = new google.auth.OAuth2(
     process.env.GOOGLE_API_CLIENT_ID,
     process.env.GOOGLE_API_CLIENT_SECRET,
@@ -58,6 +63,7 @@ export function initializeClient(): Auth.OAuth2Client {
 }
 
 export async function getUserInfo(accessToken: string) {
+  logger.debug(`✅ getUserInfo`)
   const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
 
   const resp = await fetch(url)

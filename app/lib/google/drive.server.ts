@@ -1,17 +1,14 @@
-import { json } from "@remix-run/node"
 import { google } from "googleapis"
+
 import type { drive_v3, sheets_v4 } from "googleapis"
-import type { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport"
+import type { DriveFile, Permission, Student } from "~/types"
 
 import { logger } from "~/logger"
-
-import type { DriveFile, Permission, Student } from "~/types"
+import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"
+import { getFolderId, getGakusekiFromString } from "../utils"
 
 import { getClient } from "./google.server"
 import { getStudentDataWithAccessToken } from "./sheets.server"
-
-import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"
-import { getFolderId, getGakusekiFromString, getIdFromUrl } from "../utils"
 
 /**
  * Create a Google Drive Query with given folderId
@@ -24,25 +21,6 @@ export function queryFolderId(folderId: string): string | null {
   outputQuery.push("trashed=false")
 
   outputQuery.push(`'${folderId.trim()}' in parents`)
-
-  if (!outputQuery) return null
-
-  return outputQuery.join(" and ")
-}
-
-/**
- * Create a Google Drive Query with given folderId
- */
-// TODO: DELETE: used in admin.folder but not used in other routes
-export function createBaseQuery(folderId: string): string | null {
-  const outputQuery = []
-
-  outputQuery.push("trashed=false")
-  let parentsQuery: string
-  if (folderId.trim()) {
-    parentsQuery = `'${folderId.trim()}' in parents`
-    outputQuery.push(parentsQuery)
-  }
 
   if (!outputQuery) return null
 
@@ -67,7 +45,7 @@ export function queryMultipleStudentsAndFilename(
       if (!sd || !sd.folderLink) return null
       return getFolderId(sd.folderLink)
     })
-    .filter((f) => f)
+    .filter((f): f is string => f !== null)
 
   const folderQuery = folderLinks
     .slice(0, 170)
@@ -84,7 +62,7 @@ export function queryMultipleStudentsAndFilename(
 }
 
 // to get sampled students to create segments
-// using module % 5 === 0 to supress the number of students to search for
+// using module % 3 === 0 to supress the number of students to search for
 // because the file name segments are almost all the same for most students
 // so just sampling some will be enough
 /**
@@ -100,7 +78,7 @@ export function querySampledStudent(
   const filteredStudentData: Student[] = []
   studentData.forEach((sd) => {
     // sampling some students to get segments out of file names
-    if (sd.gakunen === gakunen && sd.hr === hr && sd.hrNo % 4 === 0) {
+    if (sd.gakunen === gakunen && sd.hr === hr && sd.hrNo % 3 === 0) {
       filteredStudentData.push(sd)
     }
   })
@@ -110,7 +88,7 @@ export function querySampledStudent(
       if (!sd || !sd.folderLink) return null
       return getFolderId(sd.folderLink)
     })
-    .filter((f) => f)
+    .filter((f): f is string => f !== null)
 
   // create query from the folderLinks
   const folderQuery = folderLinks
@@ -150,7 +128,7 @@ function mapFilesToDriveFile(file: drive_v3.Schema$File): DriveFile {
     webContentLink: file.webContentLink || undefined,
     parents: file.parents || undefined,
     appProperties: file.appProperties || undefined,
-    permissions: permissions || undefined,
+    permissions: permissions,
   }
 }
 
@@ -187,25 +165,6 @@ function isRole(x: unknown): x is "owner" | "writer" | "reader" {
 }
 
 /**
- * Get Folder metadata by folder id
- * used in `admin.folder.confirm`
- */
-// TODO: DELETE? only used in admin.folder.confirm
-export async function getFolder(
-  accessToken: string,
-  folderId: string,
-): Promise<drive_v3.Schema$File> {
-  const drive = await getDrive(accessToken)
-  if (!drive) throw new Error("Couldn't get drive")
-
-  const folder = await drive.files.get({
-    fileId: folderId,
-  })
-
-  return folder.data
-}
-
-/**
  * getDriveFilesWithStudentFolder get files in Google Drive
  */
 export async function getDriveFilesWithStudentFolder(
@@ -215,7 +174,7 @@ export async function getDriveFilesWithStudentFolder(
 ): Promise<DriveFile[] | null> {
   const studentData = await getStudentDataWithAccessToken(sheets)
 
-  const files: drive_v3.Schema$File[] = await callFilesList(drive, query)
+  const files: drive_v3.Schema$File[] = await execFilesList(drive, query)
 
   if (!files) return null
 
@@ -248,7 +207,7 @@ export async function getDriveFiles(
   drive: drive_v3.Drive,
   query: string,
 ): Promise<DriveFile[] | null> {
-  let files: drive_v3.Schema$File[] = await callFilesList(drive, query)
+  let files: drive_v3.Schema$File[] = await execFilesList(drive, query)
 
   if (!files) return null
 
@@ -256,51 +215,14 @@ export async function getDriveFiles(
 }
 
 /**
- * undoMoveDriveFiles receives either a JSON file created in `履歴`
- * or clicked object data that was outputted when running
- * `moveDriveFiles`
- *
- * @export
- * @param {drive_v3.Drive} drive
- * @param {DriveFile[]} driveFiles
- */
-export async function undoMoveDriveFiles(
-  drive: drive_v3.Drive,
-  driveFiles: DriveFile[],
-) {
-  const promises: GaxiosPromise<drive_v3.Schema$File>[] = []
-  // loop through driveFileData and update `parent` to move file
-  // in Google Drive
-  // Add promises to array and run them asynchronously
-  driveFiles.forEach((d) => {
-    if (!d.meta?.last?.folderId || !d.id) return
-    const folderId = getIdFromUrl(d.meta.last.folderId)
-    if (!folderId) return
-
-    const promise = drive.files.update({
-      fileId: d.id,
-      addParents: folderId,
-    })
-
-    promises.push(promise)
-  })
-
-  try {
-    // run all Promises
-    await Promise.all(promises)
-  } catch (err) {
-    logger.error(`undoMoveDriveFiles(): ${err}`)
-    throw json({ message: `Could not undo move: ${err}` }, 500)
-  }
-}
-
-/**
  * call Permissions API
  */
-export async function callPermissions(
+export async function execPermissions(
   drive: drive_v3.Drive,
   fileId: string,
 ): Promise<Permission[]> {
+  logger.debug("✅ execPermissions")
+
   const fields = "permissions(id,type,emailAddress,role,displayName)"
   try {
     const list = await drive.permissions.list({
@@ -353,8 +275,8 @@ export async function getDrive(
 //-------------------------------------------
 // PRIVATE FUNCTIONS
 //-------------------------------------------
-async function callFilesList(drive: drive_v3.Drive, query: string) {
-  logger.debug(`✅ callFilesList`)
+async function execFilesList(drive: drive_v3.Drive, query: string) {
+  logger.debug(`✅ execFilesList`)
   let count = 0
   let files: drive_v3.Schema$File[] = []
   let nextPageToken = undefined
@@ -367,15 +289,13 @@ async function callFilesList(drive: drive_v3.Drive, query: string) {
       pageToken: nextPageToken,
       q: query,
       fields: QUERY_FILES_FIELDS,
-      // fields:
-      //   "nextPageToken, files(id,name,mimeType,webViewLink,thumbnailLink,hasThumbnail,iconLink,createdTime,modifiedTime,webContentLink,parents,appProperties)",
     })
     if (list.data.files) {
       files = files.concat(list.data.files)
     }
 
     logger.debug(
-      `✅ callFilesList: files: ${
+      `✅ execFilesList: files: ${
         files.length
       } files: count: ${count++}, nextPageToken: ${nextPageToken}`,
     )

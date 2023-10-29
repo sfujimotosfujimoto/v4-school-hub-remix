@@ -5,7 +5,7 @@ import { dateFormat } from "~/lib/utils"
 
 import { Form, useNavigation } from "@remix-run/react"
 
-import { useLoadingModal } from "../loading-modal/loading-modal"
+import { useLoadingModal } from "../loading-modal"
 
 import type { Task } from "~/types"
 
