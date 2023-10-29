@@ -55,9 +55,9 @@ export async function authenticate(
   }
 
   try {
-    logger.debug(`👑 authenticate: expExpired`)
+    logger.info(`👑 authenticate: expExpired`)
     const expExpired = isExpired(payload.exp)
-    logger.debug(`👑 authenticate: rexpExpired`)
+    logger.info(`👑 authenticate: rexpExpired`)
     const rexpExpired = isExpired(payload.rexp)
 
     // 4-1. if rexp expired, return error
