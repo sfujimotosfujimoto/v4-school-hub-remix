@@ -155,12 +155,12 @@ function Segments({
  * loader function
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
+  logger.debug(`🍿 loader: files.$gakunen.$hr ${request.url}`)
   const { user } = await authenticate(request)
   await requireUserRole(user)
 
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
-  if (!user || !user.credential) throw redirect(`/?authstate=unauthenticated`)
   const accessToken = user.credential.accessToken
 
   // get sheets
@@ -172,16 +172,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!gakunen || !hr) return { segments: [] }
   if (gakunen === "ALL" || hr === "ALL") return { segments: [] }
 
-  const studentData = await getStudents(sheets)
-  if (!studentData || studentData.length === 0)
+  let students = await getStudents(sheets)
+  if (!students || students.length === 0)
     throw redirect(`/?authstate=no-student-data`)
 
-  logger.debug(`✅ gakunen ${gakunen}, hr ${hr}`)
+  students = students.filter((s) => s.gakunen === gakunen && s.hr === hr)
 
   // get sampled students from gakunen/hr (about 10)
-  const query = querySampledStudent(studentData, gakunen, hr)
+  const query = querySampledStudent(students, gakunen, hr)
 
-  logger.debug(`✅ query ${query}`)
+  logger.debug(`🍿 loader: files.$gakunen.$hr query ${query}`)
 
   const drive = await getDrive(user.credential.accessToken)
   if (!drive) throw redirect("/?authstate=unauthorized-024")
@@ -193,7 +193,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!driveFiles) return { segments: [] }
 
   // create segments from StudentData
-  const segments = filterStudentNameSegments(driveFiles, studentData)
+  const segments = filterStudentNameSegments(driveFiles, students)
 
   return {
     segments,

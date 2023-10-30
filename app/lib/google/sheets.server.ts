@@ -15,7 +15,7 @@ import { logger } from "~/logger"
 export async function getSheets(
   accessToken: string,
 ): Promise<sheets_v4.Sheets | null> {
-  logger.debug(`✅ getSheets`)
+  logger.debug(`✅ getSheets:`)
   const client = await getClient(accessToken)
 
   if (client) {
@@ -33,7 +33,7 @@ export async function getStudents(
   gakunen: Gakunen = "ALL",
   hr: Hr = "ALL",
 ) {
-  logger.debug(`✅ getStudents`)
+  logger.debug(`✅ getStudents:`)
   const meiboSheetId = process.env.GOOGLE_API_MEIBO_SHEET_URI
   invariant(meiboSheetId, "No meibo sheet id")
 
@@ -85,7 +85,7 @@ export function getStudentByFolderId(
   folderId: string,
   studentData: Student[],
 ): Student | null {
-  logger.debug(`✅ getStudentByFolderId`)
+  logger.debug(`✅ getStudentByFolderId:`)
   const studentD = studentData.find(
     (d) => d.folderLink && folderId === getFolderId(d.folderLink),
   )
@@ -98,7 +98,7 @@ export function getStudentByFolderId(
 export async function getStudentDataWithAccessToken(
   sheets: sheets_v4.Sheets,
 ): Promise<Student[]> {
-  logger.debug(`✅ getStudentDataWithAccessToken`)
+  logger.debug(`✅ getStudentDataWithAccessToken:`)
   const meiboSheetId = process.env.GOOGLE_API_MEIBO_SHEET_URI
   invariant(meiboSheetId, "No meibo sheet id")
 
@@ -141,7 +141,7 @@ export function getStudentByGakunenHrHrNo(
   hrNo: number,
   students: Student[],
 ): Student | null {
-  logger.debug(`✅ getStudentByGakunenHrHrNo`)
+  logger.debug(`✅ getStudentByGakunenHrHrNo:`)
   const studentD = students.find(
     (sd) => sd.gakunen === gakunen && sd.hr === hr && sd.hrNo === hrNo,
   )

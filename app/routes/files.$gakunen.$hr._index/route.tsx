@@ -134,7 +134,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   tags: string[]
   nendos: string[]
 }> {
-  logger.debug(`🍿 loader: files.$gakunen.$hu._index ${request.url}`)
+  logger.debug(`🍿 loader: files.$gakunen.$hr._index ${request.url}`)
   const { user } = await authenticate(request)
   await requireUserRole(user)
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
@@ -151,26 +151,24 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   const url = new URL(request.url)
   const q = url.searchParams.getAll("q")
 
-  if (!gakunen || !hr || !q || q.length === 0)
+  if (!gakunen || !hr || !q || q.length === 0) {
     return {
       driveFiles: [],
       role: user.role,
       tags: [],
       nendos: [],
     }
+  }
 
   // get StudentData from sheet
-  const studentData = await getStudents(sheets)
-  if (!studentData || studentData.length === 0)
+  let students = await getStudents(sheets)
+  if (!students || students.length === 0)
     throw redirect(`/?authstate=no-student-data`)
 
+  students = students.filter((s) => s.gakunen === gakunen && s.hr === hr)
+
   // create querystring from gakunen/hr/query
-  const searchQuery = queryMultipleStudentsAndFilename(
-    studentData,
-    gakunen,
-    hr,
-    q,
-  )
+  const searchQuery = queryMultipleStudentsAndFilename(students, gakunen, hr, q)
 
   const drive = await getDrive(user.credential.accessToken)
   if (!drive) throw redirect("/?authstate=unauthorized")

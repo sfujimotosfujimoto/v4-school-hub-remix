@@ -46,6 +46,9 @@ export function queryMultipleStudentsAndFilename(
       return getFolderId(sd.folderLink)
     })
     .filter((f): f is string => f !== null)
+  logger.debug(
+    `✅ queryMultipleStudentsAndFilename: folderLinks: ${folderLinks.length}`,
+  )
 
   const folderQuery = folderLinks
     .slice(0, 170)
@@ -62,7 +65,7 @@ export function queryMultipleStudentsAndFilename(
 }
 
 // to get sampled students to create segments
-// using module % 3 === 0 to supress the number of students to search for
+// using module % 4 === 0 to supress the number of students to search for
 // because the file name segments are almost all the same for most students
 // so just sampling some will be enough
 /**
@@ -71,14 +74,15 @@ export function queryMultipleStudentsAndFilename(
  * used in `files.$gakunen.$hr
  */
 export function querySampledStudent(
-  studentData: Student[],
+  students: Student[],
   gakunen: string,
   hr: string,
 ): string {
   const filteredStudentData: Student[] = []
-  studentData.forEach((sd) => {
+
+  students.forEach((sd) => {
     // sampling some students to get segments out of file names
-    if (sd.gakunen === gakunen && sd.hr === hr && sd.hrNo % 3 === 0) {
+    if (sd.gakunen === gakunen && sd.hr === hr && sd.hrNo % 4 === 0) {
       filteredStudentData.push(sd)
     }
   })
@@ -96,7 +100,7 @@ export function querySampledStudent(
     .map((f) => `'${f}' in parents`)
     .join(" or ")
 
-  return folderQuery
+  return `(${folderQuery}) and trashed = false`
 }
 
 /**
@@ -172,6 +176,7 @@ export async function getDriveFilesWithStudentFolder(
   sheets: sheets_v4.Sheets,
   query: string,
 ): Promise<DriveFile[] | null> {
+  logger.debug(`✅ getDriveFilesWithStudentFolder:`)
   const studentData = await getStudentDataWithAccessToken(sheets)
 
   const files: drive_v3.Schema$File[] = await execFilesList(drive, query)
@@ -207,6 +212,7 @@ export async function getDriveFiles(
   drive: drive_v3.Drive,
   query: string,
 ): Promise<DriveFile[] | null> {
+  logger.debug(`✅ getDriveFiles:`)
   let files: drive_v3.Schema$File[] = await execFilesList(drive, query)
 
   if (!files) return null
@@ -221,7 +227,7 @@ export async function execPermissions(
   drive: drive_v3.Drive,
   fileId: string,
 ): Promise<Permission[]> {
-  logger.debug("✅ execPermissions")
+  logger.debug("✅ execPermissions:")
 
   const fields = "permissions(id,type,emailAddress,role,displayName)"
   try {
@@ -276,7 +282,7 @@ export async function getDrive(
 // PRIVATE FUNCTIONS
 //-------------------------------------------
 async function execFilesList(drive: drive_v3.Drive, query: string) {
-  logger.debug(`✅ execFilesList`)
+  logger.debug(`✅ execFilesList: query: ${query}`)
   let count = 0
   let files: drive_v3.Schema$File[] = []
   let nextPageToken = undefined
@@ -299,8 +305,12 @@ async function execFilesList(drive: drive_v3.Drive, query: string) {
         files.length
       } files: count: ${count++}, nextPageToken: ${nextPageToken}`,
     )
-    if (list.data.nextPageToken) nextPageToken = list.data.nextPageToken
+    nextPageToken = list.data.nextPageToken
+    // if (list.data.nextPageToken) nextPageToken = list.data.nextPageToken
   } while (nextPageToken && files.length < MaxSize)
+  files.forEach((f, idx) => {
+    logger.debug(`✅ file: ${idx}: ${f.name}`)
+  })
   return files
 }
 
