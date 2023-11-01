@@ -77,7 +77,7 @@ export const DriveFileSchema = z.object({
     .optional(),
   webContentLink: z.string().optional(),
   parents: z.array(z.string()),
-  appProperties: z.record(z.string(), z.string()),
+  appProperties: z.record(z.string(), z.string()).optional(),
   meta: DriveFileMetaSchema.optional(),
 })
 
