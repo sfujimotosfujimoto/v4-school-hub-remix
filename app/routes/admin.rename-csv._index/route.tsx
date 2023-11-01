@@ -28,6 +28,10 @@ import { useToast } from "~/hooks/useToast"
 import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 
+export const config = {
+  maxDuration: 30,
+}
+
 /**
  * RenameCsv Page
  */
@@ -40,6 +44,8 @@ export default function RenameCsvPage() {
 
   React.useEffect(() => {
     if (!actionData?.data || !("driveFiles" in actionData.data)) return
+
+    if (!actionData?.data?.sourceFolder) return
 
     renameCsvPageDispatch({
       type: "SET",

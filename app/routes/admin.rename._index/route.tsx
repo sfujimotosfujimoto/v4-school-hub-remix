@@ -30,6 +30,10 @@ import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
 import { authenticate } from "~/lib/authenticate.server"
 
+export const config = {
+  maxDuration: 30,
+}
+
 /**
  * Rename Page
  */
