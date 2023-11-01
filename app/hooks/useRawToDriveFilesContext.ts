@@ -23,7 +23,7 @@ export function useRawToDriveFilesContext(
     // validate rawDriveFiles using zod
     const result = DriveFilesSchema.safeParse(rawDriveFiles)
     if (!result.success) {
-      result.error.issues.map((issue) => {
+      result.error.issues.forEach((issue) => {
         console.log("issue", issue)
       })
       toast.error(`データの読み込みに失敗しました。`)
