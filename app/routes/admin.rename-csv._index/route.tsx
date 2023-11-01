@@ -29,7 +29,7 @@ import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 
 export const config = {
-  maxDuration: 30,
+  maxDuration: 60,
 }
 
 /**
