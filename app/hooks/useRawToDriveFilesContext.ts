@@ -16,7 +16,6 @@ export function useRawToDriveFilesContext(
   React.useEffect(() => {
     // if no data, do nothing
     if (!actionData?.data || !("driveFiles" in actionData.data)) return
-    console.log("data", actionData)
 
     // set to rawDriveFiles
     const rawDriveFiles = actionData?.data?.driveFiles ?? []
@@ -24,6 +23,9 @@ export function useRawToDriveFilesContext(
     // validate rawDriveFiles using zod
     const result = DriveFilesSchema.safeParse(rawDriveFiles)
     if (!result.success) {
+      result.error.issues.map((issue) => {
+        console.log("issue", issue)
+      })
       toast.error(`データの読み込みに失敗しました。`)
       return
     }
