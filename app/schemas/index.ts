@@ -61,7 +61,7 @@ export const DriveFileSchema = z.object({
   id: z.string(),
   name: z.string(),
   mimeType: z.string(),
-  link: z.string(),
+  link: z.string().optional(),
   iconLink: z.string(),
   hasThumbnail: z.boolean(),
   thumbnailLink: z.string().optional(),
