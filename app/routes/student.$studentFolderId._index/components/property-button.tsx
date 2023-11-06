@@ -25,6 +25,10 @@ export default function PropertyButton({
   const isExecuting =
     state === "submitting" && formData?.get("_action") === "execute"
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (dialogEl.current !== null) dialogEl.current.close()
+  }
+
   return (
     <>
       <button
@@ -40,7 +44,7 @@ export default function PropertyButton({
       </button>
 
       <dialog id="my_modal_1" className="modal" ref={dialogEl}>
-        <Form method="POST" className="modal-box">
+        <Form method="POST" className="modal-box" onSubmit={handleSubmit}>
           <h2 className="text-lg font-bold">
             これらのファイルにタグを追加しますか？
           </h2>
