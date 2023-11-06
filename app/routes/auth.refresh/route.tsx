@@ -13,6 +13,7 @@ import { updateUserJWT } from "~/lib/signinout.server"
 /**
  * Loader function
  */
+// update base_url in prodc
 export async function loader({ request }: ActionFunctionArgs) {
   logger.debug(`🍿 loader: auth.refresh ${request.url}`)
 
