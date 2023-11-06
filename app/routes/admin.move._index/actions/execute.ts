@@ -141,23 +141,76 @@ async function _moveDriveFiles(
       continue
     }
 
-    try {
+    //---------------------------------------------------------
+
+    // if file is already in folder, skip
+    if (d.parents?.at(0) === folderId) {
+      errors.push(`error: ${d.id}: ${d.name}`)
+      continue
+    } else if (d.parents?.at(0) && d.meta.file) {
+      try {
+        const file = await drive.files.update({
+          fileId: d.id,
+          removeParents: d.parents?.at(0),
+          addParents: folderId,
+          requestBody: {
+            appProperties: {
+              nendo: d.meta.file.nendo ?? "",
+              tags: d.meta.file.tags ?? "",
+              time: String(Date.now()),
+            },
+          },
+          fields: QUERY_FILE_FIELDS,
+          // TODO: {responseType: "stream"} implement
+          // }, {responseType: "stream"})
+        })
+        files.push(file.data)
+        // console.log(`moveDriveFiles: ${d.name}, idx:${j} of chunk: ${idx}`)
+      } catch (error) {
+        errors.push(`error: ${d.id}: ${d.name} message: ${error}`)
+
+        if (error instanceof Error) {
+          errors.push(`error: ${d.id}: ${d.name} message: ${error.message}`)
+        }
+        continue
+      }
+    } else {
+      // create promise using `update`
       const file = await drive.files.update({
         fileId: d.id,
         addParents: folderId,
-        fields: QUERY_FILE_FIELDS,
       })
-      // TODO: {responseType: "stream"} implement
-      // }, {responseType: "stream"})
-
       files.push(file.data)
-      logger.debug(
-        `moveDriveFiles: ${d.meta.file?.name}, idx:${i} of chunk: ${idx}`,
-      )
-    } catch (error) {
-      errors.push(`error: ${d.id}: ${d.name}`)
-      continue
+      logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
     }
+
+    //---------------------------------------------------------
+
+    // try {
+    //   if (d.parents?.at(0) && d.meta.file) {
+    //     const file = await drive.files.update({
+    //       fileId: d.id,
+    //       removeParents: d.parents?.at(0),
+    //       addParents: folderId,
+    //       requestBody: {
+    //         appProperties: {
+    //           nendo: d.meta.file.nendo ?? "",
+    //           tags: d.meta.file.tags ?? "",
+    //           time: String(Date.now()),
+    //         },
+    //       },
+    //       fields: QUERY_FILE_FIELDS,
+    //     })
+
+    //     files.push(file.data)
+    //     logger.debug(
+    //       `moveDriveFiles: ${d.meta.file?.name}, idx:${i} of chunk: ${idx}`,
+    //     )
+    //   }
+    // } catch (error) {
+    //   errors.push(`error: ${d.id}: ${d.name}`)
+    //   continue
+    // }
   }
   logger.debug(
     `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
