@@ -30,7 +30,8 @@ import { useToast } from "~/hooks/useToast"
 import { authenticate } from "~/lib/authenticate.server"
 
 export const config = {
-  maxDuration: 15,
+  // TODO: set maxDuration for production
+  maxDuration: 60,
 }
 
 /**
