@@ -19,7 +19,7 @@ export default function HrButtons({
       <HrButton hr={hr} hrBase="D" setHr={setHr} />
       <HrButton hr={hr} hrBase="E" setHr={setHr} />
 
-      {role === "ADMIN" && <HrButton hr={hr} hrBase="F" setHr={setHr} />}
+      {role === "SUPER" && <HrButton hr={hr} hrBase="F" setHr={setHr} />}
     </ul>
   )
 }
