@@ -3,7 +3,7 @@ import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { DriveFilesSchema } from "~/schemas"
 
-import { json, redirect } from "@remix-run/node"
+import { defer, json, redirect } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import type { ActionType, DriveFile } from "~/types"
 import { logger } from "~/logger"
@@ -58,7 +58,11 @@ export async function executeAction(request: Request, formData: FormData) {
   try {
     const drive = await getDrive(user.credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-014")
-    await moveDriveFiles(drive, driveFiles)
+
+    // TODO: checking defer
+    // await moveDriveFiles(drive, driveFiles)
+    const filesPromise = moveDriveFiles(drive, driveFiles)
+
     // 23/10/27/(Fri) 12:03:09  ----------------------
     // const dfs = mapFilesToDriveFiles(files || [])
 
@@ -78,13 +82,21 @@ export async function executeAction(request: Request, formData: FormData) {
     // }
     // const newDriveFiles = await getDriveFiles(drive, query)
 
-    return json<ActionType>({
+    return defer({
       ok: true,
       type: "execute",
       data: {
-        driveFiles: [],
+        driveFiles: filesPromise,
       },
     })
+
+    // return json<ActionType>({
+    //   ok: true,
+    //   type: "execute",
+    //   data: {
+    //     driveFiles: [],
+    //   },
+    // })
   } catch (error: unknown) {
     if (error instanceof Error) return { error: error.message }
     else return { error: "エラーが発生しました。" }
@@ -113,116 +125,88 @@ export async function moveDriveFiles(
   return newFilesFlat
 }
 
-async function _moveDriveFiles(
-  drive: drive_v3.Drive,
-  driveFiles: DriveFile[],
-  idx: number,
-) {
-  // @note Before, you didn't have to make a copy of the array
-  // Why do you have to create a copy now?
-  const dfs = [...driveFiles]
+// async function _moveDriveFiles(
+//   drive: drive_v3.Drive,
+//   driveFiles: DriveFile[],
+//   idx: number,
+// ) {
+//   // @note Before, you didn't have to make a copy of the array
+//   // Why do you have to create a copy now?
+//   const dfs = [...driveFiles]
 
-  const files: drive_v3.Schema$File[] = []
-  const errors: string[] = []
+//   const files: drive_v3.Schema$File[] = []
+//   const errors: string[] = []
 
-  for (let i = 0; i < dfs.length; i++) {
-    const d = dfs[i]
-    //---------------------------------------------------------
+//   for (let i = 0; i < dfs.length; i++) {
+//     const d = dfs[i]
+//     //---------------------------------------------------------
 
-    if (!d.meta?.studentFolder?.folderLink || !d.id) {
-      errors.push(`error: ${d.id}: ${d.name}`)
-      continue
-    }
+//     if (!d.meta?.studentFolder?.folderLink || !d.id) {
+//       errors.push(`error: ${d.id}: ${d.name}`)
+//       continue
+//     }
 
-    // get folderId from folderLink
-    const folderId = getIdFromUrl(d.meta.studentFolder.folderLink)
-    if (!folderId) {
-      errors.push(`error: ${d.id}: ${d.name}`)
-      continue
-    }
+//     // get folderId from folderLink
+//     const folderId = getIdFromUrl(d.meta.studentFolder.folderLink)
+//     if (!folderId) {
+//       errors.push(`error: ${d.id}: ${d.name}`)
+//       continue
+//     }
 
-    //---------------------------------------------------------
+//     //---------------------------------------------------------
 
-    // if file is already in folder, skip
-    if (d.parents?.at(0) === folderId) {
-      errors.push(`error: ${d.id}: ${d.name}`)
-      continue
-    } else if (d.parents?.at(0) && d.meta.file) {
-      try {
-        const file = await drive.files.update({
-          fileId: d.id,
-          removeParents: d.parents?.at(0),
-          addParents: folderId,
-          requestBody: {
-            appProperties: {
-              nendo: d.meta.file.nendo ?? "",
-              tags: d.meta.file.tags ?? "",
-              time: String(Date.now()),
-            },
-          },
-          fields: QUERY_FILE_FIELDS,
-          // TODO: {responseType: "stream"} implement
-          // }, {responseType: "stream"})
-        })
-        files.push(file.data)
-        // console.log(`moveDriveFiles: ${d.name}, idx:${j} of chunk: ${idx}`)
-      } catch (error) {
-        errors.push(`error: ${d.id}: ${d.name} message: ${error}`)
+//     // if file is already in folder, skip
+//     if (d.parents?.at(0) === folderId) {
+//       errors.push(`error: ${d.id}: ${d.name}`)
+//       continue
+//     } else if (d.parents?.at(0) && d.meta.file) {
+//       try {
+//         const file = await drive.files.update({
+//           fileId: d.id,
+//           removeParents: d.parents?.at(0),
+//           addParents: folderId,
+//           requestBody: {
+//             appProperties: {
+//               nendo: d.meta.file.nendo ?? "",
+//               tags: d.meta.file.tags ?? "",
+//               time: String(Date.now()),
+//             },
+//           },
+//           fields: QUERY_FILE_FIELDS,
+//           // TODO: {responseType: "stream"} implement
+//           // }, {responseType: "stream"})
+//         })
+//         files.push(file.data)
+//         // console.log(`moveDriveFiles: ${d.name}, idx:${j} of chunk: ${idx}`)
+//       } catch (error) {
+//         errors.push(`error: ${d.id}: ${d.name} message: ${error}`)
 
-        if (error instanceof Error) {
-          errors.push(`error: ${d.id}: ${d.name} message: ${error.message}`)
-        }
-        continue
-      }
-    } else {
-      // create promise using `update`
-      const file = await drive.files.update({
-        fileId: d.id,
-        addParents: folderId,
-      })
-      files.push(file.data)
-      logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
-    }
+//         if (error instanceof Error) {
+//           errors.push(`error: ${d.id}: ${d.name} message: ${error.message}`)
+//         }
+//         continue
+//       }
+//     } else {
+//       // create promise using `update`
+//       const file = await drive.files.update({
+//         fileId: d.id,
+//         addParents: folderId,
+//       })
+//       files.push(file.data)
+//       logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
+//     }
+//   }
+//   logger.debug(
+//     `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
+//   )
 
-    //---------------------------------------------------------
-
-    // try {
-    //   if (d.parents?.at(0) && d.meta.file) {
-    //     const file = await drive.files.update({
-    //       fileId: d.id,
-    //       removeParents: d.parents?.at(0),
-    //       addParents: folderId,
-    //       requestBody: {
-    //         appProperties: {
-    //           nendo: d.meta.file.nendo ?? "",
-    //           tags: d.meta.file.tags ?? "",
-    //           time: String(Date.now()),
-    //         },
-    //       },
-    //       fields: QUERY_FILE_FIELDS,
-    //     })
-
-    //     files.push(file.data)
-    //     logger.debug(
-    //       `moveDriveFiles: ${d.meta.file?.name}, idx:${i} of chunk: ${idx}`,
-    //     )
-    //   }
-    // } catch (error) {
-    //   errors.push(`error: ${d.id}: ${d.name}`)
-    //   continue
-    // }
-  }
-  logger.debug(
-    `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
-  )
-
-  if (errors.length > 0) {
-    logger.debug(
-      `renameDriveFiles -- chunk ${idx} errors: \n${errors.join("\n")}`,
-    )
-  }
-  return files
-}
+//   if (errors.length > 0) {
+//     logger.debug(
+//       `renameDriveFiles -- chunk ${idx} errors: \n${errors.join("\n")}`,
+//     )
+//   }
+//   return files
+// }
 
 async function _moveDriveFilesG(
   drive: drive_v3.Drive,
