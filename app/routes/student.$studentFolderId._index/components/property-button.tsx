@@ -25,6 +25,8 @@ export default function PropertyButton({
   const isExecuting =
     state === "submitting" && formData?.get("_action") === "execute"
 
+  // TODO: Add loading modal
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (dialogEl.current !== null) dialogEl.current.close()
   }
