@@ -29,7 +29,7 @@
     "@remix-run/eslint-config": "^2.2.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/papaparse": "^5.3.10",
-    "@types/react": "^18.2.35",
+    "@types/react": "^18.2.36",
     "@types/react-dom": "^18.2.14",
     "daisyui": "^3.9.4",
     "eslint": "^8.53.0",

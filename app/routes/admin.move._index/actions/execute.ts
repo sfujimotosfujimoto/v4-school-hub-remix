@@ -103,7 +103,7 @@ export async function moveDriveFiles(
   const driveFilesChunks = arrayIntoChunks<DriveFile>(driveFiles, CHUNK_SIZE)
 
   const promises = driveFilesChunks.map((dfs, idx) => {
-    return _moveDriveFiles(drive, dfs, idx)
+    return _moveDriveFilesG(drive, dfs, idx)
   })
 
   const files = await Promise.all([...promises])
@@ -221,5 +221,76 @@ async function _moveDriveFiles(
       `renameDriveFiles -- chunk ${idx} errors: \n${errors.join("\n")}`,
     )
   }
+  return files
+}
+
+async function _moveDriveFilesG(
+  drive: drive_v3.Drive,
+  driveFiles: DriveFile[],
+  idx: number,
+) {
+  const dfs = [...driveFiles]
+  const files: drive_v3.Schema$File[] = []
+  const errors: string[] = []
+  const maxRetries = 5 // Maximum number of retries
+  let retryCount = 0
+
+  for (let i = 0; i < dfs.length; i++) {
+    const d = dfs[i]
+
+    if (!d.meta?.studentFolder?.folderLink || !d.id) {
+      errors.push(`error: ${d.id}: ${d.name}`)
+      continue
+    }
+
+    const folderId = getIdFromUrl(d.meta.studentFolder.folderLink)
+
+    if (!folderId) {
+      errors.push(`error: ${d.id}: ${d.name}`)
+      continue
+    }
+
+    while (true) {
+      try {
+        const file = await drive.files.update({
+          fileId: d.id,
+          addParents: folderId,
+          fields: QUERY_FILE_FIELDS,
+        })
+
+        files.push(file.data)
+        logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
+        break // Operation succeeded, exit retry loop
+      } catch (error) {
+        errors.push(`error: ${d.id}: ${d.name}`)
+
+        if (retryCount >= maxRetries) {
+          logger.error(
+            `Exceeded max retries (${maxRetries}). Giving up on file ${d.id}: ${d.name}`,
+          )
+          break // Max retries reached, exit retry loop
+        }
+
+        const delayMs = Math.pow(2, retryCount) * 1000 // Exponential backoff
+        retryCount++
+
+        logger.debug(`Retrying file ${d.name}: in ${delayMs / 1000} seconds.`)
+        await new Promise((resolve) => setTimeout(resolve, delayMs))
+      }
+    }
+
+    retryCount = 0 // Reset retry count for the next file
+  }
+
+  logger.info(
+    `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
+  )
+
+  if (errors.length > 0) {
+    logger.info(`moveDriveFiles -- chunk ${idx} errors: \n${errors.join("\n")}`)
+  } else {
+    logger.info(`moveDriveFiles -- chunk ${idx} 🍭 NO ERRORS`)
+  }
+
   return files
 }
