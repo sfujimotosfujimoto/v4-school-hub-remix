@@ -9,22 +9,9 @@ import { logger } from "~/logger"
 const scopes = [
   "https://www.googleapis.com/auth/drive",
   "https://www.googleapis.com/auth/spreadsheets",
-  "https://www.googleapis.com/auth/userinfo.email",
-  "https://www.googleapis.com/auth/userinfo.profile",
+  // "https://www.googleapis.com/auth/userinfo.email",
+  // "https://www.googleapis.com/auth/userinfo.profile",
 ]
-
-// export default function Signin() {
-//   return (
-//     <div>
-//       <Link
-//         to="/"
-//         className={`btn btn-success btn-md hidden border-0 shadow-md hover:bg-opacity-70 sm:inline-flex`}
-//       >
-//         Back to Home
-//       </Link>
-//     </div>
-//   )
-// }
 
 /**
  * Action for signin
@@ -42,7 +29,8 @@ export async function action({ request }: ActionFunctionArgs) {
     access_type: "offline",
     scope: scopes,
     include_granted_scopes: true,
-    prompt: "select_account",
+    // TODO: check what this means
+    prompt: "consent select_account",
   })
 
   return redirect(authUrl, { status: 302 })

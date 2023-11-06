@@ -32,6 +32,7 @@ function isErrorName(value: string): value is ErrorName {
   )
 }
 
+// TODO: unused
 export function handleErrors(error: unknown): ErrorName {
   logger.debug(`✅ in handleErrors()${(error as Error).name}`)
   let errorName: ErrorName = "UnknownError"

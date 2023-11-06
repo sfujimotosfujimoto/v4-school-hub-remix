@@ -18,6 +18,7 @@ import { setSelected } from "~/lib/utils.server"
 import type { Role } from "@prisma/client"
 import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
+// TODO: move to a component folder and share
 import TagButtons from "../student.$studentFolderId._index/components/tag-buttons"
 import NendoButtons from "../student.$studentFolderId._index/components/nendo-buttons"
 import AllCheckButtons from "../student.$studentFolderId._index/components/all-check-buttons"

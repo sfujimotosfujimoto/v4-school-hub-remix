@@ -21,24 +21,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student._index ${request.url}`)
   const { user } = await authenticate(request)
   await requireUserRole(user)
-  // const user = await getUserFromSession(request)
+
   if (!user || !user.credential) {
     return destroyUserSession(request, `/?authstate=unauthenticated`)
   }
-
-  // const { user, error } = await requireUserRole(request)
-  // get userWithCreds
-
-  // if (error) {
-  //   return json(
-  //     {
-  //       error: error,
-  //     },
-  //     {
-  //       status: 401,
-  //     },
-  //   )
-  // }
 
   return json(
     {

@@ -67,7 +67,7 @@ export async function action({ request }: ActionFunctionArgs) {
           accessToken: newAccessToken,
           expiry: Number(expiry_date),
           refreshToken: newRefreshToken,
-          refreshTokenExpiry: Number(Date.now() + 1000 * 60 * 60 * 24 * 14),
+          refreshTokenExpiry: Number(Date.now() + 1000 * 60 * 60 * 24 * 7),
         },
       },
     },
@@ -97,39 +97,15 @@ export async function action({ request }: ActionFunctionArgs) {
         Number(payload.exp),
       ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
     )
-
-    // 4. update session
-    // TODO: Does this have any meaning
-    // const session = await sessionStorage.getSession()
-    // session.set("userJWT", userJWT)
-    // return json({ ok: true })
-
-    // const val = session.get("userJWT")
-
-    // const valJWT = await parseVerifyUserJWT(val)
-
-    // logger.debug(
-    //   `✅ in auth.refresh action: valJWT.exp ${new Date(
-    //     Number(valJWT?.exp || 0),
-    //   ).toLocaleString("ja-JP", {timeZone: "Asia/Tokyo"})}`,
-    // )
     const newUser = returnUser(updatedUser)
 
-    return json(
-      {
-        ok: true,
-        data: {
-          user: newUser,
-          userJWT: userJWT,
-        },
+    return json({
+      ok: true,
+      data: {
+        user: newUser,
+        userJWT: userJWT,
       },
-      // {
-      //   status: 200,
-      //   headers: {
-      //     "Set-Cookie": await sessionStorage.commitSession(session),
-      //   },
-      // },
-    )
+    })
   } catch (error) {
     console.error(`❌  error in auth.refresh action:`, error)
     return json({ ok: false }, { status: 400 })

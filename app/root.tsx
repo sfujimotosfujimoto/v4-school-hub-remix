@@ -96,17 +96,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   // if (new URL(request.url).pathname !== "/") return null
   logger.debug(`🍿 loader: root ${request.url}`)
   try {
-    // const { user, error, userJWT } = await authenticate(request)
-
-    // if (error) throw new Error(error)
-
     const user = await getUserFromSession(request)
-    // if (userJWT) {
-    //   return setSession(userJWT, {
-    //     role: user?.role || null,
-    //     picture: user?.picture || null,
-    //   })
-    // }
+
     return json({
       role: user?.role || null,
       picture: user?.picture || null,

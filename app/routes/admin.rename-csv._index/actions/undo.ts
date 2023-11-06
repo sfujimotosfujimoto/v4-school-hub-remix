@@ -1,6 +1,5 @@
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { getUndoFunction } from "~/context/tasks-context"
 import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
@@ -9,6 +8,7 @@ import { DriveFilesSchema } from "~/schemas"
 import { json, redirect } from "@remix-run/node"
 
 import type { ActionType, DriveFile } from "~/types"
+import { undoRenameDataExecute } from "_backup/undo"
 
 const FormDataScheme = z.object({
   driveFilesSerialized: z.string().optional(),
@@ -47,8 +47,8 @@ export async function undoAction(request: Request, formData: FormData) {
       error: "ファイルがありません",
     })
 
-  const undoFunc = getUndoFunction("rename")
-  const res = await undoFunc(request, driveFiles)
+  // 23/11/05/(Sun) 23:29:33  ----------------------
+  const res = await undoRenameDataExecute(request, driveFiles)
 
   if (res.error) {
     toast.error(res.error)

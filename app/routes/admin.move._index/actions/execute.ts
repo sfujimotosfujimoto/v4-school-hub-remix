@@ -147,6 +147,8 @@ async function _moveDriveFiles(
         addParents: folderId,
         fields: QUERY_FILE_FIELDS,
       })
+      // TODO: {responseType: "stream"} implement
+      // }, {responseType: "stream"})
 
       files.push(file.data)
       logger.debug(

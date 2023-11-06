@@ -77,8 +77,6 @@ export async function undoAction(request: Request, formData: FormData) {
   logger.debug(`✅ in undoAction: driveFiles.length ${driveFiles.length}`)
 
   // 23/10/27/(Fri) 18:51:49  ----------------------
-  // const undoFunc = getUndoFunction("rename")
-  // const res = await undoFunc(request, driveFiles)
   const res = await undoRenameDataExecute(request, driveFiles)
 
   // 23/10/27/(Fri) 12:03:09  ----------------------
