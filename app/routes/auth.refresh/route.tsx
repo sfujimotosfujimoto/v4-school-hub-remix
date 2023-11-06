@@ -46,7 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!newAccessToken || !expiry_date)
     return json({ ok: false }, { status: 400 })
 
-  // TODO: !!DELETE expiry date: delete after testing
+  // TODO: !!DEBUG!! expiry date: delete after testing
   // const expiryDateDummy = Date.now() + 1000 * 20 // 20 seconds
   // expiry_date = expiryDateDummy
 

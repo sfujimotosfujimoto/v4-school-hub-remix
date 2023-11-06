@@ -6,7 +6,6 @@ import { createCookieSessionStorage, json, redirect } from "@remix-run/node"
 
 import { SESSION_MAX_AGE } from "./config"
 import { getUserByEmail } from "./user.server"
-import { isExpired } from "./utils.server"
 
 import type { TypedResponse } from "@remix-run/node"
 import type { Payload, User } from "~/types"
@@ -69,10 +68,12 @@ export async function getUserFromSession(
 
   if (!userJWT) return null
 
-  const payload = await verifyUserJWT(
-    userJWT,
-    // Number(user?.credential?.expiryDate),
-  )
+  const payload = await parseVerifyUserJWT(userJWT)
+  // TODO: do we need to verify expired?
+  // //  We already do that in authenticate
+  // const payload = await verifyUserJWT(
+  //   userJWT,
+  // )
   if (!payload) return null
   // logger.debug(`👑 getUserFromSession: payload ${payload?.email}...`)
   // get UserBase from Prisma
@@ -146,14 +147,14 @@ export async function parseVerifyUserJWT(
   return typedPayload
 }
 
-// Gets payload<email, exp> from "userJWT"
-async function verifyUserJWT(userJWT: string): Promise<Payload | null> {
-  const typedPayload = await parseVerifyUserJWT(userJWT)
-  if (!typedPayload) return null
-  // check if expired
-  if (isExpired(typedPayload.exp)) {
-    return null
-  }
+// // Gets payload<email, exp> from "userJWT"
+// async function verifyUserJWT(userJWT: string): Promise<Payload | null> {
+//   const typedPayload = await parseVerifyUserJWT(userJWT)
+//   if (!typedPayload) return null
+//   // check if expired
+//   if (isExpired(typedPayload.exp)) {
+//     return null
+//   }
 
-  return typedPayload
-}
+//   return typedPayload
+// }
