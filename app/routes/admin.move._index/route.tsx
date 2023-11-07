@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { json, redirect } from "@remix-run/node"
-import { Await, useActionData } from "@remix-run/react"
+import { useActionData } from "@remix-run/react"
 
 import { logger } from "~/logger"
 
@@ -28,11 +28,12 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
 import { authenticate } from "~/lib/authenticate.server"
-import { Suspense } from "react"
+// import { Suspense } from "react"
 
 export const config = {
   // TODO: set maxDuration for production
   maxDuration: 60,
+  runtime: "edge",
 }
 
 /**
@@ -62,28 +63,17 @@ export default function MovePage() {
       </article>
 
       {/* <!-- MOVE CARDS --> */}
-      <Suspense fallback={<span>LOADING MOVE CARDS</span>}>
-        <Await resolve={actionData} errorElement={<span>ERROR</span>}>
+      {/* <Suspense fallback={<span>LOADING MOVE CARDS</span>}>
+        <Await resolve={actionData?.ok} errorElement={<span>ERROR</span>}>
           {actionData?.ok ? (
             <MoveCards driveFiles={driveFiles} size={"small"} />
           ) : (
             <span>NO DATA</span>
           )}
 
-          {/* {(actionData) => (
-            {actionData?.data.driveFiles ? (
-
-              <MoveCards
-                driveFiles={actionData?.data.driveFiles}
-                size={"small"}
-              />
-            ): (
-              <span>NO DATA</span>
-            )
-            )}
-          )} */}
         </Await>
-      </Suspense>
+      </Suspense> */}
+      <MoveCards driveFiles={driveFiles} size={"small"} />
 
       {/* <!-- TASK CARD BLOCK --> */}
       <article className="mx-auto w-full max-w-5xl p-12">
