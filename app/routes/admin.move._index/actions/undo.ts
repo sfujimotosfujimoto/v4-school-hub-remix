@@ -17,6 +17,7 @@ const FormDataScheme = z.object({
 
 export async function undoAction(request: Request, formData: FormData) {
   logger.debug("🍎 move: undoAction()")
+
   // get user
   const user = await getUserFromSession(request)
   if (!user || !user.credential)
@@ -58,7 +59,7 @@ export async function undoAction(request: Request, formData: FormData) {
 
   const driveFiles = result2.data as unknown as DriveFile[]
 
-  if (!driveFiles)
+  if (!driveFiles || driveFiles.length === 0)
     return json<ActionType>({
       ok: false,
       type: "undo",
@@ -91,6 +92,7 @@ export async function undoMoveDataExecute(
   driveFiles: DriveFile[],
 ) {
   logger.debug("✅ undoMoveDataExecute")
+  logger.debug(`✅ undoMoveDataExecute -- ${driveFiles.length} files`)
 
   const user = await getUserFromSession(request)
   if (!user || !user.credential) {

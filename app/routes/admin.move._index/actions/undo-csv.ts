@@ -3,7 +3,7 @@ import { z } from "zod"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-import { DriveFilesSchema } from "~/schemas"
+import { DriveFileMovesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
@@ -23,6 +23,7 @@ export async function undoCsvAction(
   // dataString?: string
 ) {
   logger.debug("🍎 move: undoCsvAction()")
+  logger.debug(`✅ formData: ${JSON.stringify(formData, null, 2)}`)
   // get user
   const user = await getUserFromSession(request)
   if (!user || !user.credential)
@@ -52,9 +53,11 @@ export async function undoCsvAction(
 
   const raw = JSON.parse(driveFilesString || "[]")
 
-  const result2 = DriveFilesSchema.safeParse(raw)
+  const result2 = DriveFileMovesSchema.safeParse(raw)
   if (!result2.success) {
-    logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
+    logger.debug(
+      `✅ result.error ${result2.error.errors.map((e) => `${e.path}\n`)}`,
+    )
     return json<ActionType>({
       ok: false,
       type: "undo",
@@ -63,6 +66,7 @@ export async function undoCsvAction(
   }
 
   const driveFiles = result2.data as unknown as DriveFile[]
+
   // const undoFunc = getUndoFunction("move")
   // const res = await undoFunc(request, driveFiles)
   const res = await undoMoveDataExecute(request, driveFiles)

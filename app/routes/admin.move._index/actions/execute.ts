@@ -3,7 +3,7 @@ import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { DriveFilesSchema } from "~/schemas"
 
-import { defer, json, redirect } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import type { ActionType, DriveFile } from "~/types"
 import { logger } from "~/logger"
@@ -59,54 +59,30 @@ export async function executeAction(request: Request, formData: FormData) {
     const drive = await getDrive(user.credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-014")
 
+    await moveDriveFiles(drive, driveFiles)
+
     // TODO: checking defer
-    // await moveDriveFiles(drive, driveFiles)
-    const filesPromise = moveDriveFiles(drive, driveFiles)
-
-    // 23/10/27/(Fri) 12:03:09  ----------------------
-    // const dfs = mapFilesToDriveFiles(files || [])
-
-    // TODO: 231027 Trying to read from the source folder to get the new state of google drive folder
-    // NOTE: Couldn't get the new state becuase there is a delay in the google drive api
-    // NOTE: I chose to return an empty array for now
-
-    // // create query for Google Drive Search
-    // const sourceId = getIdFromUrl(sourceFolderId || "")
-    // if (!sourceId) {
-    //   return json<ActionType>({ ok: true, type: "execute" })
-    // }
-
-    // const query = queryFolderId(sourceId)
-    // if (!query) {
-    //   return json<ActionType>({ ok: true, type: "execute" })
-    // }
-    // const newDriveFiles = await getDriveFiles(drive, query)
-
-    return defer({
-      ok: true,
-      type: "execute",
-      data: {
-        driveFiles: filesPromise,
-      },
-    })
-
-    // return json<ActionType>({
+    // return defer({
     //   ok: true,
     //   type: "execute",
     //   data: {
-    //     driveFiles: [],
+    //     driveFiles: filesPromise,
     //   },
     // })
+
+    return json<ActionType>({
+      ok: true,
+      type: "execute",
+      data: {
+        driveFiles: [],
+      },
+    })
   } catch (error: unknown) {
     if (error instanceof Error) return { error: error.message }
     else return { error: "エラーが発生しました。" }
   }
 }
 
-/**
- * moveDriveFiles moves the given files based on their gakuseki
- * which is in the name of the file.
- */
 export async function moveDriveFiles(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
@@ -118,11 +94,84 @@ export async function moveDriveFiles(
     return _moveDriveFilesG(drive, dfs, idx)
   })
 
+  // return promises.flat()
+
   const files = await Promise.all([...promises])
   const newFiles = files.filter((d): d is drive_v3.Schema$File[] => d !== null)
   const newFilesFlat = newFiles.flat()
   logger.debug(`Finished moving: ${newFilesFlat.length} files`)
   return newFilesFlat
+}
+
+async function _moveDriveFilesG(
+  drive: drive_v3.Drive,
+  driveFiles: DriveFile[],
+  idx: number,
+) {
+  const dfs = [...driveFiles]
+  const files: drive_v3.Schema$File[] = []
+  const errors: string[] = []
+  const maxRetries = 5 // Maximum number of retries
+  let retryCount = 0
+
+  for (let i = 0; i < dfs.length; i++) {
+    const d = dfs[i]
+
+    if (!d.meta?.studentFolder?.folderLink || !d.id) {
+      errors.push(`error: ${d.id}: ${d.name}`)
+      continue
+    }
+
+    const folderId = getIdFromUrl(d.meta.studentFolder.folderLink)
+
+    if (!folderId) {
+      errors.push(`error: ${d.id}: ${d.name}`)
+      continue
+    }
+
+    while (true) {
+      try {
+        const file = await drive.files.update({
+          fileId: d.id,
+          addParents: folderId,
+          fields: QUERY_FILE_FIELDS,
+        })
+
+        files.push(file.data)
+        logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
+        break // Operation succeeded, exit retry loop
+      } catch (error) {
+        errors.push(`error: ${d.id}: ${d.name}`)
+
+        if (retryCount >= maxRetries) {
+          logger.error(
+            `Exceeded max retries (${maxRetries}). Giving up on file ${d.id}: ${d.name}`,
+          )
+          break // Max retries reached, exit retry loop
+        }
+
+        const delayMs = Math.pow(2, retryCount) * 1000 // Exponential backoff
+        retryCount++
+
+        logger.debug(`Retrying file ${d.name}: in ${delayMs / 1000} seconds.`)
+        await new Promise((resolve) => setTimeout(resolve, delayMs))
+      }
+    }
+
+    retryCount = 0 // Reset retry count for the next file
+  }
+
+  logger.info(
+    `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
+  )
+
+  if (errors.length > 0) {
+    logger.info(`moveDriveFiles -- chunk ${idx} errors: \n${errors.join("\n")}`)
+  } else {
+    logger.info(`moveDriveFiles -- chunk ${idx} 🍭 NO ERRORS`)
+  }
+
+  return files
 }
 
 // async function _moveDriveFiles(
@@ -208,73 +257,73 @@ export async function moveDriveFiles(
 //   return files
 // }
 
-async function _moveDriveFilesG(
-  drive: drive_v3.Drive,
-  driveFiles: DriveFile[],
-  idx: number,
-) {
-  const dfs = [...driveFiles]
-  const files: drive_v3.Schema$File[] = []
-  const errors: string[] = []
-  const maxRetries = 5 // Maximum number of retries
-  let retryCount = 0
+// export async function _moveDriveFilesG2(
+//   drive: drive_v3.Drive,
+//   driveFiles: DriveFile[],
+//   idx: number,
+// ) {
+//   const dfs = [...driveFiles]
+//   const files: drive_v3.Schema$File[] = []
+//   const errors: string[] = []
+//   const maxRetries = 5 // Maximum number of retries
+//   let retryCount = 0
 
-  for (let i = 0; i < dfs.length; i++) {
-    const d = dfs[i]
+//   for (let i = 0; i < dfs.length; i++) {
+//     const d = dfs[i]
 
-    if (!d.meta?.studentFolder?.folderLink || !d.id) {
-      errors.push(`error: ${d.id}: ${d.name}`)
-      continue
-    }
+//     if (!d.meta?.studentFolder?.folderLink || !d.id) {
+//       errors.push(`error: ${d.id}: ${d.name}`)
+//       continue
+//     }
 
-    const folderId = getIdFromUrl(d.meta.studentFolder.folderLink)
+//     const folderId = getIdFromUrl(d.meta.studentFolder.folderLink)
 
-    if (!folderId) {
-      errors.push(`error: ${d.id}: ${d.name}`)
-      continue
-    }
+//     if (!folderId) {
+//       errors.push(`error: ${d.id}: ${d.name}`)
+//       continue
+//     }
 
-    while (true) {
-      try {
-        const file = await drive.files.update({
-          fileId: d.id,
-          addParents: folderId,
-          fields: QUERY_FILE_FIELDS,
-        })
+//     while (true) {
+//       try {
+//         const file = await drive.files.update({
+//           fileId: d.id,
+//           addParents: folderId,
+//           fields: QUERY_FILE_FIELDS,
+//         })
 
-        files.push(file.data)
-        logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
-        break // Operation succeeded, exit retry loop
-      } catch (error) {
-        errors.push(`error: ${d.id}: ${d.name}`)
+//         files.push(file.data)
+//         logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
+//         break // Operation succeeded, exit retry loop
+//       } catch (error) {
+//         errors.push(`error: ${d.id}: ${d.name}`)
 
-        if (retryCount >= maxRetries) {
-          logger.error(
-            `Exceeded max retries (${maxRetries}). Giving up on file ${d.id}: ${d.name}`,
-          )
-          break // Max retries reached, exit retry loop
-        }
+//         if (retryCount >= maxRetries) {
+//           logger.error(
+//             `Exceeded max retries (${maxRetries}). Giving up on file ${d.id}: ${d.name}`,
+//           )
+//           break // Max retries reached, exit retry loop
+//         }
 
-        const delayMs = Math.pow(2, retryCount) * 1000 // Exponential backoff
-        retryCount++
+//         const delayMs = Math.pow(2, retryCount) * 1000 // Exponential backoff
+//         retryCount++
 
-        logger.debug(`Retrying file ${d.name}: in ${delayMs / 1000} seconds.`)
-        await new Promise((resolve) => setTimeout(resolve, delayMs))
-      }
-    }
+//         logger.debug(`Retrying file ${d.name}: in ${delayMs / 1000} seconds.`)
+//         await new Promise((resolve) => setTimeout(resolve, delayMs))
+//       }
+//     }
 
-    retryCount = 0 // Reset retry count for the next file
-  }
+//     retryCount = 0 // Reset retry count for the next file
+//   }
 
-  logger.info(
-    `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
-  )
+//   logger.info(
+//     `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
+//   )
 
-  if (errors.length > 0) {
-    logger.info(`moveDriveFiles -- chunk ${idx} errors: \n${errors.join("\n")}`)
-  } else {
-    logger.info(`moveDriveFiles -- chunk ${idx} 🍭 NO ERRORS`)
-  }
+//   if (errors.length > 0) {
+//     logger.info(`moveDriveFiles -- chunk ${idx} errors: \n${errors.join("\n")}`)
+//   } else {
+//     logger.info(`moveDriveFiles -- chunk ${idx} 🍭 NO ERRORS`)
+//   }
 
-  return files
-}
+//   return files
+// }

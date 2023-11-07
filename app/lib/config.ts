@@ -15,6 +15,6 @@ export const QUERY_PERMISSION_FIELDS =
 
 export const NENDO = getSchoolYear(Date.now())
 
-export const CHUNK_SIZE = 5
+export const CHUNK_SIZE = 7
 
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 14 // 14 days

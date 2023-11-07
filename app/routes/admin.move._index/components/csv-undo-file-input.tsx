@@ -9,12 +9,13 @@ export default function CsvUndoFileInput() {
   const dialogEl = React.useRef<HTMLDialogElement>(null)
   const { state, formData } = useNavigation()
   // const [file, setFile] = React.useState<File | null>(null)
-  const [driveFileMovesString, setDriveFileMovesString] = React.useState("")
+  const [driveFilesString, setDriveFilesString] = React.useState("")
 
   const isUndo =
     state === "submitting" && formData?.get("_action") === "undo-csv"
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    console.log("✅ components/csv-undo-file-input.tsx ~ 	😀 handleChange")
     // setFile(e.target.files?.[0] || null)
 
     const file = e.target.files?.[0]
@@ -22,9 +23,20 @@ export default function CsvUndoFileInput() {
     const data = await readCsvFileToObj(file)
     const df = parseCsvObjToDriveFileMove(data)
     const dString = JSON.stringify(df)
-    setDriveFileMovesString(dString)
-
+    setDriveFilesString(dString)
+    console.log(
+      "✅ components/csv-undo-file-input.tsx ~ 	😀 handleChange file:",
+      file,
+    )
     if (dialogEl.current) dialogEl.current.showModal()
+  }
+
+  function handleInputClick(e: React.MouseEvent<HTMLInputElement>) {
+    console.log(
+      "✅ components/csv-undo-file-input.tsx ~ 	😀 clicked",
+      e.currentTarget.files,
+    )
+    e.currentTarget.files = null
   }
 
   return (
@@ -45,6 +57,7 @@ export default function CsvUndoFileInput() {
             </label>
 
             <input
+              onClick={handleInputClick}
               onChange={handleChange}
               name="jsonInput"
               type="file"
@@ -63,11 +76,12 @@ export default function CsvUndoFileInput() {
 
             <input
               type="hidden"
-              name="driveFileMovesString"
-              value={driveFileMovesString}
+              name="driveFilesString"
+              value={driveFilesString}
             />
 
             <button
+              type="submit"
               name="_action"
               value="undo-csv"
               className={`btn btn-warning btn-sm w-24 ${

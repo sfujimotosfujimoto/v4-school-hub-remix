@@ -111,6 +111,8 @@ export const DriveFileMoveSchema = z.object({
   }),
 })
 
+export const DriveFileMovesSchema = z.array(DriveFileMoveSchema)
+
 export const DriveFileRenameSchema = z.object({
   id: z.string(),
   meta: z.object({

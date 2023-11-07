@@ -23,10 +23,8 @@ export default function MoveConfirmForm() {
   useLoadingModal(isExecuting)
 
   if (!sourceFolder) return null
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     // filter only selected files
-
     const dfs = driveFiles.filter((df) => df.meta?.selected === true)
     tasksDispatch({
       type: "SET",
@@ -64,6 +62,11 @@ export default function MoveConfirmForm() {
             name="driveFilesString"
             value={JSON.stringify(driveFiles.filter((df) => df.meta?.selected))}
           />
+          {/* <input
+            type="hidden"
+            name="sourceFolderId"
+            value={sourceFolder.id || undefined}
+          /> */}
 
           <button
             type="submit"
