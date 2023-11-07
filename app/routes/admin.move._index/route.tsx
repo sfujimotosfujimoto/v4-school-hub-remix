@@ -32,8 +32,7 @@ import { authenticate } from "~/lib/authenticate.server"
 
 export const config = {
   // TODO: set maxDuration for production
-  maxDuration: 60,
-  runtime: "edge",
+  maxDuration: 90,
 }
 
 /**
