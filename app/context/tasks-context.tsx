@@ -4,7 +4,7 @@ import React from "react"
 import type { DriveFile, Task } from "~/types"
 
 const MAX_AGE = 1000 * 60 * 60 * 24 * 3 // 3 days
-const MAX_TASKS = 30
+const MAX_TASKS = 20
 
 /**
  * TYPES
@@ -155,18 +155,3 @@ function checkTimeAndLength(tasks: Task[]) {
 
   return _tasks
 }
-
-// // Get undo function based on the Task type
-// export function getUndoFunction(type: Task["type"]) {
-//   switch (type) {
-//     case "move": {
-//       return undoMoveDataExecute
-//     }
-//     case "rename": {
-//       return undoRenameDataExecute
-//     }
-//     default: {
-//       throw new Error("Invalid type")
-//     }
-//   }
-// }

@@ -9,6 +9,7 @@ import type { ActionType, DriveFile } from "~/types"
 import { logger } from "~/logger"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
+import { mapFilesToDriveFiles } from "_backup/drive.server"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -59,14 +60,14 @@ export async function executeAction(request: Request, formData: FormData) {
     const drive = await getDrive(user.credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-014")
 
-    await moveDriveFiles(drive, driveFiles)
+    const files = await moveDriveFiles(drive, driveFiles)
 
-    // TODO: checking defer
+    // // TODO: checking defer
     // return defer({
     //   ok: true,
     //   type: "execute",
     //   data: {
-    //     driveFiles: filesPromise,
+    //     driveFiles: mapFilesToDriveFiles(files),
     //   },
     // })
 
@@ -74,12 +75,19 @@ export async function executeAction(request: Request, formData: FormData) {
       ok: true,
       type: "execute",
       data: {
-        driveFiles: [],
+        driveFiles: mapFilesToDriveFiles(files),
       },
     })
   } catch (error: unknown) {
-    if (error instanceof Error) return { error: error.message }
-    else return { error: "エラーが発生しました。" }
+    logger.error(`🍎 move: executeAction() error: ${error}`)
+    if (error instanceof Error) {
+      logger.error(`🍎 move: executeAction() error.message: ${error.message}`)
+    }
+    return json<ActionType>({
+      ok: false,
+      type: "execute",
+      error: "問題が発生しました。",
+    })
   }
 }
 
@@ -100,6 +108,7 @@ export async function moveDriveFiles(
   const newFiles = files.filter((d): d is drive_v3.Schema$File[] => d !== null)
   const newFilesFlat = newFiles.flat()
   logger.debug(`Finished moving: ${newFilesFlat.length} files`)
+
   return newFilesFlat
 }
 
@@ -138,7 +147,7 @@ async function _moveDriveFilesG(
         })
 
         files.push(file.data)
-        logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
+        // logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
         break // Operation succeeded, exit retry loop
       } catch (error) {
         errors.push(`error: ${d.id}: ${d.name}`)

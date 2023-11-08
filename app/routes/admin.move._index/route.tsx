@@ -63,8 +63,12 @@ export default function MovePage() {
 
       {/* <!-- MOVE CARDS --> */}
       <Suspense fallback={<span>LOADING MOVE CARDS</span>}>
-        <Await resolve={actionData?.ok} errorElement={<span>ERROR</span>}>
-          {actionData && <MoveCards driveFiles={driveFiles} size={"small"} />}
+        <Await resolve={actionData} errorElement={<span>ERROR</span>}>
+          {actionData && (
+            <>
+              <MoveCards driveFiles={driveFiles} size={"small"} />
+            </>
+          )}
         </Await>
       </Suspense>
       {/* <MoveCards driveFiles={driveFiles} size={"small"} /> */}
@@ -93,6 +97,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")
   }
+
   return null
 }
 
