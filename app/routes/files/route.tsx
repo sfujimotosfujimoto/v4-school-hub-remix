@@ -4,6 +4,7 @@ import React from "react"
 import { Outlet, useOutletContext } from "@remix-run/react"
 
 import type { Gakunen, Hr } from "~/types"
+import TasksProvider from "~/context/tasks-context"
 
 type ContextType = {
   gakunen: Gakunen
@@ -26,7 +27,7 @@ export default function FilesLayout() {
   // hr state
   const [hr, setHr] = React.useState<Hr>("ALL")
   return (
-    <>
+    <TasksProvider>
       <section data-name="files.tsx_(Layout)" className="mx-auto h-full">
         <div
           data-name="__overflow-wrapper h-full"
@@ -40,7 +41,7 @@ export default function FilesLayout() {
           </div>
         </div>
       </section>
-    </>
+    </TasksProvider>
   )
 }
 

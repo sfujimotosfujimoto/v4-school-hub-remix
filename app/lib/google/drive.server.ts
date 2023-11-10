@@ -78,14 +78,23 @@ export function querySampledStudent(
   gakunen: string,
   hr: string,
 ): string {
-  const filteredStudentData: Student[] = []
+  let filteredStudentData: Student[] = []
+  const FILTER_NUM = 4
 
-  students.forEach((sd) => {
-    // sampling some students to get segments out of file names
-    if (sd.gakunen === gakunen && sd.hr === hr && sd.hrNo % 4 === 0) {
-      filteredStudentData.push(sd)
-    }
-  })
+  if (students.length < FILTER_NUM) {
+    filteredStudentData = [...students]
+  } else {
+    students.forEach((sd) => {
+      // sampling some students to get segments out of file names
+      if (
+        sd.gakunen === gakunen &&
+        sd.hr === hr &&
+        sd.hrNo % FILTER_NUM === 0
+      ) {
+        filteredStudentData.push(sd)
+      }
+    })
+  }
 
   const folderLinks = filteredStudentData
     .map((sd) => {
@@ -99,6 +108,8 @@ export function querySampledStudent(
     .slice()
     .map((f) => `'${f}' in parents`)
     .join(" or ")
+
+  if (!folderQuery) return ""
 
   return `(${folderQuery}) and trashed = false`
 }
@@ -213,6 +224,9 @@ export async function getDriveFiles(
   query: string,
 ): Promise<DriveFile[] | null> {
   logger.debug(`✅ getDriveFiles:`)
+
+  if (!query || query === "") return null
+
   let files: drive_v3.Schema$File[] = await execFilesList(drive, query)
 
   if (!files) return null

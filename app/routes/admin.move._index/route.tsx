@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { json, redirect } from "@remix-run/node"
-import { Await, useActionData } from "@remix-run/react"
+import { useActionData, useLoaderData } from "@remix-run/react"
 
 import { logger } from "~/logger"
 
@@ -27,12 +27,12 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
 import { authenticate } from "~/lib/authenticate.server"
-import { Suspense } from "react"
 import { executeAction } from "./actions/execute"
+import type { Role } from "@prisma/client"
 
 export const config = {
   // TODO: set maxDuration for production
-  maxDuration: 90,
+  maxDuration: 120,
 }
 
 /**
@@ -40,6 +40,7 @@ export const config = {
  */
 export default function MovePage() {
   const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
+  const { role } = useLoaderData<{ role: Role }>()
 
   const actionData = useActionData<ActionType>()
 
@@ -58,20 +59,11 @@ export default function MovePage() {
         <MoveForm />
 
         {/* MOVE CONFIRM FORM  */}
-        <MoveConfirmForm />
+        <MoveConfirmForm role={role} />
       </article>
 
       {/* <!-- MOVE CARDS --> */}
-      <Suspense fallback={<span>LOADING MOVE CARDS</span>}>
-        <Await resolve={actionData} errorElement={<span>ERROR</span>}>
-          {actionData && (
-            <>
-              <MoveCards driveFiles={driveFiles} size={"small"} />
-            </>
-          )}
-        </Await>
-      </Suspense>
-      {/* <MoveCards driveFiles={driveFiles} size={"small"} /> */}
+      <MoveCards driveFiles={driveFiles} size={"small"} />
 
       {/* <!-- TASK CARD BLOCK --> */}
       <article className="mx-auto w-full max-w-5xl p-12">
@@ -98,7 +90,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw redirect("/?authstate=unauthenticated")
   }
 
-  return null
+  return {
+    role: user.role,
+  }
 }
 
 // Zod Data Type

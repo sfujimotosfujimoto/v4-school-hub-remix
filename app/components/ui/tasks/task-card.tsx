@@ -69,6 +69,12 @@ export default function TaskCard({ task }: { task: Task }) {
                   }),
                 ) || ""}
               </span>
+              <span>
+                {task.driveFiles ? task.driveFiles.length : 0}{" "}
+                {task.driveFiles && task.driveFiles.length === 1
+                  ? "file"
+                  : "files"}
+              </span>
             </div>
           </div>
         </div>

@@ -6,8 +6,11 @@ import { useTasksContext } from "~/context/tasks-context"
 import { useMovePageContext } from "~/routes/admin.move._index/context/move-page-context"
 
 import { Form, useNavigation } from "@remix-run/react"
+import { arrayIntoChunks } from "~/lib/utils"
+import toast from "react-hot-toast"
+import type { Role } from "@prisma/client"
 
-export default function MoveConfirmForm() {
+export default function MoveConfirmForm({ role }: { role: Role }) {
   const dialogEl = React.useRef<HTMLDialogElement>(null)
   const { state, formData } = useNavigation()
 
@@ -39,11 +42,55 @@ export default function MoveConfirmForm() {
     if (dialogEl.current !== null) dialogEl.current.close()
   }
 
+  async function handleClick(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) {
+    e.preventDefault()
+
+    console.log("✅ admin.move._index/route.tsx ~ 	😀 clicked")
+
+    const dfs = driveFiles.filter((df) => df.meta?.selected === true)
+    tasksDispatch({
+      type: "SET",
+      payload: {
+        driveFiles: dfs,
+        taskType: "move",
+      },
+    })
+
+    const chunks = arrayIntoChunks(dfs, 10)
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      const res = await fetch("/api/move", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          totalChunks: chunks.length,
+          currentChunk: i + 1,
+          driveFiles: chunk.length,
+          sourceFolder,
+        }),
+      })
+        .then((res) => res.json())
+        .catch((error) => console.error(error))
+      toast.success(
+        `${((res.data.currentChunk / res.data.totalChunks) * 100).toFixed(0)}%`,
+      )
+    }
+  }
+
   return (
     <div className="mt-4 grid grid-cols-1 place-content-center">
       <h2 data-name="Form H1" className="mb-4 text-lg">
         🚙 ファイルを移動しますか？
       </h2>
+      {role === "SUPER" && (
+        <button className="btn" onClick={handleClick}>
+          PRACTICE
+        </button>
+      )}
 
       <div
         onClick={() => {

@@ -24,12 +24,15 @@ import NendoButtons from "../student.$studentFolderId._index/components/nendo-bu
 import AllCheckButtons from "../student.$studentFolderId._index/components/all-check-buttons"
 import React from "react"
 import PropertyButton from "../student.$studentFolderId._index/components/property-button"
-import { arrayIntoChunks, getSchoolYear, parseTags } from "~/lib/utils"
+import { parseTags } from "~/lib/utils"
 import { z } from "zod"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { CheckIcon } from "~/components/icons"
-import { CHUNK_SIZE } from "~/lib/config"
-import { updateAppProperties } from "~/lib/app-properties"
+import DeleteButton from "./components/delete-button"
+import { propertyExecuteAction } from "./actions/property-execute"
+import { deleteExecuteAction } from "./actions/delete-execute"
+import TaskCards from "~/components/ui/tasks/task-cards"
+import { deleteUndoAction } from "./actions/delete-undo"
 
 /**
  * loader function
@@ -62,7 +65,10 @@ export default function FilesGakunenHrQueryPage() {
       <div className="flex items-center gap-4">
         {/* PROPERTY BUTTON */}
         {role && ["ADMIN", "SUPER"].includes(role) && (
-          <PropertyButton driveFiles={_driveFiles} tags={tags} />
+          <>
+            <PropertyButton driveFiles={_driveFiles} tags={tags} />
+            <DeleteButton driveFiles={_driveFiles} />
+          </>
         )}
 
         {/* ALLCHECK BUTTONS  {#if _driveFiles && $driveFiles && role}*/}
@@ -120,6 +126,17 @@ export default function FilesGakunenHrQueryPage() {
             driveFiles={_driveFiles}
             size={isBig ? "big" : "small"}
           />
+          {/* <!-- ACTION CARD BLOCK --> */}
+          {["ADMIN", "SUPER"].includes(role) && (
+            <article className="mx-auto w-full max-w-5xl p-12">
+              <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
+                💽 履歴データ
+              </h2>
+
+              {/* <!-- TASK CARDS --> */}
+              <TaskCards taskType="delete" />
+            </article>
+          )}
         </>
       )}
     </div>
@@ -218,9 +235,6 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
 // Zod Data Type
 const FormDataScheme = z.object({
   _action: z.string(),
-  nendoString: z.string(),
-  tagsString: z.string().optional(),
-  fileIdsString: z.string().optional(),
 })
 
 /**
@@ -235,76 +249,43 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!user || !user.credential)
     throw redirect("/?authstate=unauthenticated-move-001")
 
-  const accessToken = user.credential.accessToken
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
   if (!result.success) {
-    return json({ ok: false, error: result.error.message }, { status: 400 })
+    return json(
+      { ok: false, type: "property", error: result.error.message },
+      { status: 400 },
+    )
   }
 
-  let { _action, nendoString, tagsString, fileIdsString } = result.data
-
-  const tags = tagsString ? tagsString : ""
-
-  const fileIds = JSON.parse(fileIdsString || "[]")
+  let { _action } = result.data
 
   switch (_action) {
     /**
      * EXECUTE ACTION
      */
 
-    case "execute": {
-      logger.debug(
-        `✅ action: "execute" ${nendoString}, ${tagsString}, ${fileIds}, ${fileIdsString}`,
-      )
+    case "property-execute": {
+      logger.debug(`✅ action: property-execute`)
 
-      const fileIdsChunks = arrayIntoChunks<string>(fileIds, CHUNK_SIZE)
-      logger.debug(`✅ action: fileIdsChunks: ${fileIdsChunks.length} `)
+      return await propertyExecuteAction(request, formData)
+    }
 
-      const promises = fileIdsChunks.map((fileIds, idx) =>
-        _updateAppProperties(accessToken, fileIds, tags, nendoString, idx),
-      )
+    case "delete-execute": {
+      logger.debug(`✅ action: delete-execute`)
+      return await deleteExecuteAction(request, formData)
+      // logger.debug(`✅ action: "delete": ${fileIdsString}`)
+      // return json({ ok: true })
+      // return json({ ok: true, data: { fileIds } })
+    }
 
-      logger.debug(`✅ action: promises: ${promises.length} `)
-
-      const resArr = await Promise.all([...promises])
-      const res = resArr.filter((d) => d).flat()
-
-      console.log("✅ res.length: ", res.length)
-
-      return json({ ok: true, data: { res } })
+    case "undo": {
+      logger.debug(`✅ action: delete undo`)
+      return await deleteUndoAction(request, formData)
     }
 
     default:
       break
   }
-}
-
-async function _updateAppProperties(
-  accessToken: string,
-  fileIds: string[],
-  tagString: string,
-  nendo: string,
-  idx: number,
-) {
-  logger.debug(`✅ action: _updateAppProperties `)
-  const res = []
-  for (let i = 0; i < fileIds.length; i++) {
-    const fileId = fileIds[i]
-    const appProperties = {
-      nendo: nendo || String(getSchoolYear(Date.now())),
-      tags: tagString,
-      time: String(Date.now()),
-    }
-    const r = await updateAppProperties(accessToken, fileId, appProperties)
-
-    res.push(r)
-    logger.debug(`updateAppProperties -- update idx:${i} of chunk: ${idx}`)
-  }
-
-  logger.debug(
-    `updateAppProperties -- finished ${res.length} files of chunk: ${idx}`,
-  )
-  return res
 }
