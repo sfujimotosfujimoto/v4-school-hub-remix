@@ -139,15 +139,76 @@ async function _moveDriveFilesG(
 
     while (true) {
       try {
-        const file = await drive.files.update({
-          fileId: d.id,
-          addParents: folderId,
-          fields: QUERY_FILE_FIELDS,
-        })
+        // // if file is already in folder, skip
+        // logger.debug(`✅ moveDriveFiles: start ${d.name}`)
+        // if (d.parents?.at(0) === folderId) {
+        //   logger.debug(`✅ moveDriveFiles: ${d.name} already in folder`)
+        //   errors.push(`error: ${d.id}: ${d.name}`)
+        //   break
+        // } else if (d.parents?.at(0) && d.meta.file) {
+        //   logger.debug(`✅ moveDriveFiles: ${d.name} updating file`)
+        //   try {
+        //     const file = await drive.files.update({
+        //       fileId: d.id,
+        //       removeParents: d.parents?.at(0),
+        //       addParents: folderId,
+        //       requestBody: {
+        //         appProperties: {
+        //           nendo: d.meta.file.nendo ?? "",
+        //           tags: d.meta.file.tags ?? "",
+        //           time: String(Date.now()),
+        //         },
+        //       },
+        //       fields: QUERY_FILE_FIELDS,
+        //       // TODO: {responseType: "stream"} implement
+        //       // }, {responseType: "stream"})
+        //     })
+        //     files.push(file.data)
+        //     // console.log(`moveDriveFiles: ${d.name}, idx:${j} of chunk: ${idx}`)
+        //   } catch (error) {
+        //     errors.push(`error: ${d.id}: ${d.name} message: ${error}`)
 
-        files.push(file.data)
-        // logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
-        break // Operation succeeded, exit retry loop
+        //     if (error instanceof Error) {
+        //       errors.push(`error: ${d.id}: ${d.name} message: ${error.message}`)
+        //     }
+        //     break
+        //   }
+        // } else {
+        //   // create promise using `update`
+        //   const file = await drive.files.update({
+        //     fileId: d.id,
+        //     addParents: folderId,
+        //   })
+        //   files.push(file.data)
+        //   logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
+        //   break
+        // }
+
+        // //---------------------------------------------------------
+
+        // if file is already in folder, skip
+        if (d.parents?.at(0) === folderId) {
+          errors.push(`error: ${d.id}: ${d.name}`)
+          continue
+        } else if (d.parents?.at(0) && d.meta.file) {
+          const file = await drive.files.update({
+            fileId: d.id,
+            removeParents: d.parents?.at(0),
+            addParents: folderId,
+            fields: QUERY_FILE_FIELDS,
+            requestBody: {
+              appProperties: {
+                nendo: d.meta.file.nendo ?? "",
+                tags: d.meta.file.tags ?? "",
+                time: String(Date.now()),
+              },
+            },
+          })
+
+          files.push(file.data)
+          // logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
+          break // Operation succeeded, exit retry loop
+        }
       } catch (error) {
         errors.push(`error: ${d.id}: ${d.name}`)
 
@@ -210,7 +271,7 @@ async function _moveDriveFilesG(
 //       continue
 //     }
 
-//     //---------------------------------------------------------
+//     //     //---------------------------------------------------------
 
 //     // if file is already in folder, skip
 //     if (d.parents?.at(0) === folderId) {
