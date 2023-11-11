@@ -21,11 +21,10 @@ import { getSheets, getStudents } from "~/lib/google/sheets.server"
  * Student Layout
  */
 export default function StudentLayout() {
-  const { studentData } = useLoaderData<typeof loader>()
+  const { students } = useLoaderData<typeof loader>()
 
   // filtered StudentData[]
-  const [filteredStudentData, setFilteredStudentData] =
-    React.useState(studentData)
+  const [filteredStudents, setFilteredStudents] = React.useState(students)
   // gakunen state
   const [gakunen, setGakunen] = React.useState<Gakunen>("ALL")
   // hr state
@@ -33,9 +32,9 @@ export default function StudentLayout() {
 
   // check for change in filteredStudentData
   React.useEffect(() => {
-    const tmp = filterStudentDataByGakunen(gakunen, hr, studentData)
-    setFilteredStudentData(tmp)
-  }, [gakunen, studentData, hr])
+    const tmp = filterStudentDataByGakunen(gakunen, hr, students)
+    setFilteredStudents(tmp)
+  }, [gakunen, students, hr])
 
   // used to check click state in hidden checkbox of Sidebar
 
@@ -75,7 +74,7 @@ export default function StudentLayout() {
           </div>
 
           {/* <!-- SideBar --> */}
-          <Sidebar studentData={filteredStudentData} drawerRef={drawerRef} />
+          <Sidebar studentData={filteredStudents} drawerRef={drawerRef} />
         </div>
       </section>
     </>
@@ -104,10 +103,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   // get StudentData[]
-  const studentData = await getStudents(sheets)
+  const students = await getStudents(sheets)
   return json(
     {
-      studentData,
+      students,
     },
     {
       status: 200,

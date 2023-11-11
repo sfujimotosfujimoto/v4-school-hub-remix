@@ -16,12 +16,11 @@ import {
   querySampledStudent,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { requireUserRole } from "~/lib/require-roles.server"
 import { filterStudentNameSegments } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
-import { authenticate } from "~/lib/authenticate.server"
 import NendoTagsProvider from "~/context/nendos-tags-context"
 import DriveFilesProvider from "~/context/drive-files-context"
+import { getUserFromSession } from "~/lib/session.server"
 
 /**
  * Layout for files.$gakunen.$hr
@@ -156,8 +155,16 @@ function Segments({
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: files.$gakunen.$hr ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireUserRole(user)
+
+  // if search params are empty, return empty segments
+  const q = new URL(request.url).searchParams.get("q")
+  if (q) {
+    return { segments: [] }
+  }
+
+  // const { user } = await authenticate(request)
+  const user = await getUserFromSession(request)
+  // await requireUserRole(user)
 
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 

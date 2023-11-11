@@ -113,24 +113,24 @@ export default function NavRight() {
                       <Dashboard className="h-4 w-4 sm:hidden" />
                       <span className="hidden sm:block">ADMIN</span>
                     </summary>
-                    <ul className="flex flex-col gap-2 bg-base-100 p-2">
-                      <li>
-                        <NavLink
-                          to="/admin/move"
-                          className={`${navCssSubItem}`}
-                        >
-                          <PlaneIcon className="h-4 w-4 sm:hidden" />
-                          <span className="hidden sm:block">Move</span>
-                        </NavLink>
-                      </li>
-
+                    <ul className="flex w-40 flex-col gap-2 bg-base-100 p-2">
                       <li>
                         <NavLink
                           to="/admin/rename"
                           className={`${navCssSubItem}`}
                         >
                           <RenameIcon className="h-4 w-4 sm:hidden" />
-                          <span className="hidden sm:block">Rename</span>
+                          <span className="hidden sm:block">🐣 名前変更</span>
+                        </NavLink>
+                      </li>
+
+                      <li>
+                        <NavLink
+                          to="/admin/move"
+                          className={`${navCssSubItem}`}
+                        >
+                          <PlaneIcon className="h-4 w-4 sm:hidden" />
+                          <span className="hidden sm:block">🚙 移動</span>
                         </NavLink>
                       </li>
 
@@ -140,7 +140,9 @@ export default function NavRight() {
                           className={`${navCssSubItem}`}
                         >
                           <RenameIcon className="h-4 w-4 sm:hidden" />
-                          <span className="hidden sm:block">Rename CSV</span>
+                          <span className="hidden sm:block">
+                            👨🏻‍💻 CSV名前変更
+                          </span>
                         </NavLink>
                       </li>
 

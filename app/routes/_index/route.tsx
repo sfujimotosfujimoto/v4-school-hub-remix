@@ -1,11 +1,16 @@
-import type { LoaderFunctionArgs } from "@remix-run/node"
+// import type { LoaderFunctionArgs } from "@remix-run/node"
 
 // components
 import { DriveLogo, LogoIcon, LogoTextIcon } from "~/components/icons"
 import LoginButton from "./components/login-button"
 // functions
-import { logger } from "~/logger"
-import { getUserFromSession } from "~/lib/session.server"
+// import { logger } from "~/logger"
+// import { getUserFromSession } from "~/lib/session.server"
+
+// {
+//   role: user?.role || null,
+//   picture: user?.picture || null,
+// }
 
 export default function Index() {
   return (
@@ -56,15 +61,15 @@ function Explanation() {
 /**
  * Loader
  */
-export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`🍿 loader: _index ${request.url}`)
+// export async function loader({ request }: LoaderFunctionArgs) {
+//   logger.debug(`🍿 loader: _index ${request.url}`)
 
-  // check if there is __session cookie
-  const user = await getUserFromSession(request)
-  if (!user) return { role: undefined, picture: undefined }
+//   // check if there is __session cookie
+//   const user = await getUserFromSession(request)
+//   if (!user) return { role: undefined, picture: undefined }
 
-  return { role: user.role, picture: user.picture }
-}
+//   return { role: user.role, picture: user.picture }
+// }
 
 // export const headers: HeadersFunction = ({ loaderHeaders }) => {
 //   return {

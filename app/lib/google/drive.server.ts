@@ -296,7 +296,6 @@ export async function getDrive(
 // PRIVATE FUNCTIONS
 //-------------------------------------------
 async function execFilesList(drive: drive_v3.Drive, query: string) {
-  logger.debug(`✅ execFilesList: query: ${query}`)
   let count = 0
   let files: drive_v3.Schema$File[] = []
   let nextPageToken = undefined
@@ -313,18 +312,18 @@ async function execFilesList(drive: drive_v3.Drive, query: string) {
     if (list.data.files) {
       files = files.concat(list.data.files)
     }
+    nextPageToken = list.data.nextPageToken
 
     logger.debug(
       `✅ execFilesList: files: ${
         files.length
-      } files: count: ${count++}, nextPageToken: ${nextPageToken}`,
+      } files: count: ${count++}, nextPageToken: ${!!nextPageToken}`,
     )
-    nextPageToken = list.data.nextPageToken
     // if (list.data.nextPageToken) nextPageToken = list.data.nextPageToken
   } while (nextPageToken && files.length < MaxSize)
-  files.forEach((f, idx) => {
-    logger.debug(`✅ file: ${idx}: ${f.name}`)
-  })
+  // files.forEach((f, idx) => {
+  //   logger.debug(`✅ file: ${idx}: ${f.name}`)
+  // })
   return files
 }
 
