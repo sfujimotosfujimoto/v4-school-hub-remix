@@ -101,6 +101,7 @@ export default function FilesGakunenHrQueryPage() {
           baseDriveFiles={baseDriveFiles}
           nendos={nendos}
           color={"bg-slate-400"}
+          showAll={true}
         />
       </div>
 

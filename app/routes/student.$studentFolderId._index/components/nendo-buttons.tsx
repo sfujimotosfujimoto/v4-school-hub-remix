@@ -8,24 +8,31 @@ export default function NendoButtons({
   baseDriveFiles,
   nendos,
   color, // currentNendo,
+  showAll = false,
 }: {
   baseDriveFiles: DriveFile[]
   nendos: string[]
   color: string
+  showAll?: boolean
 }) {
-  // get the newest nendo from the nendos set
-  let newestNendo =
-    Array.from(nendos)
-      .sort((a, b) => Number(b) - Number(a))
-      .filter((n): n is string => n !== null)
-      .at(0) ?? "ALL"
+  let newestNendo
+  if (!showAll) {
+    // get the newest nendo from the nendos set
+    newestNendo =
+      Array.from(nendos)
+        .sort((a, b) => Number(b) - Number(a))
+        .filter((n): n is string => n !== null)
+        .at(0) ?? "ALL"
+  }
 
+  // set the current nendo to the newest nendo
   const [currentNendo] = React.useState(newestNendo ?? "ALL")
 
   const { nendo, setNendo } = useNendoTags()
   const { driveFilesDispatch } = useDriveFilesContext()
   const [nendosArr, setNendosArr] = React.useState<string[]>([])
 
+  // set driveFiles to baseDriveFiles
   React.useEffect(() => {
     driveFilesDispatch({
       type: "SET_AND_UPDATE_META_SELECTED",
@@ -33,6 +40,7 @@ export default function NendoButtons({
     })
   }, [baseDriveFiles, driveFilesDispatch])
 
+  // set nendosArr to the nendos set
   React.useEffect(() => {
     const tmpArr = Array.from(nendos)
       .sort((a, b) => Number(b) - Number(a))
@@ -42,16 +50,22 @@ export default function NendoButtons({
     setNendo(currentNendo)
   }, [nendos, currentNendo, setNendo])
 
+  // filter by nendo
   React.useEffect(() => {
+    // first set the driveFiles to baseDriveFiles
     driveFilesDispatch({
       type: "SET_AND_UPDATE_META_SELECTED",
       payload: { driveFiles: baseDriveFiles, selected: true },
     })
-    driveFilesDispatch({
-      type: "FILTER_BY_NENDO",
-      payload: { nendo: currentNendo, driveFiles: baseDriveFiles },
-    })
-  }, [baseDriveFiles, currentNendo, driveFilesDispatch])
+
+    if (!showAll) {
+      // then filter by nendo
+      driveFilesDispatch({
+        type: "FILTER_BY_NENDO",
+        payload: { nendo: currentNendo, driveFiles: baseDriveFiles },
+      })
+    }
+  }, [baseDriveFiles, currentNendo, driveFilesDispatch, showAll])
 
   return (
     <div data-name="NendoButtons.tsx" className={`flex gap-2`}>

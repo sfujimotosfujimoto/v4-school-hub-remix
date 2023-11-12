@@ -27,6 +27,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node"
+import MotionWrapper from "./components/ui/motion-wrapper"
 function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="mytheme">
@@ -44,7 +45,9 @@ function Document({ children }: { children: React.ReactNode }) {
         >
           <Navigation />
           <LoadingModalProvider>
-            <main className="h-full ">{children}</main>
+            <MotionWrapper>
+              <main className="h-full ">{children}</main>
+            </MotionWrapper>
           </LoadingModalProvider>
           <Footer />
         </div>
