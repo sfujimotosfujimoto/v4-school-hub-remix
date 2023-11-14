@@ -50,9 +50,11 @@ export default function LoginButton() {
           <Form method="POST" action="/auth/signout">
             <button
               type="submit"
-              className={`btn btn-error w-64  border-0 shadow-lg hover:bg-opacity-70`}
+              className={`btn btn-error w-64  border-0 shadow-lg hover:bg-opacity-70 ${
+                loading && "animate-bounce"
+              }`}
             >
-              <LogoIcon className={`h-7 w-4 ${loading && "animate-spin"}`} />
+              <LogoIcon className={`h-7 w-4`} />
               <span className="ml-1  sm:ml-2 sm:inline">
                 SCHOOL HUB サインアウト
               </span>

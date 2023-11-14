@@ -241,8 +241,6 @@ export async function execPermissions(
   drive: drive_v3.Drive,
   fileId: string,
 ): Promise<Permission[]> {
-  logger.debug("✅ execPermissions:")
-
   const fields = "permissions(id,type,emailAddress,role,displayName)"
   try {
     const list = await drive.permissions.list({

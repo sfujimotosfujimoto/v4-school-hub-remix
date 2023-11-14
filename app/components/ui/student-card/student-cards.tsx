@@ -24,6 +24,7 @@ export default function StudentCards({
           if (d.parents && d.parents?.length > 0) {
             return (
               <Link
+                prefetch="intent"
                 key={d.id}
                 id="_StudentCard"
                 to={`/student/${d.parents[0]}/${d.id}`}
@@ -33,7 +34,7 @@ export default function StudentCards({
             )
           } else {
             return (
-              <Link key={d.id} id="_StudentCard" to={`/`}>
+              <Link prefetch="intent" key={d.id} id="_StudentCard" to={`/`}>
                 <StudentCard driveFile={d} size={size} role={role} />
               </Link>
             )

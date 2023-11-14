@@ -14,7 +14,7 @@ export default function LogoLeft() {
       <Link to="/" aria-label="Go home" className="mr-2">
         <LogoIcon
           className={`h-7 w-8 ease-in-out sm:h-12 ${
-            loading && "animate-wiggle"
+            loading && "animate-bounce"
           }`}
         />
       </Link>
