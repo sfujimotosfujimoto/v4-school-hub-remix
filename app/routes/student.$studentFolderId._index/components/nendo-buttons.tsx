@@ -23,6 +23,8 @@ export default function NendoButtons({
         .sort((a, b) => Number(b) - Number(a))
         .filter((n): n is string => n !== null)
         .at(0) ?? "ALL"
+  } else {
+    newestNendo = "ALL"
   }
 
   // set the current nendo to the newest nendo

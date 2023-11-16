@@ -108,6 +108,7 @@ export function checkValidSeigEmail(email: string): boolean {
 
 export function getIdFromUrl(url: string): string | undefined {
   const match = url.match(/[\w-_]{30,}/)
+  console.log(`✅ match: ${match}`)
   return match ? match[0] : undefined
 }
 
