@@ -86,7 +86,7 @@ export default function MoveForm() {
               placeholder="移動元フォルダID"
               className="input input-bordered input-primary w-full border-2"
               required
-              maxLength={100}
+              maxLength={300}
             />
 
             {/* <!-- TAGS --> */}

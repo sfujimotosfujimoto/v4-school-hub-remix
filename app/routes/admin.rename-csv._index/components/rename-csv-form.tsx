@@ -69,7 +69,7 @@ export default function RenameCsvForm() {
               placeholder="変更元フォルダID"
               className="input input-bordered input-primary w-full border-2 text-sfblue-300"
               required
-              maxLength={100}
+              maxLength={300}
             />
           </div>
 
