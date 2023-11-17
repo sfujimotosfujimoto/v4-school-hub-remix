@@ -134,6 +134,7 @@ export async function authenticate(
       // return the access token so you can use it in your action
       // return jsn.data.userJWT
       const newUser = returnUser(jsn.data.user)
+      logger.info(`👑 authenticate: ${newUser.last} ${newUser.first}`)
       return { user: newUser, userJWT: jsn.data.userJWT }
     }
 

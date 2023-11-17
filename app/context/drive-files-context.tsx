@@ -34,12 +34,12 @@ type FilterBySegmentAction = {
     driveFiles: DriveFile[]
   }
 }
-type FilterBySegmentAction2 = {
-  type: "FILTER_BY_SEGMENT2"
-  payload: {
-    segment: string
-  }
-}
+// type FilterBySegmentAction2 = {
+//   type: "FILTER_BY_SEGMENT2"
+//   payload: {
+//     segment: string
+//   }
+// }
 
 type FilterByExtensionAction = {
   type: "FILTER_BY_EXTENSION"
@@ -56,12 +56,12 @@ type FilterByNendoAction = {
     driveFiles: DriveFile[]
   }
 }
-type FilterByNendoAction2 = {
-  type: "FILTER_BY_NENDO2"
-  payload: {
-    nendo: string
-  }
-}
+// type FilterByNendoAction2 = {
+//   type: "FILTER_BY_NENDO2"
+//   payload: {
+//     nendo: string
+//   }
+// }
 
 type FilterByTagAction = {
   type: "FILTER_BY_TAG"
@@ -84,10 +84,8 @@ export type Action =
   | UpdateMetaSelectedAction
   | SetAndUpdateMetaSelectedAction
   | FilterBySegmentAction
-  | FilterBySegmentAction2
   | FilterByExtensionAction
   | FilterByNendoAction
-  | FilterByNendoAction2
   | FilterByTagAction
   | SetCheckAction
 
@@ -119,12 +117,12 @@ function driveFilesReducer(dfs: DriveFile[], action: Action): DriveFile[] {
         return currentSegments.includes(action.payload.segment)
       })
     }
-    case "FILTER_BY_SEGMENT2": {
-      return dfs.filter((df) => {
-        const currentSegments = df.name.split(/[-_.]/)
-        return currentSegments.includes(action.payload.segment)
-      })
-    }
+    // case "FILTER_BY_SEGMENT2": {
+    //   return dfs.filter((df) => {
+    //     const currentSegments = df.name.split(/[-_.]/)
+    //     return currentSegments.includes(action.payload.segment)
+    //   })
+    // }
     case "FILTER_BY_EXTENSION": {
       const baseDriveFiles = action.payload.driveFiles as DriveFile[]
       const filtered = baseDriveFiles.filter((df) => {
@@ -151,15 +149,15 @@ function driveFilesReducer(dfs: DriveFile[], action: Action): DriveFile[] {
         return filtered
       }
     }
-    case "FILTER_BY_NENDO2": {
-      const nendo = action.payload.nendo
-      const filtered = dfs.filter((df) => df.appProperties?.nendo === nendo)
-      if (!filtered || !nendo) {
-        return dfs
-      } else {
-        return filtered
-      }
-    }
+    // case "FILTER_BY_NENDO2": {
+    //   const nendo = action.payload.nendo
+    //   const filtered = dfs.filter((df) => df.appProperties?.nendo === nendo)
+    //   if (!filtered || !nendo) {
+    //     return dfs
+    //   } else {
+    //     return filtered
+    //   }
+    // }
     case "FILTER_BY_TAG": {
       const tag = action.payload.tag
       const baseDriveFiles = action.payload.driveFiles as DriveFile[]
