@@ -1,8 +1,5 @@
 import React from "react"
 import { useRouteLoaderData } from "@remix-run/react"
-import type { Role } from "@prisma/client"
-
-import type { DriveFile, Student } from "~/types"
 
 // components
 import BackButton from "~/components/ui/buttons/back-button"
@@ -15,20 +12,20 @@ import TagButtons from "./components/tag-buttons"
 // context
 import { useDriveFilesContext } from "~/context/drive-files-context"
 
+import type { loader as studentFolderIdLoader } from "../student.$studentFolderId/route"
+
 /**
  * StudentFolderIndexPage Component
  */
 export default function StudentFolderIdIndexPage() {
-  const { driveFiles, segments, extensions, nendos, tags, role } =
-    useRouteLoaderData("routes/student.$studentFolderId") as unknown as {
-      extensions: string[]
-      segments: string[]
-      driveFiles: DriveFile[] | null
-      student: Student | null
-      role: Role
-      nendos: string[]
-      tags: string[]
-    }
+  const data = useRouteLoaderData<typeof studentFolderIdLoader>(
+    "routes/student.$studentFolderId",
+  )
+  if (!data) {
+    console.error(`🚨 `)
+    throw new Error("no props")
+  }
+  const { driveFiles, segments, extensions, tags, nendos, role } = data
 
   const { driveFiles: _driveFiles } = useDriveFilesContext()
 
@@ -36,10 +33,6 @@ export default function StudentFolderIdIndexPage() {
     if (!driveFiles) return []
     return driveFiles
   }, [driveFiles])
-
-  // baseDriveFiles = React.useMemo(() => {
-  //   return setSelected(baseDriveFiles ?? [], true)
-  // }, [baseDriveFiles])
 
   // JSX -------------------------
   return (

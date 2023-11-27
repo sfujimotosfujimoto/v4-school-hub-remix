@@ -25,6 +25,7 @@ import { logger } from "~/logger"
  */
 export default function StudentFolderIdFileIdPage() {
   const { permissions } = useLoaderData<{ permissions: Permission[] }>()
+
   const { fileId } = useParams()
   const { driveFiles, role } = useRouteLoaderData(
     "routes/student.$studentFolderId",
