@@ -26,7 +26,7 @@ ul.join > li > button:active {
 }
 
 #sidebar > ul.menu > li > a:hover,
-#sidebar > ul.menu > li > a:active{
+#sidebar > ul.menu > li > a:active {
   color: theme("colors.sfred.200");
   background-color: inherit;
 }
@@ -39,7 +39,7 @@ button.nendo-active {
   background-color: hsl(1, 64%, 72%);
 }
 button.tag-active {
-  background-color: #78C3C6;
+  background-color: #78c3c6;
 }
 div.flex.gap-2 > button.btn.btn-sm:hover {
   background-color: hsl(1, 54%, 72%);

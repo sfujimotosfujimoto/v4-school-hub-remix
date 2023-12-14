@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node"
-import { Outlet, useLoaderData } from "@remix-run/react"
+import { Outlet, useLoaderData, useParams } from "@remix-run/react"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -27,6 +27,7 @@ import DriveFilesProvider from "~/context/drive-files-context"
 import NendoTagsProvider from "~/context/nendos-tags-context"
 import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 /**
  * StudentFolderIdLayout
@@ -170,4 +171,13 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
       title: `${title} | SCHOOL HUB`,
     },
   ]
+}
+
+/**
+ * Error Boundary
+ */
+export function ErrorBoundary() {
+  const { studentFolderId } = useParams()
+  let message = `フォルダID（${studentFolderId}）からフォルダを取得できませんでした。`
+  return <ErrorBoundaryDocument message={message} />
 }

@@ -20,6 +20,7 @@ import { json, redirect } from "@remix-run/node"
 
 import type { ActionType } from "../route"
 import type { DriveFile, Gakunen, Hr, Student } from "~/types"
+import { serverErrorResponse } from "~/lib/errors"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -112,6 +113,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
 
   // get DriveFile with query
   const driveFiles = await getDriveFilesWithStudentFolder(drive, sheets, query)
+
   if (!driveFiles)
     return json<ActionType>(
       {
@@ -127,12 +129,12 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   if (driveFiles) await addPermissionToDriveFiles(drive, driveFiles)
 
   const students = await getStudents(sheets)
-  logger.debug(`🍎 6. action: students: ${students.length}`)
+  // logger.debug(`🍎 6. action: students: ${students.length}`)
 
   // 1. add segemented name to meta
   // 2. if hr and hrNo, or lastname firstname in segments get it
 
-  if (!driveFiles || !students)
+  if (!driveFiles || !students || driveFiles.length === 0)
     return json({ ok: false, error: "データが見つかりませんでした" })
 
   const newDriveFiles = await findStudentDataFromSegments(
@@ -192,7 +194,7 @@ async function findStudentDataFromSegments(
   includeSuffix: boolean,
   includeGakunenHrHrNo: boolean,
   gakunenHrHrNoStart: boolean,
-) {
+): Promise<DriveFile[]> {
   logger.debug(
     `✅ findStudentDataFromSegments: gakunen: ${gakunen}, segment: ${segment}, driveFiles: ${driveFiles.length}`,
   )
@@ -212,6 +214,7 @@ async function findStudentDataFromSegments(
     )
     if (a) newDriveFiles.push(a)
   }
+
   return newDriveFiles
 }
 
@@ -235,7 +238,17 @@ async function _findStudentDataFromSegments(
   }
 
   // get file extension
-  const extensions = ["pdf", "jpg", "jpeg", "png", "doc", "docx", "xls", "xlsx"]
+  const extensions = [
+    "pdf",
+    "jpg",
+    "jpeg",
+    "png",
+    "doc",
+    "docx",
+    "xls",
+    "xlsx",
+    "m4a",
+  ]
   // get ex. "pdf", "document"
   const ext =
     extensions
@@ -269,10 +282,10 @@ async function _findStudentDataFromSegments(
   // look up if studentEmail is set in meta.file
   // is so, find students from studentEmail
   if (df.meta.file?.studentEmail) {
-    // logger.debug(`✅ _findStudentDataFromSegments: in studentEmail`)
-    const student = students.find(
-      (sd) => sd.email === df.meta?.file?.studentEmail,
-    )
+    logger.debug(`✅ _findStudentDataFromSegments: in studentEmail`)
+    const student = students.find((sd) => {
+      return sd.email === df.meta?.file?.studentEmail
+    })
 
     if (student) {
       df.meta = {
@@ -292,6 +305,11 @@ async function _findStudentDataFromSegments(
         },
       }
       return df
+    } else {
+      console.log("before driveErrorResponse")
+      serverErrorResponse(
+        `メールアドレス ${df.meta.file?.studentEmail} の生徒が名簿から見つかりません。`,
+      )
     }
   }
 
@@ -330,6 +348,7 @@ async function _findStudentDataFromSegments(
           ),
         },
       }
+
       return df
     }
   }

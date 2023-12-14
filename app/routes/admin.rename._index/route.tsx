@@ -29,54 +29,15 @@ import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 // hooks
 import { useToast } from "~/hooks/useToast"
 import { authenticate } from "~/lib/authenticate.server"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 export const config = {
   maxDuration: 60,
 }
 
 /**
- * Rename Page
+ * Loader Function
  */
-export default function RenamePage() {
-  const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
-  const actionData = useActionData<ActionType>()
-
-  useRawToDriveFilesContext(driveFilesDispatch, actionData)
-
-  useToast(
-    `ファイル名を変更しました。`,
-    `ファイル名を元に戻しました。`,
-    actionData,
-  )
-
-  return (
-    <>
-      <article
-        data-name="admin.rename._index"
-        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-400 bg-slate-50 p-8 shadow-lg"
-      >
-        {/* FORM */}
-        <RenameForm />
-
-        {/* CONFIRM FORM  */}
-        <RenameConfirmForm />
-      </article>
-
-      {/* <!-- CARDS --> */}
-      <RenameCards driveFiles={driveFiles} size={"small"} />
-
-      {/* <!-- TASK CARD BLOCK --> */}
-      <article className="mx-auto w-full max-w-5xl p-12">
-        <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
-          💽 履歴データ
-        </h2>
-
-        <TaskCards taskType="rename" />
-      </article>
-    </>
-  )
-}
-
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin.rename._index ${request.url}`)
   const { user } = await authenticate(request)
@@ -109,7 +70,7 @@ const FormDataScheme = z.object({
 })
 
 /**
- * Action
+ * Action Function
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.rename._index ${request.url}`)
@@ -156,4 +117,56 @@ export async function action({ request }: ActionFunctionArgs) {
     default:
       break
   }
+}
+
+/**
+ * Rename Page
+ */
+export default function RenamePage() {
+  const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
+  const actionData = useActionData<ActionType>()
+
+  useRawToDriveFilesContext(driveFilesDispatch, actionData)
+
+  useToast(
+    `ファイル名を変更しました。`,
+    `ファイル名を元に戻しました。`,
+    actionData,
+  )
+
+  return (
+    <>
+      <article
+        data-name="admin.rename._index"
+        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-400 bg-slate-50 p-8 shadow-lg"
+      >
+        {/* FORM */}
+        <RenameForm />
+
+        {/* CONFIRM FORM  */}
+        <RenameConfirmForm />
+      </article>
+
+      {/* <!-- CARDS --> */}
+      <RenameCards driveFiles={driveFiles} size={"small"} />
+
+      {/* <!-- TASK CARD BLOCK --> */}
+      <article className="mx-auto w-full max-w-5xl p-12">
+        <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
+          💽 履歴データ
+        </h2>
+
+        <TaskCards taskType="rename" />
+      </article>
+    </>
+  )
+}
+
+/**
+ * Error Boundary
+ */
+export function ErrorBoundary() {
+  return (
+    <ErrorBoundaryDocument message="フォルダからファイルを取得できませんでした。" />
+  )
 }

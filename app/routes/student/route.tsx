@@ -16,6 +16,7 @@ import { filterStudentDataByGakunen } from "~/lib/utils"
 import { logger } from "~/logger"
 import { getUserFromSession } from "~/lib/session.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 /**
  * Student Layout
@@ -142,4 +143,12 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return {
     ...loaderHeaders,
   }
+}
+
+/**
+ * Error Boundary
+ */
+export function ErrorBoundary() {
+  let message = `問題が発生しました。`
+  return <ErrorBoundaryDocument message={message} />
 }

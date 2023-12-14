@@ -21,6 +21,7 @@ import { setSelected } from "~/lib/utils.server"
 import NendoTagsProvider from "~/context/nendos-tags-context"
 import DriveFilesProvider from "~/context/drive-files-context"
 import { getUserFromSession } from "~/lib/session.server"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 /**
  * Layout for files.$gakunen.$hr
@@ -205,4 +206,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return {
     segments,
   }
+}
+
+/**
+ * Error Boundary
+ */
+export function ErrorBoundary() {
+  const { gakunen, hr } = useParams()
+  let message = `学年（${gakunen}）からクラス（${hr}）のファイルを取得できませんでした。`
+  return <ErrorBoundaryDocument message={message} />
 }

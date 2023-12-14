@@ -5,6 +5,7 @@ import { Outlet, useOutletContext } from "@remix-run/react"
 
 import type { Gakunen, Hr } from "~/types"
 import TasksProvider from "~/context/tasks-context"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 type ContextType = {
   gakunen: Gakunen
@@ -47,4 +48,12 @@ export default function FilesLayout() {
 
 export const meta: MetaFunction = () => {
   return [{ title: `ファイル | SCHOOL HUB` }]
+}
+
+/**
+ * Error Boundary
+ */
+export function ErrorBoundary() {
+  let message = `問題が発生しました。`
+  return <ErrorBoundaryDocument message={message} />
 }

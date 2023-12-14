@@ -29,52 +29,11 @@ import { useToast } from "~/hooks/useToast"
 import { authenticate } from "~/lib/authenticate.server"
 import { executeAction } from "./actions/execute"
 import type { Role } from "@prisma/client"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 export const config = {
   // TODO: set maxDuration for production
   maxDuration: 120,
-}
-
-/**
- * Move Page
- */
-export default function MovePage() {
-  const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
-  const { role } = useLoaderData<{ role: Role }>()
-
-  const actionData = useActionData<ActionType>()
-
-  // validate raw driveFiles and set to driveFilesContext
-  useRawToDriveFilesContext(driveFilesDispatch, actionData)
-
-  useToast(`ファイルを移動しました。`, `ファイルを元に戻しました。`, actionData)
-
-  return (
-    <>
-      <article
-        data-name="admin.move._index"
-        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-400 bg-slate-50 p-8 shadow-lg"
-      >
-        {/* MOVE FORM */}
-        <MoveForm />
-
-        {/* MOVE CONFIRM FORM  */}
-        <MoveConfirmForm role={role} />
-      </article>
-
-      {/* <!-- MOVE CARDS --> */}
-      <MoveCards driveFiles={driveFiles} size={"small"} />
-
-      {/* <!-- TASK CARD BLOCK --> */}
-      <article className="mx-auto w-full max-w-5xl p-12">
-        <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
-          💽 履歴データ
-        </h2>
-
-        <TaskCards taskType="move" />
-      </article>
-    </>
-  )
 }
 
 /**
@@ -161,4 +120,54 @@ export async function action({ request }: ActionFunctionArgs) {
     default:
       break
   }
+}
+
+/**
+ * Move Page
+ */
+export default function MovePage() {
+  const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
+  const { role } = useLoaderData<{ role: Role }>()
+
+  const actionData = useActionData<ActionType>()
+
+  // validate raw driveFiles and set to driveFilesContext
+  useRawToDriveFilesContext(driveFilesDispatch, actionData)
+
+  useToast(`ファイルを移動しました。`, `ファイルを元に戻しました。`, actionData)
+
+  return (
+    <>
+      <article
+        data-name="admin.move._index"
+        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-400 bg-slate-50 p-8 shadow-lg"
+      >
+        {/* MOVE FORM */}
+        <MoveForm />
+
+        {/* MOVE CONFIRM FORM  */}
+        <MoveConfirmForm role={role} />
+      </article>
+
+      {/* <!-- MOVE CARDS --> */}
+      <MoveCards driveFiles={driveFiles} size={"small"} />
+
+      {/* <!-- TASK CARD BLOCK --> */}
+      <article className="mx-auto w-full max-w-5xl p-12">
+        <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
+          💽 履歴データ
+        </h2>
+
+        <TaskCards taskType="move" />
+      </article>
+    </>
+  )
+}
+
+/**
+ * Error Boundary
+ */
+export function ErrorBoundary() {
+  let message = `フォルダからファイルを取得できませんでした。`
+  return <ErrorBoundaryDocument message={message} />
 }

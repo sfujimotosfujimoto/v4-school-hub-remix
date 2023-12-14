@@ -19,6 +19,7 @@ import { requireUserRole } from "~/lib/require-roles.server"
 import { destroyUserSession, getUserFromSession } from "~/lib/session.server"
 // import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 /**
  * StudentFolderFileIdPage
@@ -104,4 +105,13 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
       title: `SCHOOL HUB`,
     },
   ]
+}
+
+/**
+ * Error Boundary
+ */
+export function ErrorBoundary() {
+  const { studentFolderId, fileId } = useParams()
+  let message = `フォルダID（${studentFolderId}）からファイル（${fileId}）のファイルを取得できませんでした。`
+  return <ErrorBoundaryDocument message={message} />
 }

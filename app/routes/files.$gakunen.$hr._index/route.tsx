@@ -37,116 +37,6 @@ import { deleteUndoAction } from "./actions/delete-undo"
 /**
  * loader function
  */
-export default function FilesGakunenHrQueryPage() {
-  const [isBig, setIsBig] = React.useState(true)
-  let { driveFiles, role, tags, nendos } = useLoaderData<typeof loader>()
-
-  const { driveFiles: _driveFiles } = useDriveFilesContext()
-
-  let baseDriveFiles = React.useMemo(() => {
-    if (!driveFiles) return []
-    return driveFiles
-  }, [driveFiles])
-
-  if (driveFiles.length === 0) {
-    return (
-      <p>
-        <span className="btn btn-warning btn-xs m-1">ファイル名</span>
-        を選択してください。
-      </p>
-    )
-  }
-
-  return (
-    <div
-      data-name="files.$gakunen.$hr._index"
-      className="mb-12 mt-4 overflow-x-auto"
-    >
-      <div className="flex items-center gap-4">
-        {/* PROPERTY BUTTON */}
-        {role && ["ADMIN", "SUPER"].includes(role) && (
-          <>
-            <PropertyButton driveFiles={_driveFiles} tags={tags} />
-            <DeleteButton driveFiles={_driveFiles} />
-          </>
-        )}
-
-        {/* ALLCHECK BUTTONS  {#if _driveFiles && $driveFiles && role}*/}
-        <AllCheckButtons role={role} baseDriveFiles={baseDriveFiles} />
-
-        {/* SMALL OR BIG  {#if $driveFiles && $driveFiles.length > 0} */}
-        {driveFiles && driveFiles.length > 0 && (
-          <div className="flex items-center justify-center gap-2">
-            <label htmlFor="" className="">
-              size
-            </label>
-            <input
-              type="checkbox"
-              className="toggle toggle-success"
-              checked={isBig}
-              onChange={() => setIsBig(!isBig)}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* TAGS & NENDOS */}
-      <div className="mt-2 flex flex-col gap-2">
-        <TagButtons
-          baseDriveFiles={baseDriveFiles}
-          tags={tags}
-          color={"bg-slate-400"}
-        />
-        <NendoButtons
-          baseDriveFiles={baseDriveFiles}
-          nendos={nendos}
-          color={"bg-slate-400"}
-          showAll={true}
-        />
-      </div>
-
-      {_driveFiles && role && (
-        <>
-          {" "}
-          <div
-            data-name="file count"
-            className="absolute right-0 top-0 ml-1 flex gap-1"
-          >
-            <span className="text-md  rounded-md bg-slate-300 p-1">
-              {_driveFiles.length} files
-            </span>
-            <span className="text-md justify-content ml-2 flex items-center gap-1 rounded-md bg-slate-300 px-2 py-1">
-              <CheckIcon className="h-3 w-3 font-bold" />
-              {
-                _driveFiles?.filter((df) => df.meta?.selected === true).length
-              }{" "}
-            </span>
-          </div>
-          <StudentCards
-            role={role}
-            driveFiles={_driveFiles}
-            size={isBig ? "big" : "small"}
-          />
-          {/* <!-- ACTION CARD BLOCK --> */}
-          {["ADMIN", "SUPER"].includes(role) && (
-            <article className="mx-auto w-full max-w-5xl p-12">
-              <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
-                💽 履歴データ
-              </h2>
-
-              {/* <!-- TASK CARDS --> */}
-              <TaskCards taskType="delete" />
-            </article>
-          )}
-        </>
-      )}
-    </div>
-  )
-}
-
-/**
- * loader function
- */
 export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   driveFiles: DriveFile[]
   role: Role
@@ -289,4 +179,114 @@ export async function action({ request }: ActionFunctionArgs) {
     default:
       break
   }
+}
+
+/**
+ * Page
+ */
+export default function FilesGakunenHrQueryPage() {
+  const [isBig, setIsBig] = React.useState(true)
+  let { driveFiles, role, tags, nendos } = useLoaderData<typeof loader>()
+
+  const { driveFiles: _driveFiles } = useDriveFilesContext()
+
+  let baseDriveFiles = React.useMemo(() => {
+    if (!driveFiles) return []
+    return driveFiles
+  }, [driveFiles])
+
+  if (driveFiles.length === 0) {
+    return (
+      <p>
+        <span className="btn btn-warning btn-xs m-1">ファイル名</span>
+        を選択してください。
+      </p>
+    )
+  }
+
+  return (
+    <div
+      data-name="files.$gakunen.$hr._index"
+      className="mb-12 mt-4 overflow-x-auto"
+    >
+      <div className="flex items-center gap-4">
+        {/* PROPERTY BUTTON */}
+        {role && ["ADMIN", "SUPER"].includes(role) && (
+          <>
+            <PropertyButton driveFiles={_driveFiles} tags={tags} />
+            <DeleteButton driveFiles={_driveFiles} />
+          </>
+        )}
+
+        {/* ALLCHECK BUTTONS  {#if _driveFiles && $driveFiles && role}*/}
+        <AllCheckButtons role={role} baseDriveFiles={baseDriveFiles} />
+
+        {/* SMALL OR BIG  {#if $driveFiles && $driveFiles.length > 0} */}
+        {driveFiles && driveFiles.length > 0 && (
+          <div className="flex items-center justify-center gap-2">
+            <label htmlFor="" className="">
+              size
+            </label>
+            <input
+              type="checkbox"
+              className="toggle toggle-success"
+              checked={isBig}
+              onChange={() => setIsBig(!isBig)}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* TAGS & NENDOS */}
+      <div className="mt-2 flex flex-col gap-2">
+        <TagButtons
+          baseDriveFiles={baseDriveFiles}
+          tags={tags}
+          color={"bg-slate-400"}
+        />
+        <NendoButtons
+          baseDriveFiles={baseDriveFiles}
+          nendos={nendos}
+          color={"bg-slate-400"}
+          showAll={true}
+        />
+      </div>
+
+      {_driveFiles && role && (
+        <>
+          {" "}
+          <div
+            data-name="file count"
+            className="absolute right-0 top-0 ml-1 flex gap-1"
+          >
+            <span className="text-md  rounded-md bg-slate-300 p-1">
+              {_driveFiles.length} files
+            </span>
+            <span className="text-md justify-content ml-2 flex items-center gap-1 rounded-md bg-slate-300 px-2 py-1">
+              <CheckIcon className="h-3 w-3 font-bold" />
+              {
+                _driveFiles?.filter((df) => df.meta?.selected === true).length
+              }{" "}
+            </span>
+          </div>
+          <StudentCards
+            role={role}
+            driveFiles={_driveFiles}
+            size={isBig ? "big" : "small"}
+          />
+          {/* <!-- ACTION CARD BLOCK --> */}
+          {["ADMIN", "SUPER"].includes(role) && (
+            <article className="mx-auto w-full max-w-5xl p-12">
+              <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
+                💽 履歴データ
+              </h2>
+
+              {/* <!-- TASK CARDS --> */}
+              <TaskCards taskType="delete" />
+            </article>
+          )}
+        </>
+      )}
+    </div>
+  )
 }

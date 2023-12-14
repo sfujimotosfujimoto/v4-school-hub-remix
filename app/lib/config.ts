@@ -7,9 +7,9 @@ export const YEAR_NAMES = ["2024", "2023", "2022", "2021", "2020", "2019"]
 export const SUBFOLDER_NAMES = [...KYOUKAS, ...YEAR_NAMES]
 
 export const QUERY_FILES_FIELDS =
-  "nextPageToken, files(id,name,mimeType,webViewLink,thumbnailLink,hasThumbnail,iconLink,createdTime,modifiedTime,webContentLink,parents,appProperties)"
+  "nextPageToken, files(id,name,mimeType,webViewLink,thumbnailLink,hasThumbnail,iconLink,createdTime,modifiedTime,webContentLink,parents,appProperties,capabilities)"
 export const QUERY_FILE_FIELDS =
-  "id,name,mimeType,webViewLink,thumbnailLink,hasThumbnail,iconLink,createdTime,modifiedTime,webContentLink,parents,appProperties"
+  "id,name,mimeType,webViewLink,thumbnailLink,hasThumbnail,iconLink,createdTime,modifiedTime,webContentLink,parents,appProperties,capabilities"
 export const QUERY_PERMISSION_FIELDS =
   "permissions(id,type,emailAddress,role,displayName)"
 

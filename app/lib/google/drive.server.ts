@@ -192,6 +192,8 @@ export async function getDriveFilesWithStudentFolder(
 
   const files: drive_v3.Schema$File[] = await execFilesList(drive, query)
 
+  console.log(`file`, files[0])
+
   if (!files) return null
 
   const driveFileData = mapFilesToDriveFiles(files)
