@@ -46,7 +46,7 @@ export default function RenameCsvForm() {
         method="POST"
         className="h-full space-y-4"
       >
-        <div className="flex flex-col gap-2 text-sftext-900 sm:gap-4">
+        <div className="flex flex-col gap-2 text-sfblue-300 sm:gap-4">
           {/* SOURCEFOLDERID INPUT GROUP */}
           <div className="w-full">
             {/* SOURCEFOLDERID LABEL */}

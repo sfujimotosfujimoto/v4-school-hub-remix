@@ -32,7 +32,7 @@ function WhatIsSchoolHub() {
   return (
     <h2 className="text-xl font-semibold">
       ✨ What is{" "}
-      <span className="text-bold inline-block rounded-md bg-sfred-50 p-[2px] px-1 text-sftext-900">
+      <span className="text-bold inline-block rounded-md bg-sfred-50 p-[2px] px-1 text-sfblue-300">
         <LogoIcon className="inline h-4 w-4" />
         SCHOOL HUB
       </span>
@@ -44,9 +44,9 @@ function WhatIsSchoolHub() {
 function Explanation() {
   return (
     <p className="text-normal mt-2 ">
-      <span className="text-bold rounded-md px-1 text-sftext-900 underline decoration-sfred-200 decoration-2">
+      <span className="text-bold rounded-md px-1 text-sfblue-300 underline decoration-sfred-200 decoration-2">
         <LogoIcon className="inline h-3 w-3" />
-        SCHOOL HUB
+        SCHOOL HUB TEACHER
       </span>
       とは生徒の
       <span className="underline decoration-sfred-200 decoration-2">

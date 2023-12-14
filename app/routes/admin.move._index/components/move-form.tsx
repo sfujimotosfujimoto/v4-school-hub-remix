@@ -65,7 +65,7 @@ export default function MoveForm() {
         className="h-full space-y-4"
         encType="multipart/form-data"
       >
-        <div className="flex flex-col gap-2 text-sftext-900 sm:gap-4">
+        <div className="flex flex-col gap-2 text-sfblue-300 sm:gap-4">
           {/* <!-- FROM FOLDER ID --> */}
           <div className="w-full">
             <label className="label text-sfblue-300" htmlFor="sourceFolderId">
