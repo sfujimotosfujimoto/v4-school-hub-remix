@@ -34,7 +34,7 @@ function WhatIsSchoolHub() {
       ✨ What is{" "}
       <span className="text-bold inline-block rounded-md bg-sfred-50 p-[2px] px-1 text-sfblue-300">
         <LogoIcon className="inline h-4 w-4" />
-        SCHOOL HUB
+        SCHOOL HUB TEACHER
       </span>
       ?
     </h2>

@@ -39,25 +39,21 @@ export default function LoginButton() {
       <div className="relative flex w-full items-center justify-center gap-8 ">
         {!role ? (
           <Form reloadDocument method="POST" action="/auth/signin">
-            <button type="submit" className={`btn btn-success w-64 shadow-lg`}>
+            <button type="submit" className={`btn btn-success w-48 shadow-lg`}>
               <LogoIcon className="h-7 w-4" />
-              <span className="ml-2  sm:ml-4 sm:inline">
-                SCHOOL HUB サインイン
-              </span>
+              <span className="sm:ml-2 sm:inline">サインイン</span>
             </button>
           </Form>
         ) : (
           <Form method="POST" action="/auth/signout">
             <button
               type="submit"
-              className={`btn btn-error w-64  border-0 shadow-lg hover:bg-opacity-70 ${
+              className={`btn btn-error w-48  border-0 shadow-lg hover:bg-opacity-70 ${
                 loading && "animate-bounce"
               }`}
             >
               <LogoIcon className={`h-7 w-4`} />
-              <span className="ml-1  sm:ml-2 sm:inline">
-                SCHOOL HUB サインアウト
-              </span>
+              <span className="sm:ml-2 sm:inline">サインアウト</span>
             </button>
           </Form>
         )}
