@@ -1,5 +1,9 @@
 import { z } from "zod"
-import { getDrive, getFileById } from "~/lib/google/drive.server"
+import {
+  getDrive,
+  getFileById,
+  mapFilesToDriveFiles,
+} from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 
 import { json, redirect } from "@remix-run/node"
@@ -8,7 +12,6 @@ import { logger } from "~/logger"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"
 import { renameDriveFiles } from "~/routes/admin.rename._index/actions/execute"
-import { mapFilesToDriveFiles } from "_backup/drive.server"
 
 // Zod Data Type
 const FormDataScheme = z.object({

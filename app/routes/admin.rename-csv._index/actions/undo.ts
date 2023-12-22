@@ -8,7 +8,7 @@ import { DriveFilesSchema } from "~/schemas"
 import { json, redirect } from "@remix-run/node"
 
 import type { ActionType, DriveFile } from "~/types"
-import { undoRenameDataExecute } from "_backup/undo"
+import { undoRenameDataExecute } from "~/routes/admin.rename._index/actions/undo"
 
 const FormDataScheme = z.object({
   driveFilesSerialized: z.string().optional(),
