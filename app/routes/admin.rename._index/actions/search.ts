@@ -186,7 +186,7 @@ async function addPermissionToDriveFiles(
   })
 }
 
-async function findStudentDataFromSegments(
+export async function findStudentDataFromSegments(
   driveFiles: DriveFile[],
   students: Student[],
   gakunen: Gakunen,

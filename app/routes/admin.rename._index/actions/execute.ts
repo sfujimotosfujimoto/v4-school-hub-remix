@@ -93,7 +93,7 @@ export async function renameDriveFiles(
   return newFilesFlat
 }
 
-async function _renameDriveFiles(
+export async function _renameDriveFiles(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
   idx: number,

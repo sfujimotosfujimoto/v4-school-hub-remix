@@ -24,12 +24,14 @@ import NendoButtons from "../student.$studentFolderId._index/components/nendo-bu
 import AllCheckButtons from "../student.$studentFolderId._index/components/all-check-buttons"
 import React from "react"
 import PropertyButton from "../student.$studentFolderId._index/components/property-button"
+import BaseNameButton from "../student.$studentFolderId._index/components/base-name-button"
 import { parseTags } from "~/lib/utils"
 import { z } from "zod"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { CheckIcon } from "~/components/icons"
 import DeleteButton from "./components/delete-button"
 import { propertyExecuteAction } from "./actions/property-execute"
+import { renameExecuteAction } from "./actions/rename-execute"
 import { deleteExecuteAction } from "./actions/delete-execute"
 import TaskCards from "~/components/ui/tasks/task-cards"
 import { deleteUndoAction } from "./actions/delete-undo"
@@ -162,6 +164,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
       return await propertyExecuteAction(request, formData)
     }
+    case "rename-execute": {
+      logger.debug(`✅ action: rename-execute`)
+
+      return await renameExecuteAction(request, formData)
+    }
 
     case "delete-execute": {
       logger.debug(`✅ action: delete-execute`)
@@ -214,6 +221,7 @@ export default function FilesGakunenHrQueryPage() {
         {role && ["ADMIN", "SUPER"].includes(role) && (
           <>
             <PropertyButton driveFiles={_driveFiles} tags={tags} />
+            <BaseNameButton />
             <DeleteButton driveFiles={_driveFiles} />
           </>
         )}
