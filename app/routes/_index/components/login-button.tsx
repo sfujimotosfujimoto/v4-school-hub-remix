@@ -36,7 +36,7 @@ export default function LoginButton() {
 
   return (
     <>
-      <div className="relative flex w-full items-center justify-center gap-8 ">
+      <div className="relative flex w-full items-center justify-center gap-8 text-sfblue-300">
         {!role ? (
           <Form reloadDocument method="POST" action="/auth/signin">
             <button type="submit" className={`btn btn-success w-48 shadow-lg`}>

@@ -15,7 +15,7 @@ export default function Logo({ ...rest }) {
       <circle cx="18.25" cy="54.7498" r="18.25" fill="#F15412" />
       <circle cx="54.75" cy="54.7498" r="18.25" fill="#34B3F1" />
       <circle cx="54.75" cy="18.25" r="18.25" fill="#F15412" />
-      <circle cx="18.25" cy="18.25" r="18.25" fill="#34B3F1" />
+      <circle cx="18.25" cy="18.25" r="18.25" fill="#69B7BA" />
     </svg>
   )
 }
