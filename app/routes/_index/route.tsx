@@ -16,8 +16,8 @@ export default function Index() {
   return (
     <section className="mx-auto flex h-full w-screen max-w-7xl flex-col items-center justify-center gap-8">
       <div className="flex items-center">
-        <LogoIcon className="h-12 w-12 sm:h-32 sm:w-32" />
-        <LogoTextIcon className="h-12 w-32 sm:h-32 sm:w-72" />
+        <LogoIcon className="h-28 w-28 sm:h-32 sm:w-32" />
+        <LogoTextIcon className="h-28 w-auto sm:h-32" />
       </div>
       <div className="max-w-xl rounded-lg bg-base-100 p-4 shadow-lg">
         <WhatIsSchoolHub />
