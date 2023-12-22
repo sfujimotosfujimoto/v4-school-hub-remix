@@ -3,7 +3,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix build --sourcemap",
+    "build": "remix build",
     "dev": "PORT=3000 remix dev --manual",
     "start": "remix-serve ./build/index.js",
     "postinstall": "prisma generate"
