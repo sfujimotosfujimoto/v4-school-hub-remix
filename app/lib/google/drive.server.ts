@@ -55,7 +55,8 @@ export function queryMultipleStudentsAndFilename(
     .map((f) => `'${f}' in parents`)
     .join(" or ")
 
-  const qQuery = q.map((item) => `fullText contains '${item}'`).join(" and ")
+  // TODO: fullText to name
+  const qQuery = q.map((item) => `name contains '${item}'`).join(" and ")
 
   if (qQuery) {
     return `(${folderQuery}) and (${qQuery}) and trashed = false`
