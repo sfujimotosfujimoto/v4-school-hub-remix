@@ -1,6 +1,7 @@
 import { Form, useNavigation } from "@remix-run/react"
 import React from "react"
 import { AddIcon } from "~/components/icons"
+import { getBaseNameFromFileName } from "~/lib/actions/rename-execute"
 // import { useDriveFilesContext } from "~/context/drive-files-context"
 import type { DriveFile } from "~/types"
 
@@ -13,6 +14,8 @@ export default function BaseNameButton({
   const dialogEl = React.useRef<HTMLDialogElement>(null)
 
   // const { driveFiles: _driveFiles } = useDriveFilesContext()
+
+  const currentBaseName = getBaseNameFromFileName(driveFiles[0]?.name ?? "")
 
   const [baseNameString, setBaseNameString] = React.useState("")
 
@@ -55,6 +58,17 @@ export default function BaseNameButton({
               </p>
               <p className="text-xs">
                 現在、入っているベース名は上書きされます。
+              </p>
+              <p className="text-xs">現在、入っているタグは上書きされます。</p>
+              <p className="text-xs font-bold">
+                {currentBaseName && (
+                  <>
+                    現在のベース名：{" "}
+                    <span className="rounded-md bg-slate-300 px-2 py-1 text-sm shadow-sm">
+                      {currentBaseName}{" "}
+                    </span>
+                  </>
+                )}
               </p>
             </div>
           </label>
