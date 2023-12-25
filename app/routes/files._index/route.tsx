@@ -12,6 +12,31 @@ import { authenticate } from "~/lib/authenticate.server"
 import { requireUserRole } from "~/lib/require-roles.server"
 import { destroyUserSession } from "~/lib/session.server"
 
+/**
+ * loader function
+ */
+export async function loader({ request }: LoaderFunctionArgs) {
+  logger.debug(`🍿 loader: files._index ${request.url}`)
+  const { user } = await authenticate(request)
+  await requireUserRole(user)
+
+  if (!user || !user.credential) {
+    return destroyUserSession(request, `/?authstate=unauthenticated`)
+  }
+
+  return json(
+    {
+      role: user?.role,
+    },
+    // {
+    //   status: 200,
+    //   headers: {
+    //     "Cache-Control": `max-age=${60 * 10}`,
+    //   },
+    // },
+  )
+}
+
 export default function FilesPage() {
   const { gakunen, setGakunen, hr, setHr } = useGakunen()
   const { role } = useLoaderData<typeof loader>()
@@ -49,30 +74,5 @@ export default function FilesPage() {
         </div>
       </div>
     </div>
-  )
-}
-
-/**
- * loader function
- */
-export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`🍿 loader: files._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireUserRole(user)
-
-  if (!user || !user.credential) {
-    return destroyUserSession(request, `/?authstate=unauthenticated`)
-  }
-
-  return json(
-    {
-      role: user?.role,
-    },
-    // {
-    //   status: 200,
-    //   headers: {
-    //     "Cache-Control": `max-age=${60 * 10}`,
-    //   },
-    // },
   )
 }
