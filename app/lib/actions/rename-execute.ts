@@ -196,6 +196,14 @@ async function updateDriveFileMetaName(
   return df
 }
 
+export function getBaseNameFromFileName(name: string) {
+  const ext = name.match(/\.[a-zA-Z0-9]+$/)?.at(-1) ?? ""
+  const nameNoExt = name.replace(ext, "")
+  const segments = Array.from(new Set(nameNoExt.split(/[_.]/)))
+  const lastName = segments.at(-1)
+  return lastName
+}
+
 // function renameDriveFile(
 //   drive: drive_v3.Drive,
 //   driveFiles: DriveFile[],
