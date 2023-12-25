@@ -1,22 +1,21 @@
 import { Form, useNavigation } from "@remix-run/react"
 import React from "react"
 import { AddIcon } from "~/components/icons"
-import { useDriveFilesContext } from "~/context/drive-files-context"
 // import { useDriveFilesContext } from "~/context/drive-files-context"
 import { getSchoolYear } from "~/lib/utils"
 import type { DriveFile } from "~/types"
 
 export default function PropertyButton({
-  tags,
   driveFiles,
+  tags,
 }: {
-  tags?: string[]
   driveFiles: DriveFile[]
+  tags?: string[]
 }) {
   const { state, formData } = useNavigation()
   const dialogEl = React.useRef<HTMLDialogElement>(null)
 
-  const { driveFiles: _driveFiles } = useDriveFilesContext()
+  // const { driveFiles: _driveFiles } = useDriveFilesContext()
 
   const [tagString, setTagString] = React.useState("")
 
@@ -60,7 +59,7 @@ export default function PropertyButton({
               </p>
               <p className="text-xs">現在、入っているタグは上書きされます。</p>
               <p className="text-xs font-bold">
-                {tags && <span>[ {Array.from(tags).join(", ")}] </span>}
+                {tags && <span>現在：[ {Array.from(tags).join(", ")}] </span>}
               </p>
             </div>
           </label>
@@ -114,7 +113,7 @@ export default function PropertyButton({
             type="hidden"
             name="fileIdsString"
             value={JSON.stringify(
-              _driveFiles.filter((df) => df.meta?.selected).map((df) => df.id),
+              driveFiles.filter((df) => df.meta?.selected).map((df) => df.id),
             )}
           />
 
