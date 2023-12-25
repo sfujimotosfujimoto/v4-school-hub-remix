@@ -30,11 +30,11 @@ import { z } from "zod"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { CheckIcon } from "~/components/icons"
 import DeleteButton from "./components/delete-button"
-import { propertyExecuteAction } from "./actions/property-execute"
-import { renameExecuteAction } from "./actions/rename-execute"
-import { deleteExecuteAction } from "./actions/delete-execute"
+import { propertyExecuteAction } from "../../lib/actions/property-execute"
+import { renameExecuteAction } from "../../lib/actions/rename-execute"
+import { deleteExecuteAction } from "../../lib/actions/delete-execute"
 import TaskCards from "~/components/ui/tasks/task-cards"
-import { deleteUndoAction } from "./actions/delete-undo"
+import { deleteUndoAction } from "../../lib/actions/delete-undo"
 
 /**
  * loader function
@@ -221,7 +221,7 @@ export default function FilesGakunenHrQueryPage() {
         {role && ["ADMIN", "SUPER"].includes(role) && (
           <>
             <PropertyButton driveFiles={_driveFiles} tags={tags} />
-            <BaseNameButton />
+            <BaseNameButton driveFiles={_driveFiles} />
             <DeleteButton driveFiles={_driveFiles} />
           </>
         )}
