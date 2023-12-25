@@ -57,22 +57,3 @@ function Explanation() {
     </p>
   )
 }
-
-/**
- * Loader
- */
-// export async function loader({ request }: LoaderFunctionArgs) {
-//   logger.debug(`🍿 loader: _index ${request.url}`)
-
-//   // check if there is __session cookie
-//   const user = await getUserFromSession(request)
-//   if (!user) return { role: undefined, picture: undefined }
-
-//   return { role: user.role, picture: user.picture }
-// }
-
-// export const headers: HeadersFunction = ({ loaderHeaders }) => {
-//   return {
-//     "Cache-Control": `max-age=${60 * 10}`,
-//   }
-// }
