@@ -1,42 +1,37 @@
-import { json, redirect } from "@remix-run/node"
+import type { Role } from "@prisma/client"
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
+  SerializeFrom,
 } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import { useLoaderData, useParams, useRouteLoaderData } from "@remix-run/react"
-import type { Role } from "@prisma/client"
-
 import invariant from "tiny-invariant"
-
-// components
+import { z } from "zod"
 import BackButton from "~/components/ui/buttons/back-button"
 import StudentCard from "~/components/ui/student-card/student-card"
-import PermissionTags from "./components/permission-tags"
-import ToFolderButton from "./components/to-folder-button"
-
-// functions
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { deleteExecuteAction } from "~/lib/actions/delete-execute"
+import { deleteUndoAction } from "~/lib/actions/delete-undo"
+import { propertyExecuteAction } from "~/lib/actions/property-execute"
+import { renameExecuteAction } from "~/lib/actions/rename-execute"
 import {
   execPermissions,
   getDrive,
   getFileById,
 } from "~/lib/google/drive.server"
 import { requireAdminRole, requireUserRole } from "~/lib/require-roles.server"
-import { destroyUserSession, getUserFromSession } from "~/lib/session.server"
-// import { authenticate } from "~/lib/authenticate.server"
-import { logger } from "~/logger"
-import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
-import PropertyButton from "../student.$studentFolderId._index/components/property-button"
-import BaseNameButton from "../student.$studentFolderId._index/components/base-name-button"
-import DeleteButton from "../files.$gakunen.$hr._index/components/delete-button"
+import { getUserFromSession } from "~/lib/session.server"
 import { parseTags } from "~/lib/utils"
-import { authenticate } from "~/lib/authenticate.server"
-import { propertyExecuteAction } from "~/lib/actions/property-execute"
-import { renameExecuteAction } from "~/lib/actions/rename-execute"
-import { deleteExecuteAction } from "~/lib/actions/delete-execute"
-import { deleteUndoAction } from "~/lib/actions/delete-undo"
-import { z } from "zod"
-import type { DriveFile } from "~/type.d"
+import { logger } from "~/logger"
+import DeleteButton from "../files.$gakunen.$hr._index/components/delete-button"
+import BaseNameButton from "../student.$studentFolderId._index/components/base-name-button"
+import PropertyButton from "../student.$studentFolderId._index/components/property-button"
+import PermissionTags from "./components/permission-tags"
+import ToFolderButton from "./components/to-folder-button"
+import { redirectToSignin } from "~/lib/responses"
+import { convertDriveFiles } from "~/lib/utils-loader"
 
 /**
  * Loader Function
@@ -44,20 +39,18 @@ import type { DriveFile } from "~/type.d"
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student.$studentFolderId.$fileId  ${request.url}`)
   const user = await getUserFromSession(request)
-  if (!user || !user.credential) {
-    return destroyUserSession(request, `/?authstate=unauthenticated`)
-  }
-  await requireUserRole(user)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireUserRole(request, user)
 
-  const fileId = params.fileId
+  const { fileId } = params
+  if (!fileId) throw redirectToSignin(request)
 
   invariant(fileId, "fileId in params is required")
 
   const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirect("/?authstate=unauthorized-28")
+  if (!drive) throw redirectToSignin(request)
 
   const driveFile = await getFileById(drive, fileId)
-  // const driveFiles = await getDriveFiles(drive, `id='${fileId}'`)
 
   const tags: string[] = parseTags(driveFile?.appProperties?.tags || "")
 
@@ -65,6 +58,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const permissions = await execPermissions(drive, fileId)
 
   return {
+    driveFile,
     permissions,
     tags,
   }
@@ -81,11 +75,11 @@ const FormDataScheme = z.object({
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: student.$studentFolderId.$fileId ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
 
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-move-001")
+  if (!user || !user.credential) throw redirectToSignin(request)
 
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
@@ -148,15 +142,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
  * StudentFolderFileIdPage
  */
 export default function StudentFolderIdFileIdPage() {
-  const { permissions, tags } = useLoaderData<typeof loader>()
+  const { driveFile, permissions, tags } =
+    useLoaderData<SerializeFrom<typeof loader>>()
   console.log("✅ student.$studentFolderId.$fileId/route.tsx ~ 	😀 tags", tags)
 
-  const { fileId } = useParams()
-  const { driveFiles, role } = useRouteLoaderData(
-    "routes/student.$studentFolderId",
-  ) as { driveFiles: DriveFile[]; role: Role }
+  const { role } = useRouteLoaderData("routes/student.$studentFolderId") as {
+    role: Role
+  }
 
-  const driveFile = driveFiles?.find((r) => r.id === fileId)
+  const df = convertDriveFiles([driveFile])[0]
 
   // JSX -------------------------
   return (
@@ -169,12 +163,9 @@ export default function StudentFolderIdFileIdPage() {
         {/* PROPERTY BUTTON */}
         {role && ["ADMIN", "SUPER"].includes(role) && (
           <>
-            <PropertyButton
-              driveFiles={driveFile ? [driveFile] : []}
-              tags={tags}
-            />
-            <BaseNameButton driveFiles={driveFile ? [driveFile] : []} />
-            <DeleteButton driveFiles={driveFiles} />
+            <PropertyButton driveFiles={df ? [df] : []} tags={tags} />
+            <BaseNameButton driveFiles={df ? [df] : []} />
+            <DeleteButton driveFiles={[df]} />
           </>
         )}
       </div>
@@ -186,13 +177,9 @@ export default function StudentFolderIdFileIdPage() {
             id="_StudentCard"
             target="_blank"
             rel="noopener noreferrer"
-            href={`${driveFile.link}`}
+            href={`${df.link}`}
           >
-            <StudentCard
-              role={role}
-              driveFile={driveFile}
-              thumbnailSize={"big"}
-            />
+            <StudentCard role={role} driveFile={df} thumbnailSize={"big"} />
           </a>
         )}
       </div>
@@ -210,6 +197,6 @@ export default function StudentFolderIdFileIdPage() {
  */
 export function ErrorBoundary() {
   const { studentFolderId, fileId } = useParams()
-  let message = `フォルダID（${studentFolderId}）からファイル（${fileId}）のファイルを取得できませんでした。`
+  let message = `フォルダID（${studentFolderId}）からファイル（${fileId}）を取得できませんでした。`
   return <ErrorBoundaryDocument message={message} />
 }
