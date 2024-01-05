@@ -1,6 +1,6 @@
 import { logger } from "~/logger"
 
-import { createCookieSessionStorage, json, redirect } from "@remix-run/node"
+import { createCookieSessionStorage, redirect } from "@remix-run/node"
 
 import { SESSION_MAX_AGE } from "./config"
 
@@ -86,17 +86,13 @@ export async function getRefreshUserFromSession(
   )
   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
 
-  const userId = Number(session.get("userId") || 0)
-  // const userJWT = await getUserJWTFromSession(request)
+  const userIdSession = session.get("userId")
 
-  // if (!userJWT) return null
-
-  // const payload = await parseVerifyUserJWT(userJWT)
-
-  // if (!payload) return null
-
+  if (!userIdSession) return null
+  const userId = Number(userIdSession || 0)
   // get UserBase from Prisma
   const user = await getRefreshUserById(userId)
+  // console.log("✅ user", user)
   // if no user, create in prisma db
   if (!user) {
     return null
@@ -132,47 +128,47 @@ export async function updateSession(
   }
 }
 
-export async function setSession(userJWT: string, returnObj: any) {
-  const session = await sessionStorage.getSession()
-  session.set("userJWT", userJWT)
+// export async function setSession(userJWT: string, returnObj: any) {
+//   const session = await sessionStorage.getSession()
+//   session.set("userJWT", userJWT)
 
-  return json(
-    {
-      ...returnObj,
-    },
-    {
-      status: 200,
-      headers: {
-        // "Cache-Control": `max-age=${60 * 10}`,
-        "Set-Cookie": await sessionStorage.commitSession(session),
-      },
-    },
-  )
-}
+//   return json(
+//     {
+//       ...returnObj,
+//     },
+//     {
+//       status: 200,
+//       headers: {
+//         // "Cache-Control": `max-age=${60 * 10}`,
+//         "Set-Cookie": await sessionStorage.commitSession(session),
+//       },
+//     },
+//   )
+// }
 
 //-------------------------------------------
 // LOCAL FUNCTIONS
 //-------------------------------------------
 // Gets session in Request Headers -------------------------
 // then gets "userJWT"
-export async function getUserJWTFromSession(
-  request: Request,
-): Promise<string | null> {
-  logger.debug("👑 getUserJWTFromSession")
+// export async function getUserJWTFromSession(
+//   request: Request,
+// ): Promise<string | null> {
+//   logger.debug("👑 getUserJWTFromSession")
 
-  const session = await sessionStorage.getSession(request.headers.get("Cookie"))
-  // logger.debug(`👑 session:  ${session.get("userJWT")}`)
+//   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
+//   // logger.debug(`👑 session:  ${session.get("userJWT")}`)
 
-  const userJWT = session.get("userJWT") as string | null | undefined
+//   const userJWT = session.get("userJWT") as string | null | undefined
 
-  // logger.debug(`👑 getUserJWTFromSession: userJWT: ${userJWT?.slice(0, 20)}...`)
+//   // logger.debug(`👑 getUserJWTFromSession: userJWT: ${userJWT?.slice(0, 20)}...`)
 
-  if (!userJWT) {
-    return null
-  }
+//   if (!userJWT) {
+//     return null
+//   }
 
-  return userJWT
-}
+//   return userJWT
+// }
 
 // export async function parseVerifyUserJWT(
 //   userJWT: string,
