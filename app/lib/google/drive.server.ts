@@ -1,7 +1,7 @@
 import { google } from "googleapis"
 
 import type { drive_v3, sheets_v4 } from "googleapis"
-import type { DriveFile, Permission, Student } from "~/type.d"
+import type { DriveFile, Student } from "~/type.d"
 
 import { logger } from "~/logger"
 import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"
@@ -9,6 +9,7 @@ import { getFolderId, getGakusekiFromString } from "../utils"
 
 import { getClient } from "./google.server"
 import { getStudentDataWithAccessToken } from "./sheets.server"
+import type { Permission } from "~/type.d/google-types"
 
 /**
  * Create a Google Drive Query with given folderId
@@ -139,11 +140,11 @@ function mapFilesToDriveFile(file: drive_v3.Schema$File): DriveFile {
     iconLink: file.iconLink || "",
     hasThumbnail: file.hasThumbnail || false,
     thumbnailLink: file.thumbnailLink || undefined,
-    createdTime: file.createdTime || undefined,
-    modifiedTime: file.modifiedTime || undefined,
+    createdTime: file.createdTime ? new Date(file.createdTime) : undefined,
+    modifiedTime: file.modifiedTime ? new Date(file.modifiedTime) : undefined,
     webContentLink: file.webContentLink || undefined,
     parents: file.parents || undefined,
-    appProperties: file.appProperties || undefined,
+    appProperties: JSON.stringify(file.appProperties) || undefined,
     permissions: permissions,
   }
 }
