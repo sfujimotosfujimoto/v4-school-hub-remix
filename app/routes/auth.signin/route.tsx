@@ -101,7 +101,6 @@ async function fetchRefresh(user: User) {
       return { error: "error in fetch" }
     })
 
-  console.log("✅ jsn", jsn)
   return jsn
 }
 
