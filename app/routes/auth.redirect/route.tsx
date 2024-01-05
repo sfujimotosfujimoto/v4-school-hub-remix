@@ -1,9 +1,9 @@
 import { signin } from "~/lib/signinout.server"
 
-import { redirect } from "@remix-run/node"
-
 import type { LoaderFunctionArgs } from "@remix-run/node"
 import { logger } from "~/logger"
+import { redirectToSignin } from "~/lib/responses"
+import { createUserSession } from "~/lib/session.server"
 
 /**
  * Loader function
@@ -15,7 +15,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const code = parsedUrl.searchParams.get("code")
 
   // if no "code" , do not touch and resolve
-  if (!code) throw redirect("/?authstate=unauthorized-023")
+  if (!code) throw redirectToSignin(request)
 
-  return signin({ code })
+  const { userId } = await signin({ request, code })
+
+  return createUserSession(userId, "/student")
 }
