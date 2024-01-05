@@ -1,15 +1,19 @@
-import { useDriveFilesContext } from "~/context/drive-files-context"
+import type { DriveFile } from "~/type.d"
 
-export default function FileCount() {
-  const { driveFiles } = useDriveFilesContext()
+export default function FileCount({
+  driveFiles,
+}: {
+  driveFiles?: DriveFile[] | null
+}) {
   return (
-    <div
-      data-name="file count"
-      className="absolute right-12 top-2 ml-1 inline-block"
-    >
-      <span className="text-md rounded-md bg-slate-300 px-2 py-1">
-        {driveFiles.length} files
-      </span>
-    </div>
+    <>
+      {driveFiles && (
+        <div data-name="file count" className="ml-1 inline-block">
+          <span className="text-md rounded-md bg-slate-300 px-2 py-1">
+            {driveFiles.length} files
+          </span>
+        </div>
+      )}
+    </>
   )
 }
