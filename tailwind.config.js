@@ -76,19 +76,19 @@ module.exports = {
     themes: [
       {
         mytheme: {
-          primary: "#76c3c6",
+          primary: "hsl(182, 50%, 60%)",
 
           secondary: "#e58b8a",
 
           accent: "#eed8b4",
 
-          neutral: "#76c3c6",
+          neutral: "hsl(182, 50%, 60%)",
 
           "base-100": "#ffffff",
 
-          info: "#76c3c6",
+          info: "hsl(182, 50%, 60%)",
 
-          success: "#76c3c6",
+          success: "hsl(182, 50%, 60%)",
 
           warning: "#eed8b4",
 
