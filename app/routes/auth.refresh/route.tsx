@@ -7,9 +7,7 @@ import { logger } from "~/logger"
 // functions
 import { getRefreshedToken } from "~/lib/google/google.server"
 import { returnUser } from "~/lib/return-user"
-import { parseVerifyUserJWT } from "~/lib/session.server"
-import { updateUserJWT } from "~/lib/signinout.server"
-
+const REFRESH_EXPIRY = Date.now() + 1000 * 60 * 60 * 24
 /**
  * Loader function
  */
@@ -66,9 +64,9 @@ export async function action({ request }: ActionFunctionArgs) {
       credential: {
         update: {
           accessToken: newAccessToken,
-          expiry: Number(expiry_date),
+          expiry: new Date(expiry_date),
           refreshToken: newRefreshToken,
-          refreshTokenExpiry: Number(Date.now() + 1000 * 60 * 60 * 24 * 7),
+          refreshTokenExpiry: new Date(REFRESH_EXPIRY),
         },
       },
     },
@@ -76,35 +74,48 @@ export async function action({ request }: ActionFunctionArgs) {
       ...selectUser,
     },
   })
-
   if (!updatedUser) {
     return json({ ok: false }, { status: 400 })
   }
+  // const folderId = getFolderId(updatedUser.student?.folderLink || "")
+  // TODO: update error response
+  // if (!folderId) {
+  //   return json({ ok: false }, { status: 400 })
+  // }
+
+  // Update drive file data in Database
+  // !! Wasn't using newAccessToken
+  // const driveFiles = await getDriveFiles(
+  //   newAccessToken, // !! was using accessToken which is old and outdated
+  //   `trashed=false and '${folderId}' in parents`,
+  // )
+  // await saveDriveFileData(updatedUser.id, driveFiles)
+  // await updateThumbnails(driveFiles)
 
   try {
     // 3. update userJWT in session
-    const userJWT = await updateUserJWT(
-      updatedUser.email,
-      expiry_date,
-      Number(updatedUser.credential?.refreshTokenExpiry) || 0,
-    )
-    const payload = await parseVerifyUserJWT(userJWT)
-    if (!payload) {
-      return json({ ok: false }, { status: 400 })
-    }
+    // const userJWT = await updateUserJWT(
+    //   updatedUser.email,
+    //   new Date(expiry_date),
+    //   updatedUser.credential?.refreshTokenExpiry || new Date(),
+    // )
+    // const payload = await parseVerifyUserJWT(userJWT)
+    // if (!payload) {
+    //   return json({ ok: false }, { status: 400 })
+    // }
 
-    logger.debug(
-      `✅ in auth.refresh action: new payload.exp ${new Date(
-        Number(payload.exp),
-      ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
-    )
+    // logger.debug(
+    //   `✅ in auth.refresh action: new payload.exp ${new Date(
+    //     Number(payload.exp),
+    //   ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+    // )
     const newUser = returnUser(updatedUser)
 
     return json({
       ok: true,
       data: {
         user: newUser,
-        userJWT: userJWT,
+        // userJWT: userJWT,
       },
     })
   } catch (error) {
