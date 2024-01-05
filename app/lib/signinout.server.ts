@@ -47,8 +47,8 @@ export async function signin({
     result.data
 
   // TODO: !!DEBUG!!: setting expiryDateDummy to 10 seconds
-  // const expiryDummy = new Date().getTime() + 1000 * 15
-  // expiry_date = expiryDummy
+  const expiryDummy = new Date().getTime() + 1000 * 15
+  expiry_date = expiryDummy
 
   // let refreshTokenExpiryDummy = Date.now() + 1000 * 30 // 30 seconds
   // let refreshTokenExpiry = refreshTokenExpiryDummy
