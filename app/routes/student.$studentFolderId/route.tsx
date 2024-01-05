@@ -13,7 +13,7 @@ import {
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import DriveFilesProvider from "~/context/drive-files-context"
 import NendoTagsProvider from "~/context/nendos-tags-context"
-import { getDrive, getDriveFiles } from "~/lib/google/drive.server"
+import { getDrive } from "~/lib/google/drive.server"
 import {
   getSheets,
   getStudentByFolderId,
@@ -22,10 +22,7 @@ import {
 import { requireUserRole } from "~/lib/require-roles.server"
 import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
-import { filterSegments, parseAppProperties, parseTags } from "~/lib/utils"
-import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
-import type { DriveFile, Student } from "~/type.d"
 import StudentHeader from "./components/student-header"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
@@ -48,12 +45,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const studentFolderId = params.studentFolderId
   if (!studentFolderId) throw redirectToSignin(request)
 
-  const url = new URL(request.url)
-  const nendoString = url.searchParams.get("nendo")
-  const tagString = url.searchParams.get("tags")
-  const segmentsString = url.searchParams.get("segments")
-  const extensionsString = url.searchParams.get("extensions")
-
   try {
     const drive = await getDrive(user.credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-026")
@@ -62,23 +53,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const sheets = await getSheets(accessToken)
     if (!sheets) throw redirect(`/?authstate=unauthenticated`)
 
-    // call drive and get DriveFileData[] of student
-    let driveFiles = await getDriveFiles(
-      drive,
-      `trashed=false and '${studentFolderId}' in parents`,
-    )
-
-    driveFiles = driveFiles ? setSelected(driveFiles, true) : []
-
-    // Filter by nendo, tags, segments, extensions
-    driveFiles = getFilteredDriveFiles(
-      driveFiles || [],
-      nendoString,
-      tagString,
-      segmentsString,
-      extensionsString,
-    )
-
     // get StudentData[] from spreadsheet
     const students = await getStudents(sheets)
 
@@ -86,23 +60,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const student = getStudentByFolderId(studentFolderId, students)
     if (!student) throw redirectToSignin(request)
 
-    const { nendos, segments, extensions, tags } =
-      getNendosSegmentsExtensionsTags(driveFiles, student)
-
     const headers = new Headers()
 
     headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
 
     return json(
       {
-        nendoString,
-        tagString,
-        url: request.url,
-        nendos,
-        segments,
-        extensions,
-        tags,
-        driveFiles,
         student,
         role: user.role,
       },
@@ -160,116 +123,6 @@ export default function StudentFolderIdLayout() {
       </NendoTagsProvider>
     </DriveFilesProvider>
   )
-}
-
-function getFilteredDriveFiles(
-  driveFiles: DriveFile[],
-  nendoString: string | null,
-  tagString: string | null,
-  segmentsString: string | null,
-  extensionsString: string | null,
-) {
-  // filter by nendo
-  if (nendoString) {
-    driveFiles =
-      driveFiles?.filter((df) => {
-        const props = JSON.parse(df.appProperties || "[]")
-        if (props.nendo === nendoString) return true
-        return false
-      }) || []
-  }
-
-  // filter by tag
-  if (tagString) {
-    driveFiles =
-      driveFiles?.filter((df) => {
-        const props = JSON.parse(df.appProperties || "[]")
-        if (props.tags) {
-          const tagsArr = parseTags(props.tags)
-          return tagsArr.includes(tagString || "")
-        }
-        return false
-      }) || []
-  }
-
-  // filter by extensions
-  if (extensionsString) {
-    driveFiles =
-      driveFiles?.filter((df) => {
-        const ext = df.mimeType.split(/[/.]/).at(-1) || ""
-        return ext === extensionsString
-      }) || []
-  }
-
-  // filter by segments
-  if (segmentsString) {
-    driveFiles =
-      driveFiles?.filter((df) => {
-        const segments = df.name.split(/[-_.]/)
-        return segments.includes(segmentsString)
-      }) || []
-  }
-
-  return (
-    driveFiles.sort(
-      (a, b) =>
-        new Date(b.modifiedTime || 0).getTime() -
-        new Date(a.modifiedTime || 0).getTime(),
-    ) || []
-  )
-}
-
-function getNendosSegmentsExtensionsTags(
-  driveFiles: DriveFile[],
-  student: Omit<Student, "users">,
-) {
-  let segments: string[] = Array.from(
-    new Set(driveFiles?.map((d) => d.name.split(/[-_.]/)).flat()),
-  )
-
-  segments = filterSegments(segments, student)
-
-  const extensions: string[] =
-    Array.from(new Set(driveFiles?.map((d) => d.mimeType))).map(
-      (ext) => ext.split(/[/.]/).at(-1) || "",
-    ) || []
-
-  const tags: string[] = Array.from(
-    new Set(
-      driveFiles
-        ?.map((df) => {
-          if (!df.appProperties) return null
-          let appProps = parseAppProperties(df.appProperties)
-          if (appProps.tags) return parseTags(appProps.tags) || null
-          return null
-        })
-        .filter((g): g is string[] => g !== null)
-        .flat(),
-    ),
-  ).sort()
-
-  const nendos: string[] = Array.from(
-    new Set(
-      driveFiles
-        ?.map((df) => {
-          if (!df.appProperties) return null
-          let appProps = parseAppProperties(df.appProperties)
-          if (appProps.nendo) return appProps.nendo.trim() || null
-          return null
-        })
-        .filter((g): g is string => g !== null)
-        .flat(),
-    ),
-  )
-    .sort((a, b) => Number(b) - Number(a))
-    .filter((n): n is string => n !== null)
-
-  return {
-    nendos,
-    segments,
-    extensions,
-    tags,
-  }
 }
 
 // TODO: This is needed because appProperties is sometimes string and sometimes object
