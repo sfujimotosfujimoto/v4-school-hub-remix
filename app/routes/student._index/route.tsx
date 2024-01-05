@@ -9,19 +9,22 @@ import HrButtons from "~/components/ui/buttons/hr-buttons"
 // functions
 // hooks
 import { useGakunen } from "../student/route"
-import { destroyUserSession } from "~/lib/session.server"
-import { authenticate } from "~/lib/authenticate.server"
+import { destroyUserSession, getUserFromSession } from "~/lib/session.server"
 import { requireUserRole } from "~/lib/require-roles.server"
 import { logger } from "~/logger"
+import { redirectToSignin } from "~/lib/responses"
 
 /**
  * loader function
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireUserRole(user)
+  const user = await getUserFromSession(request)
 
+  if (!user || !user.credential) throw redirectToSignin(request)
+
+  // const { user } = await authenticate(request)
+  await requireUserRole(request, user)
   if (!user || !user.credential) {
     return destroyUserSession(request, `/?authstate=unauthenticated`)
   }
