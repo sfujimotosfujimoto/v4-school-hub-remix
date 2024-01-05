@@ -9,7 +9,7 @@ import type {
 
 import type {
   User as PrismaUser,
-  DriveFileData as PrismaDriveFileData,
+  // DriveFileData as PrismaDriveFileData,
 } from "@prisma/client"
 
 // type inferred from zod schemas
@@ -25,7 +25,7 @@ export type PrismaUserWithAll = Omit<PrismaUser, "oldId"> & {
   credential: Credential | null
   stats: Stats | null
   student?: Student | null
-  driveFileData?: PrismaDriveFileData[] | null
+  // driveFileData?: PrismaDriveFileData[] | null
 }
 
 // type PrismaCredential = {
