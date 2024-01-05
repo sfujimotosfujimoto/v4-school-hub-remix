@@ -1,19 +1,29 @@
-import { json } from "@remix-run/node"
 import type { ActionFunctionArgs } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import { prisma } from "~/lib/db.server"
-
-import { logger } from "~/logger"
-
-// functions
 import { getRefreshedToken } from "~/lib/google/google.server"
 import { returnUser } from "~/lib/return-user"
+import { selectUser } from "~/lib/user.server"
+import { logger } from "~/logger"
+
+export const config = {
+  // TODO: set maxDuration for production
+  maxDuration: 60,
+}
+
 const REFRESH_EXPIRY = Date.now() + 1000 * 60 * 60 * 24
+
 /**
  * Loader function
  */
 // update base_url in prodc
 export async function loader({ request }: ActionFunctionArgs) {
   logger.debug(`🍿 loader: auth.refresh ${request.url}`)
+  // get redirect from search params
+  const redirectUrl = new URL(request.url).searchParams.get("redirect")
+  if (redirectUrl) {
+    throw redirect(redirectUrl)
+  }
 
   return json({ ok: true }, 200)
 }
@@ -124,29 +134,29 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-const selectUser = {
-  id: true,
-  first: true,
-  last: true,
-  picture: true,
-  email: true,
-  activated: true,
-  role: true,
-  createdAt: true,
-  updatedAt: true,
-  credential: {
-    select: {
-      accessToken: true,
-      expiry: true,
-      refreshToken: true,
-      createdAt: true,
-      refreshTokenExpiry: true,
-    },
-  },
-  stats: {
-    select: {
-      count: true,
-      lastVisited: true,
-    },
-  },
-}
+// const selectUser = {
+//   id: true,
+//   first: true,
+//   last: true,
+//   picture: true,
+//   email: true,
+//   activated: true,
+//   role: true,
+//   createdAt: true,
+//   updatedAt: true,
+//   credential: {
+//     select: {
+//       accessToken: true,
+//       expiry: true,
+//       refreshToken: true,
+//       createdAt: true,
+//       refreshTokenExpiry: true,
+//     },
+//   },
+//   stats: {
+//     select: {
+//       count: true,
+//       lastVisited: true,
+//     },
+//   },
+// }
