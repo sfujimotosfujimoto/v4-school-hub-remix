@@ -9,8 +9,6 @@ import type { Role } from "@prisma/client"
 
 import invariant from "tiny-invariant"
 
-import type { DriveFile } from "~/types"
-
 // components
 import BackButton from "~/components/ui/buttons/back-button"
 import StudentCard from "~/components/ui/student-card/student-card"
@@ -38,6 +36,7 @@ import { renameExecuteAction } from "~/lib/actions/rename-execute"
 import { deleteExecuteAction } from "~/lib/actions/delete-execute"
 import { deleteUndoAction } from "~/lib/actions/delete-undo"
 import { z } from "zod"
+import type { DriveFile } from "~/type.d"
 
 /**
  * Loader Function
