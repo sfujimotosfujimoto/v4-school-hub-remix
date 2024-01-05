@@ -36,7 +36,7 @@ export default function PropertyButton({
         onClick={() => {
           if (dialogEl.current !== null) dialogEl.current.showModal()
         }}
-        className={`h-full rounded-lg bg-sfgreen-300 px-2 py-[0.05rem] shadow-md transition-all duration-500  hover:-translate-y-[1px] hover:bg-sfgreen-400`}
+        className={`h-full rounded-lg bg-sfgreen-400 px-2 py-[0.05rem] shadow-md transition-all duration-500  hover:-translate-y-[1px] hover:bg-sfgreen-300`}
       >
         <div className="flex items-center justify-center font-bold">
           <AddIcon className="mr-2 h-6 w-6" />

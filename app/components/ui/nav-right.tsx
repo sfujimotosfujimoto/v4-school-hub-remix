@@ -39,7 +39,7 @@ export default function NavRight() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isHover, setIsHover] = React.useState(false)
 
-  const btnCss = `!bg-sfgreen-200 hover:!bg-sfgreen-300 active:visited:!bg-sfgreen-400 text-xs px-3 hover:scale-[1.05] transform font-semibold`
+  const btnCss = `!bg-sfgreen-400 hover:!bg-sfgreen-300 active:visited:!bg-sfgreen-400 text-xs px-3 hover:scale-[1.05] transform font-semibold`
 
   const navCssSubItem = `font-semibold text-xs`
 
@@ -88,7 +88,7 @@ export default function NavRight() {
             >
               <button
                 type="submit"
-                className={`btn btn-success btn-xs shadow-md hover:!bg-sfgreen-300 hover:active:!bg-sfgreen-400`}
+                className={`btn btn-success btn-xs shadow-md hover:!bg-sfgreen-300 hover:active:!bg-sfgreen-200`}
               >
                 <LoginIcon className="h-5 w-5 sm:hidden" />
                 <span className="hidden sm:block">サインイン</span>

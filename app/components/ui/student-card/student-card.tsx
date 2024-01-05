@@ -38,7 +38,7 @@ export default function StudentCard({
       <div
         data-name="StudentCard.tsx"
         className={clsx(`card bg-sfgreen-400 shadow-lg lg:card-side`, {
-          "transition-all duration-500 hover:-translate-y-1 hover:bg-sfgreen-200":
+          "transition-all duration-500 hover:-translate-y-1 hover:bg-sfgreen-300":
             size === "big",
           "opacity-40": isNavigating,
         })}
@@ -92,7 +92,7 @@ export default function StudentCard({
                 <TimeIcon className="h-3 w-4" />
                 <span>
                   {driveFile.createdTime
-                    ? dateFormat(driveFile.createdTime.toDateString())
+                    ? dateFormat(driveFile.createdTime.toISOString())
                     : ""}
                 </span>
               </div>
@@ -100,7 +100,7 @@ export default function StudentCard({
                 <RenewIcon className="h-3 w-3" />
                 <span>
                   {driveFile.modifiedTime
-                    ? dateFormat(driveFile.modifiedTime.toDateString())
+                    ? dateFormat(driveFile.modifiedTime.toISOString())
                     : ""}
                 </span>
               </div>

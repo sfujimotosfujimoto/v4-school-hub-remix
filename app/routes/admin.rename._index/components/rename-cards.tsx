@@ -32,7 +32,7 @@ export default function RenameCards({
       <article className="mx-auto max-w-5xl p-12">
         <div
           data-name="ReanmeCards.tsx"
-          className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-200 md:grid-cols-2 xl:grid-cols-3"
+          className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-400 md:grid-cols-2 xl:grid-cols-3"
         >
           {driveFiles &&
             driveFiles.map((d) => {

@@ -26,7 +26,7 @@ export default function AdminCard({ user }: { user: User }) {
       <div
         data-name="AdminCards"
         className={`card ${
-          user.activated ? "bg-sfgreen-200" : "bg-slate-400"
+          user.activated ? "bg-sfgreen-400" : "bg-slate-400"
         } shadow-lg transition-all duration-500 lg:card-side hover:-translate-y-1 hover:bg-sfred-50`}
       >
         <div className="card-body p-4 sm:p-8">

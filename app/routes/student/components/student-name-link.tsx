@@ -13,7 +13,7 @@ export default function StudentNameLink({
     <Link
       onClick={closeFunc}
       to={link}
-      className="join-item relative flex flex-col items-start text-sfblue-300 focus:bg-sfgreen-200 focus:text-sfred-200"
+      className="join-item relative flex flex-col items-start text-sfblue-300 focus:bg-sfgreen-400 focus:text-sfred-200"
     >
       <h2 className="card-title">
         <span className="text-base font-normal">

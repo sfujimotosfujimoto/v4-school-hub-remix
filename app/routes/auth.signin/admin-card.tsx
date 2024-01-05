@@ -6,7 +6,7 @@ export default function AdminCard({ user }: { user: User }) {
     <div
       data-name="AdminCards"
       className={`card ${
-        user.activated ? "bg-sfgreen-200" : "bg-slate-400"
+        user.activated ? "bg-sfgreen-400" : "bg-slate-400"
       } shadow-lg  lg:card-side `}
     >
       <div className="card-body p-4 sm:p-8">

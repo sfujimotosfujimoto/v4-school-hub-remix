@@ -57,7 +57,7 @@ function GakunenButton({
   gakunenBase: Gakunen
   setGakunen: React.Dispatch<React.SetStateAction<Gakunen>>
 }) {
-  const bgColor = `!bg-sfgreen-200`
+  const bgColor = `!bg-sfgreen-400`
 
   return (
     <li>

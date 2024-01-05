@@ -33,7 +33,7 @@ function HrButton({
   hrBase: Hr
   setHr: React.Dispatch<React.SetStateAction<Hr>>
 }) {
-  const bgColor = `!bg-sfgreen-200`
+  const bgColor = `!bg-sfgreen-400`
   return (
     <li>
       <button
