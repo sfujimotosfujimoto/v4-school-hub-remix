@@ -11,7 +11,7 @@ export type DriveFile = {
   webContentLink?: string
   parents?: string[]
   appProperties?: string
-  // meta?: DriveFileMeta
+  meta?: DriveFileMeta
 }
 
 export type Tokens = {
@@ -21,6 +21,19 @@ export type Tokens = {
   expiry_date: number
   id_token?: string
   refresh_token?: string
+}
+
+export type Student = {
+  gakuseki: number
+  gakunen: string
+  hr: string
+  hrNo: number
+  last: string
+  first: string
+  sei: string
+  mei: string
+  email: string
+  folderLink: string | null
 }
 
 export interface Person {
@@ -49,28 +62,28 @@ export type Payload = {
   rexp: number
 }
 
-// export type DriveFileMeta = {
-//   selected?: boolean
-//   studentFolder?: {
-//     folderLink?: string
-//     folderId?: string
-//     name?: string
-//   }
-//   destination?: {
-//     folderId?: string
-//     name?: string
-//   }
-//   last?: {
-//     folderId?: string
-//   }
-//   file?: {
-//     segments?: string[]
-//     name?: string
-//     formerName?: string
-//     studentEmail?: string
-//     tags?: string
-//     nendo?: string
-//   }
-//   student?: PrismaStudent
-//   permissions?: Permission[]
-// }
+export type DriveFileMeta = {
+  selected?: boolean
+  studentFolder?: {
+    folderLink?: string
+    folderId?: string
+    name?: string
+  }
+  destination?: {
+    folderId?: string
+    name?: string
+  }
+  last?: {
+    folderId?: string
+  }
+  file?: {
+    segments?: string[]
+    name?: string
+    formerName?: string
+    studentEmail?: string
+    tags?: string
+    nendo?: string
+  }
+  student?: Student
+  permissions?: Permission[]
+}
