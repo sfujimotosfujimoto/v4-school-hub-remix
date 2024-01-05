@@ -42,7 +42,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const jsn = await fetchRefresh(refreshUser)
 
     logger.info(
-      `👑 authenticate: expiry: ${new Date(
+      `👑 auth.signin: expiry: ${new Date(
         jsn.data.user.credential.expiry,
       ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
     )
@@ -54,11 +54,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
 
     // update the session with the new values
-    const headers = await updateSession("userId", jsn.data.userId)
+    const headers = await updateSession("userId", jsn.data.user.id)
 
     // redirect to the same URL if the request was a GET (loader)
     if (request.method === "GET") {
-      logger.debug("👑 authenticate: request GET redirect")
+      logger.debug(
+        `👑 auth.signin: request GET redirect: userId: ${jsn.data.user.id}`,
+      )
       throw redirect(redirectUrl ? redirectUrl : request.url, { headers })
     }
   }
@@ -91,13 +93,15 @@ async function fetchRefresh(user: User) {
     ),
   })
     .then((res) => {
-      logger.debug("👑 authenticate: fetch res")
+      logger.debug("👑 fetchRefresh: fetch res")
       return res.json()
     })
     .catch((err) => {
-      console.error(`❌ authenticate: fetch error`, err.message, err)
+      console.error(`❌ fetchRefresh: fetch error`, err.message, err)
       return { error: "error in fetch" }
     })
+
+  console.log("✅ jsn", jsn)
   return jsn
 }
 
