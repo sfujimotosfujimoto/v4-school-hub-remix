@@ -6,7 +6,6 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node"
-import type { Gakunen, Hr } from "~/types"
 
 // components
 import Sidebar from "./components/sidebar"
@@ -17,6 +16,42 @@ import { logger } from "~/logger"
 import { getUserFromSession } from "~/lib/session.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import type { Gakunen, Hr } from "~/type.d"
+
+/**
+ * loader function
+ */
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  logger.debug(`🍿 loader: student ${request.url}`)
+
+  const user = await getUserFromSession(request)
+
+  if (!user || !user.credential) {
+    throw redirectToSignin(request)
+  }
+  const accessToken = user.credential.accessToken
+
+  // get sheets
+  const sheets = await getSheets(accessToken)
+  if (!sheets) {
+    throw redirect("/?authstate=unauthenticated")
+  }
+
+  // get StudentData[]
+  const students = await getStudents(sheets)
+  return json(
+    {
+      students,
+    },
+    {
+      status: 200,
+      headers: {
+        "Cache-Control": `max-age=${60 * 10}`,
+      },
+    },
+  )
+}
 
 /**
  * Student Layout
@@ -79,42 +114,6 @@ export default function StudentLayout() {
         </div>
       </section>
     </>
-  )
-}
-
-/**
- * loader function
- */
-
-export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`🍿 loader: student ${request.url}`)
-
-  const user = await getUserFromSession(request)
-
-  if (!user || !user.credential) {
-    throw redirect("/?authstate=unauthenticated")
-    // return destroyUserSession(request, `/?authstate=unauthenticated`)
-  }
-  const accessToken = user.credential.accessToken
-
-  // get sheets
-  const sheets = await getSheets(accessToken)
-  if (!sheets) {
-    throw redirect("/?authstate=unauthenticated")
-  }
-
-  // get StudentData[]
-  const students = await getStudents(sheets)
-  return json(
-    {
-      students,
-    },
-    {
-      status: 200,
-      headers: {
-        "Cache-Control": `max-age=${60 * 10}`,
-      },
-    },
   )
 }
 
