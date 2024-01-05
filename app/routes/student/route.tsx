@@ -17,6 +17,7 @@ import { getUserFromSession } from "~/lib/session.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import type { Gakunen, Hr } from "~/type.d"
+import { redirectToSignin } from "~/lib/responses"
 
 /**
  * loader function
