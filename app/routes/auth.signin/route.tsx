@@ -26,12 +26,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: auth.signin ${request.url}`)
   const user = await getUserFromSession(request)
 
-  // TODO: For debug
-
   // if user is expired, check for refresh token
   if (!user) {
     // get refresh token expiry
-    logger.debug("!! getRefreshUserFromSession: in if (user)")
+    logger.debug("🐝 before getRefreshUserFromSession: in if (user)")
     const refreshUser = await getRefreshUserFromSession(request)
     if (!refreshUser) {
       return null
@@ -93,11 +91,11 @@ async function fetchRefresh(user: User) {
     ),
   })
     .then((res) => {
-      logger.debug("👑 fetchRefresh: fetch res")
+      logger.debug("🍺 fetchRefresh: fetch res")
       return res.json()
     })
     .catch((err) => {
-      console.error(`❌ fetchRefresh: fetch error`, err.message, err)
+      console.error(`🍺 fetchRefresh: fetch error`, err.message, err)
       return { error: "error in fetch" }
     })
 

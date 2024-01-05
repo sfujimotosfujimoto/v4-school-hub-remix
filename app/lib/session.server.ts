@@ -61,6 +61,7 @@ export async function getUserFromSession(
   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
 
   const userId = Number(session.get("userId") || 0)
+  console.log("✅ userId", userId)
 
   const user = await getUserById(userId)
   if (!user) {
