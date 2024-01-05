@@ -6,7 +6,6 @@ import {
   stripText,
 } from "~/lib/utils"
 
-import Tags from "../tags"
 import CheckBox from "./checkbox"
 
 import type { Role } from "@prisma/client"
@@ -48,7 +47,7 @@ export default function StudentCard({
           </h2>
 
           {/* NENDO & TAGS */}
-          <div className="flex gap-2">
+          <div className="tags flex flex-wrap gap-2">
             {nendo && (
               <span
                 className={`rounded-lg bg-slate-200  px-2 py-1 text-xs font-bold sm:text-sm`}
@@ -56,7 +55,15 @@ export default function StudentCard({
                 {nendo}
               </span>
             )}
-            {tags && <Tags tags={tags} />}
+            {tags &&
+              tags.map((tag) => (
+                <span
+                  key={tag}
+                  className={`text-ellipsis rounded-lg bg-slate-200 px-2 py-1 text-xs font-bold sm:text-sm`}
+                >
+                  {tag}
+                </span>
+              ))}
           </div>
 
           {/* EXTENSION ICON */}

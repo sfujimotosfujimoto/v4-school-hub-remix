@@ -1,3 +1,8 @@
+
+🌼   daisyUI 4.4.24
+├─ ✔︎ 1 theme added		https://daisyui.com/docs/themes
+╰─ ★ Star daisyUI on GitHub	https://github.com/saadeghi/daisyui
+
 // import type { LoaderFunctionArgs } from "@remix-run/node"
 
 // components
