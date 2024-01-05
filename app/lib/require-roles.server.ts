@@ -1,37 +1,38 @@
 import { logger } from "~/logger"
 
-import { redirect } from "@remix-run/node"
-import type { User } from "~/types"
+import type { User } from "~/type.d"
+import { redirectToSignin } from "./responses"
 
-export async function requireUserRole(user: User) {
+export async function requireUserRole(request: Request, user: User) {
   logger.debug("👑 requireUserRole start")
 
   if (user && !["SUPER", "ADMIN", "MODERATOR", "USER"].includes(user.role)) {
-    throw redirect("/?authstate=unauthorized")
+    throw redirectToSignin(request)
+    // throw redirect("/auth/signin?authstate=unauthorized")
   }
 }
 
-export async function requireModeratorRole(user: User) {
+export async function requireModeratorRole(request: Request, user: User) {
   logger.debug("👑 requireModeratorRole start")
 
   if (user && !["SUPER", "ADMIN", "MODERATOR"].includes(user.role)) {
-    throw redirect("/?authstate=unauthorized")
+    throw redirectToSignin(request)
   }
 }
 
-export async function requireAdminRole(user: User) {
+export async function requireAdminRole(request: Request, user: User) {
   logger.debug("👑 requireAdminRole start")
 
   if (user && !["SUPER", "ADMIN"].includes(user.role)) {
-    throw redirect("/?authstate=unauthorized")
+    throw redirectToSignin(request)
   }
 }
 
-export async function requireSuperRole(user: User) {
+export async function requireSuperRole(request: Request, user: User) {
   logger.debug("👑 requireSuperRole start")
 
   if (user && !["SUPER"].includes(user.role)) {
-    throw redirect("/?authstate=unauthorized")
+    throw redirectToSignin(request)
   }
 }
 
