@@ -2,6 +2,7 @@ import { RenewIcon, TimeIcon } from "~/components/icons"
 import {
   checkGoogleMimeType,
   dateFormat,
+  parseAppProperties,
   parseTags,
   stripText,
 } from "~/lib/utils"
@@ -11,31 +12,36 @@ import CheckBox from "./checkbox"
 import type { Role } from "@prisma/client"
 
 import type { DriveFile } from "~/type.d"
+import clsx from "clsx"
 export default function StudentCard({
   driveFile,
   role,
   thumbnailSize = "small",
   size = "big",
+  isNavigating = false,
 }: {
   driveFile: DriveFile
   role: Role
   thumbnailSize?: "small" | "big"
   size?: "small" | "big"
+  isNavigating?: boolean
 }) {
   const appProperties = driveFile.appProperties
+  if (!appProperties) return null
+  let appProps = parseAppProperties(appProperties)
 
-  const tags = appProperties?.tags ? parseTags(appProperties.tags) : null
-  const nendo = driveFile.appProperties?.nendo
+  const tags = appProps.tags ? parseTags(appProps.tags) : null
+  const nendo = appProps.nendo
 
   return (
     <>
       <div
         data-name="StudentCard.tsx"
-        className={`card shadow-lg transition-all duration-500 lg:card-side hover:-translate-y-1  ${
-          driveFile.meta?.selected
-            ? "bg-sfgreen-200 hover:bg-sfgreen-300"
-            : "bg-slate-300 hover:bg-slate-400"
-        }`}
+        className={clsx(`card bg-sfgreen-400 shadow-lg lg:card-side`, {
+          "transition-all duration-500 hover:-translate-y-1 hover:bg-sfgreen-200":
+            size === "big",
+          "opacity-40": isNavigating,
+        })}
       >
         <div
           className={`card-body ${
@@ -84,11 +90,19 @@ export default function StudentCard({
             <div className="flex gap-4">
               <div className="flex items-center gap-1">
                 <TimeIcon className="h-3 w-4" />
-                <span>{dateFormat(driveFile.createdTime || "") || ""}</span>
+                <span>
+                  {driveFile.createdTime
+                    ? dateFormat(driveFile.createdTime.toDateString())
+                    : ""}
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <RenewIcon className="h-3 w-3" />
-                <span>{dateFormat(driveFile.modifiedTime || "") || ""}</span>
+                <span>
+                  {driveFile.modifiedTime
+                    ? dateFormat(driveFile.modifiedTime.toDateString())
+                    : ""}
+                </span>
               </div>
             </div>
           )}

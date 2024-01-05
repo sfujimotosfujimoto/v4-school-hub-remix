@@ -9,10 +9,12 @@ export default function StudentCards({
   driveFiles,
   role,
   size = "big",
+  isNavigating = false,
 }: {
   driveFiles: DriveFile[]
   role: Role
   size?: "small" | "big"
+  isNavigating?: boolean
 }) {
   return (
     <div
@@ -29,13 +31,23 @@ export default function StudentCards({
                 id="_StudentCard"
                 to={`/student/${d.parents[0]}/${d.id}`}
               >
-                <StudentCard driveFile={d} size={size} role={role} />
+                <StudentCard
+                  driveFile={d}
+                  size={size}
+                  role={role}
+                  isNavigating={isNavigating}
+                />
               </Link>
             )
           } else {
             return (
               <Link prefetch="intent" key={d.id} id="_StudentCard" to={`/`}>
-                <StudentCard driveFile={d} size={size} role={role} />
+                <StudentCard
+                  driveFile={d}
+                  size={size}
+                  role={role}
+                  isNavigating={isNavigating}
+                />
               </Link>
             )
           }
