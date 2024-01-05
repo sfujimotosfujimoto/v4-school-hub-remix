@@ -1,4 +1,4 @@
-export default function DriveLogo({ ...rest }) {
+export default function DriveLogoIcon({ ...rest }) {
   return (
     <svg {...rest} viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
       <path
