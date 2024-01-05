@@ -29,6 +29,7 @@ import { logger } from "~/logger"
 import type { DriveFile, Student } from "~/type.d"
 import StudentHeader from "./components/student-header"
 
+const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 /**
  * Loader
  * get
@@ -90,39 +91,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     const headers = new Headers()
 
-    headers.set("Cache-Control", `private, max-age=${60 * 10}`) // 10 minutes
-    // let segments = Array.from(
-    //   new Set(driveFiles?.map((d) => d.name.split(/[-_.]/)).flat()),
-    // )
-
-    // segments = filterSegments(segments, student)
-
-    // // get ex. "pdf", "document"
-    // const extensions =
-    //   Array.from(new Set(driveFiles?.map((d) => d.mimeType))).map(
-    //     (ext) => ext.split(/[/.]/).at(-1) || "",
-    //   ) || []
-
-    // const tags: Set<string> = new Set(
-    //   driveFiles
-    //     ?.map((df) => {
-    //       if (df.appProperties?.tags)
-    //         return parseTags(df.appProperties.tags) || null
-    //       return null
-    //     })
-    //     .filter((g): g is string[] => g !== null)
-    //     .flat(),
-    // )
-    // const nendos: Set<string> = new Set(
-    //   driveFiles
-    //     ?.map((df) => {
-    //       if (df.appProperties?.nendo)
-    //         return df.appProperties.nendo.trim() || null
-    //       return null
-    //     })
-    //     .filter((g): g is string => g !== null)
-    //     .flat(),
-    // )
+    headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
 
     return json(
       {
@@ -244,7 +213,8 @@ function getFilteredDriveFiles(
   return (
     driveFiles.sort(
       (a, b) =>
-        (b.modifiedTime?.getTime() || 0) - (a.modifiedTime?.getTime() || 0),
+        new Date(b.modifiedTime || 0).getTime() -
+        new Date(a.modifiedTime || 0).getTime(),
     ) || []
   )
 }
@@ -268,7 +238,8 @@ function getNendosSegmentsExtensionsTags(
     new Set(
       driveFiles
         ?.map((df) => {
-          const appProps = JSON.parse(df.appProperties || "[]")
+          if (!df.appProperties) return null
+          let appProps = parseAppProperties(df.appProperties)
           if (appProps.tags) return parseTags(appProps.tags) || null
           return null
         })
@@ -281,7 +252,8 @@ function getNendosSegmentsExtensionsTags(
     new Set(
       driveFiles
         ?.map((df) => {
-          const appProps = JSON.parse(df.appProperties || "[]")
+          if (!df.appProperties) return null
+          let appProps = parseAppProperties(df.appProperties)
           if (appProps.nendo) return appProps.nendo.trim() || null
           return null
         })
@@ -298,6 +270,20 @@ function getNendosSegmentsExtensionsTags(
     extensions,
     tags,
   }
+}
+
+// TODO: This is needed because appProperties is sometimes string and sometimes object
+// I was storing it as an json object in db but found out that it is
+// better to store as string for future proofing
+function parseAppProperties(appProperties: string | object) {
+  if (!appProperties) return null
+  let appProps: any = {}
+  if (typeof appProperties === "string") {
+    appProps = JSON.parse(appProperties || "[]")
+  } else if (typeof appProperties === "object") {
+    appProps = appProperties
+  }
+  return appProps
 }
 
 /**
