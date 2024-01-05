@@ -1,4 +1,4 @@
-import type { DriveFile, Student } from "~/types"
+import type { DriveFile, Student } from "~/type.d"
 
 export function filterStudentDataByGakunen(
   gakunen: string,
@@ -179,4 +179,38 @@ export function arrayIntoChunks<T>(arr: T[], chunkSize: number) {
 
 export function createURLFromId(id: string) {
   return `https://drive.google.com/drive/folders/${id}`
+}
+
+type ErrorMessage =
+  | "expired"
+  | "unauthorized"
+  | "no-login"
+  | "not-parent-account"
+  | "no-folder"
+  | "login-error"
+
+export function getErrorMessage(errorMessage: ErrorMessage): string {
+  console.log("✅ lib/utils.ts ~ 	😀 in getErrorMessage", errorMessage)
+  switch (errorMessage) {
+    case "expired":
+      return "アクセス期限が切れました。"
+    case "unauthorized":
+      return "アクセス権限がありません。"
+    case "no-login":
+      return "ログインをしてください。"
+    case "not-parent-account":
+      return "保護者・生徒Googleアカウントでログインをしてください。"
+    case "no-folder":
+      return "Googleフォルダがないか、名簿のGoogleSheetが共有されていません。"
+    case "login-error":
+      return "ログインに失敗しました。"
+    default:
+      return "エラーが発生しました。"
+  }
+}
+
+export function setSearchParams(url: string, key: string, value: string) {
+  const _url = new URL(url)
+  _url.searchParams.set(key, value ? value : "ALL")
+  return _url.href
 }
