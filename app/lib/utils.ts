@@ -214,3 +214,14 @@ export function setSearchParams(url: string, key: string, value: string) {
   _url.searchParams.set(key, value ? value : "ALL")
   return _url.href
 }
+
+export function parseAppProperties(appProperties: string | object) {
+  if (!appProperties) return null
+  let appProps: any = {}
+  if (typeof appProperties === "string") {
+    appProps = JSON.parse(appProperties || "[]")
+  } else if (typeof appProperties === "object") {
+    appProps = appProperties
+  }
+  return appProps
+}
