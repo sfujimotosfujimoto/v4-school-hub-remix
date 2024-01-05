@@ -1,34 +1,52 @@
-
-🌼   daisyUI 4.4.24
-├─ ✔︎ 1 theme added		https://daisyui.com/docs/themes
-╰─ ★ Star daisyUI on GitHub	https://github.com/saadeghi/daisyui
-
-// import type { LoaderFunctionArgs } from "@remix-run/node"
-
 // components
 import { DriveLogo, LogoIcon, LogoTextIcon } from "~/components/icons"
-import LoginButton from "./components/login-button"
-// functions
-// import { logger } from "~/logger"
-// import { getUserFromSession } from "~/lib/session.server"
+import { type LoaderFunctionArgs, json } from "@remix-run/node"
+import { logger } from "~/logger"
+import { getUserFromSession } from "~/lib/session.server"
+import { NavLinkButton } from "~/components/buttons/button"
+import DriveLogoIcon from "~/components/icons/drive-logo-icon"
+import type { loader as rootLoader } from "~/root"
+import { useRouteLoaderData } from "@remix-run/react"
+/**
+ * Root loader
+ */
+export async function loader({ request }: LoaderFunctionArgs) {
+  logger.debug(`🍿 loader: _index ${request.url}`)
+  // throw Error("error!!!!!")
+  try {
+    const user = await getUserFromSession(request)
 
-// {
-//   role: user?.role || null,
-//   picture: user?.picture || null,
-// }
+    return json({
+      role: user?.role || null,
+      picture: user?.picture || null,
+      email: user?.email || null,
+    })
+  } catch (error) {
+    console.error(`_index.tsx: ${error}`)
+    return null
+  }
+}
 
 export default function Index() {
+  const data = useRouteLoaderData<typeof rootLoader>("root")
+
+  if (!data) {
+    throw Error("no data")
+  }
+
+  const { email } = data
+
   return (
     <section className="mx-auto flex h-full w-screen max-w-7xl flex-col items-center justify-center gap-8">
       <div className="flex items-center">
-        <LogoIcon className="h-28 w-28 sm:h-32 sm:w-32" />
-        <LogoTextIcon className="h-28 w-auto sm:h-32" />
+        <LogoIcon className=" w-16 sm:w-24" />
+        <LogoTextIcon className="w-40 sm:w-48" />
       </div>
-      <div className="max-w-xl rounded-lg bg-base-100 p-4 shadow-lg">
+      <div className="max-w-xl rounded-lg bg-slate-50 p-4">
         <WhatIsSchoolHub />
         <Explanation />
       </div>
-      <LoginButton />
+      <LoginButton email={email} />
     </section>
   )
 }
@@ -60,5 +78,34 @@ function Explanation() {
       </span>{" "}
       と連携するアプリです。
     </p>
+  )
+}
+
+function LoginButton({ email }: { email?: string | null }) {
+  return (
+    <>
+      <div className="relative flex w-full items-center justify-center gap-8 ">
+        {!email ? (
+          <NavLinkButton to="/auth/signin" size="md">
+            <LogoIcon className="h-7 w-4" />
+            <span id="signin" className="ml-2 sm:ml-4 sm:inline">
+              SCHOOL HUB サインイン
+            </span>
+          </NavLinkButton>
+        ) : (
+          <>
+            <div className="mt-8 flex flex-col gap-4">
+              <h3 className="text-xl ">Hello, </h3>
+              <h2 className="text-sfblue-400  text-2xl font-bold">{email}</h2>
+              <NavLinkButton className="mt-4" to={`/student`} size="md">
+                <LogoIcon className="h-7 w-4" />
+                <DriveLogoIcon className="h-4 w-4" />
+                ダッシュボードへ
+              </NavLinkButton>
+            </div>
+          </>
+        )}
+      </div>
+    </>
   )
 }
