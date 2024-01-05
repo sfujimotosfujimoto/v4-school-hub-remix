@@ -8,11 +8,6 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // 
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
 model User {
   id         Int         @id @default(autoincrement())
   last       String
@@ -32,10 +27,10 @@ model Credential {
   accessToken        String
   scope              String
   tokenType          String
-  expiry             BigInt   @default(0)
+  expiry             DateTime @default(now())
   refreshToken       String?
   createdAt          DateTime @default(now())
-  refreshTokenExpiry BigInt   @default(0)
+  refreshTokenExpiry DateTime @default(now())
   userId             Int      @unique
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
