@@ -7,7 +7,7 @@ export const DriveFileMetaSchema = z.object({
   studentFolder: z
     .object({
       folderLink: z.string().optional(),
-      // folderId: z.string().optional(),
+      folderId: z.string().optional(),
       name: z.string().optional(),
     })
     .optional(),
@@ -44,23 +44,11 @@ export const DriveFileSchema = z.object({
   iconLink: z.string(),
   hasThumbnail: z.boolean(),
   thumbnailLink: z.string().optional(),
-  createdTime: z.date(),
-  // createdTime: z.string().datetime(),
-  // createdTime: z
-  //   .string()
-  //   .or(z.date())
-  //   .transform((arg) => new Date(arg))
-  //   .optional(),
-  modifiedTime: z.date(),
-  // modifiedTime: z.string().datetime(),
-  // modifiedTime: z
-  //   .string()
-  //   .or(z.date())
-  //   .transform((arg) => new Date(arg))
-  //   .optional(),
+  createdTime: z.date().optional(),
+  modifiedTime: z.date().optional(),
   webContentLink: z.string().optional(),
-  parents: z.array(z.string()),
-  appProperties: z.record(z.string(), z.string()).optional(),
+  parents: z.array(z.string()).optional(),
+  appProperties: z.string().optional(),
   meta: DriveFileMetaSchema.optional(),
 })
 

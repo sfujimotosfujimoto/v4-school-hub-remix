@@ -10,5 +10,5 @@ export const StudentSchema = z.object({
   sei: z.string(),
   mei: z.string(),
   email: z.string(),
-  folderLink: z.string().optional().nullable(),
+  folderLink: z.string().nullable(),
 })
