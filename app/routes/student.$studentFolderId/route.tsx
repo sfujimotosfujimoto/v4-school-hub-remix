@@ -10,7 +10,6 @@ import {
   useParams,
   useRouteError,
 } from "@remix-run/react"
-import invariant from "tiny-invariant"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import DriveFilesProvider from "~/context/drive-files-context"
 import NendoTagsProvider from "~/context/nendos-tags-context"
@@ -23,13 +22,14 @@ import {
 import { requireUserRole } from "~/lib/require-roles.server"
 import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
-import { filterSegments, parseTags } from "~/lib/utils"
+import { filterSegments, parseAppProperties, parseTags } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
 import type { DriveFile, Student } from "~/type.d"
 import StudentHeader from "./components/student-header"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
+
 /**
  * Loader
  * get
@@ -46,7 +46,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   // get studentFolderId from params
   const studentFolderId = params.studentFolderId
-  invariant(studentFolderId, "studentFolder in params is required")
+  if (!studentFolderId) throw redirectToSignin(request)
 
   const url = new URL(request.url)
   const nendoString = url.searchParams.get("nendo")
@@ -275,16 +275,16 @@ function getNendosSegmentsExtensionsTags(
 // TODO: This is needed because appProperties is sometimes string and sometimes object
 // I was storing it as an json object in db but found out that it is
 // better to store as string for future proofing
-function parseAppProperties(appProperties: string | object) {
-  if (!appProperties) return null
-  let appProps: any = {}
-  if (typeof appProperties === "string") {
-    appProps = JSON.parse(appProperties || "[]")
-  } else if (typeof appProperties === "object") {
-    appProps = appProperties
-  }
-  return appProps
-}
+// function parseAppProperties(appProperties: string | object) {
+//   if (!appProperties) return null
+//   let appProps: any = {}
+//   if (typeof appProperties === "string") {
+//     appProps = JSON.parse(appProperties || "[]")
+//   } else if (typeof appProperties === "object") {
+//     appProps = appProperties
+//   }
+//   return appProps
+// }
 
 /**
  * Error Boundary
