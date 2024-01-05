@@ -2,8 +2,6 @@ import { json, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 
-import type { DriveFile } from "~/types"
-
 // components
 import StudentCards from "~/components/ui/student-card/student-cards"
 // functions
@@ -35,6 +33,7 @@ import { renameExecuteAction } from "../../lib/actions/rename-execute"
 import { deleteExecuteAction } from "../../lib/actions/delete-execute"
 import TaskCards from "~/components/ui/tasks/task-cards"
 import { deleteUndoAction } from "../../lib/actions/delete-undo"
+import type { DriveFile } from "~/type.d"
 
 /**
  * loader function

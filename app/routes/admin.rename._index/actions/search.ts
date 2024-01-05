@@ -19,7 +19,7 @@ import { logger } from "~/logger"
 import { json, redirect } from "@remix-run/node"
 
 import type { ActionType } from "../route"
-import type { DriveFile, Gakunen, Hr, Student } from "~/types"
+import type { DriveFile, Gakunen, Hr, Student } from "~/type.d"
 import { serverErrorResponse } from "~/lib/errors"
 
 // Zod Data Type

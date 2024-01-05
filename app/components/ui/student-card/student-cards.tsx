@@ -1,4 +1,4 @@
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 import { Link } from "@remix-run/react"
 
 import StudentCard from "./student-card"

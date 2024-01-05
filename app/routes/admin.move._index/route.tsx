@@ -6,7 +6,7 @@ import { logger } from "~/logger"
 
 // types
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import type { ActionType } from "~/types"
+import type { ActionType } from "~/type.d"
 
 // components
 import MoveCards from "./components/move-cards"

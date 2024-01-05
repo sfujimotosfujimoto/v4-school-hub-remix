@@ -7,7 +7,7 @@ import { DriveFilesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionType, DriveFile } from "~/types"
+import type { ActionType, DriveFile } from "~/type.d"
 import { undoRenameDataExecute } from "~/routes/admin.rename._index/actions/undo"
 
 const FormDataScheme = z.object({

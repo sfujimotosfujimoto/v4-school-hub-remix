@@ -1,4 +1,4 @@
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 
 export default function Segments({

@@ -1,5 +1,5 @@
 import { logger } from "~/logger"
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 
 export function setSelected(driveFiles: DriveFile[], selected: boolean) {
   return driveFiles.map((df) => {

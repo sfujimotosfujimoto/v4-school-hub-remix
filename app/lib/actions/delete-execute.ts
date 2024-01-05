@@ -3,7 +3,7 @@ import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 
 import { json, redirect } from "@remix-run/node"
-import type { ActionType } from "~/types"
+import type { ActionType } from "~/type.d"
 import { logger } from "~/logger"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"

@@ -2,7 +2,7 @@ import React from "react"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useNendoTags } from "~/context/nendos-tags-context"
 
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 
 export default function TagButtons({
   baseDriveFiles,

@@ -12,7 +12,7 @@ import { logger } from "~/logger"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionType, DriveFile, Student } from "~/types"
+import type { ActionType, DriveFile, Student } from "~/type.d"
 // Zod Data Type
 const FormDataScheme = z.object({
   // _action: z.string(),

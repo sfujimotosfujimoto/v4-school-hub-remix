@@ -3,7 +3,7 @@ import { useTasksContext } from "~/context/tasks-context"
 
 import TaskCard from "./task-card"
 
-import type { Task } from "~/types"
+import type { Task } from "~/type.d"
 export default function TaskCards({ taskType }: { taskType: Task["type"] }) {
   const { tasks, tasksDispatch } = useTasksContext()
 

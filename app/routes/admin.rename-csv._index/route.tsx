@@ -4,7 +4,7 @@ import { useActionData } from "@remix-run/react"
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import { z } from "zod"
 
-import type { ActionType } from "~/types"
+import type { ActionType } from "~/type.d"
 
 // components
 import RenameCards from "../admin.rename._index/components/rename-cards"

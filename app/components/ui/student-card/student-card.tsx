@@ -10,7 +10,7 @@ import CheckBox from "./checkbox"
 
 import type { Role } from "@prisma/client"
 
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 export default function StudentCard({
   driveFile,
   role,

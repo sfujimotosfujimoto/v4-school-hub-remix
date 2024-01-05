@@ -1,4 +1,4 @@
-import type { Student } from "~/types"
+import type { Student } from "~/type.d"
 
 export default function StudentHeader({ student }: { student: Student }) {
   return (

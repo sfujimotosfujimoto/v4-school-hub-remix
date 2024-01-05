@@ -8,7 +8,7 @@ import { logger } from "~/logger"
 // types
 import type { drive_v3 } from "googleapis"
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 
 // components
 import RenameCards from "./components/rename-cards"

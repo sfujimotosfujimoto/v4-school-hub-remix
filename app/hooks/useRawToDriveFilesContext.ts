@@ -3,7 +3,7 @@ import toast from "react-hot-toast"
 import { DriveFilesSchema } from "~/schemas"
 
 import type { Action } from "~/context/drive-files-context"
-import type { ActionType, DriveFile } from "~/types"
+import type { ActionType, DriveFile } from "~/type.d"
 
 /**
  * useRawToDriveFilesContext

@@ -7,7 +7,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node"
 
-import type { User } from "~/types"
+import type { User } from "~/type.d"
 import { UserSchema } from "~/schemas"
 
 // components

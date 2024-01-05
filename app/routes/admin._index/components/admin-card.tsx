@@ -1,4 +1,4 @@
-import type { User } from "~/types"
+import type { User } from "~/type.d"
 import React from "react"
 import { formatDate } from "~/lib/utils"
 

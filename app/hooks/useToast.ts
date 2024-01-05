@@ -1,7 +1,7 @@
 import React from "react"
 import toast from "react-hot-toast"
 
-import type { ActionType } from "~/types"
+import type { ActionType } from "~/type.d"
 
 export function useToast(
   executeText: string,

@@ -3,7 +3,7 @@ import React from "react"
 
 import { Outlet, useOutletContext } from "@remix-run/react"
 
-import type { Gakunen, Hr } from "~/types"
+import type { Gakunen, Hr } from "~/type.d"
 import TasksProvider from "~/context/tasks-context"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 

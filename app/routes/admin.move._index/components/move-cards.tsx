@@ -2,7 +2,7 @@ import { CheckIcon, DriveLogo, RenewIcon, TimeIcon } from "~/components/icons"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { createURLFromId, dateFormat } from "~/lib/utils"
 
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 
 export default function MoveCards({
   driveFiles,

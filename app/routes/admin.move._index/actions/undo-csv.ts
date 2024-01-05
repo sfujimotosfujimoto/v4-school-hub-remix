@@ -7,7 +7,7 @@ import { DriveFileMovesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionType, DriveFile } from "~/types"
+import type { ActionType, DriveFile } from "~/type.d"
 import { undoMoveDataExecute } from "./undo"
 
 const FormDataScheme = z.object({

@@ -3,7 +3,7 @@ import React from "react"
 import { AddIcon } from "~/components/icons"
 import { getBaseNameFromFileName } from "~/lib/actions/rename-execute"
 // import { useDriveFilesContext } from "~/context/drive-files-context"
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 
 export default function BaseNameButton({
   driveFiles,

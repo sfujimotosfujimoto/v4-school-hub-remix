@@ -6,7 +6,7 @@ import { DriveFilesRenameSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { DriveFile } from "~/types"
+import type { DriveFile } from "~/type.d"
 import type { ActionType } from "../route"
 import type { drive_v3 } from "googleapis"
 import { arrayIntoChunks } from "~/lib/utils"

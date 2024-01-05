@@ -6,7 +6,7 @@ import { DriveFilesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionType, DriveFile } from "~/types"
+import type { ActionType, DriveFile } from "~/type.d"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import type { drive_v3 } from "googleapis"
