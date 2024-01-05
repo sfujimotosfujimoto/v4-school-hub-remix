@@ -1,7 +1,7 @@
-import type { Permission } from "~/types"
 import { getStudentEmail } from "~/lib/utils"
 
 import PermissionTag from "./permission-tag"
+import type { Permission } from "~/type.d/google-types"
 
 export default function PermissionTags({
   permissions,
