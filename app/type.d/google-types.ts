@@ -12,6 +12,7 @@ export type DriveFile = {
   parents?: string[]
   appProperties?: string
   meta?: DriveFileMeta
+  permissions?: Permission[]
 }
 
 export type Tokens = {
@@ -50,9 +51,9 @@ export interface UserBase extends Person {
 export type Permission = {
   id: string
   displayName: string
-  type: "user" | "group"
+  type: "user" | "group" | "unknown"
   emailAddress: string
-  role: "owner" | "writer" | "reader"
+  role: "owner" | "writer" | "reader" | "unknown"
 }
 
 // rexp = refresh token expiry date
