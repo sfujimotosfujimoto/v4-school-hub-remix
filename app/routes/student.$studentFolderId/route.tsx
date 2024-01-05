@@ -1,16 +1,19 @@
-import { json, redirect } from "@remix-run/node"
-import { Outlet, useLoaderData, useParams } from "@remix-run/react"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
+import {
+  Outlet,
+  useLoaderData,
+  useParams,
+  useRouteError,
+} from "@remix-run/react"
 import invariant from "tiny-invariant"
-
-// components
-import StudentHeader from "./components/student-header"
-
-// functions
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import DriveFilesProvider from "~/context/drive-files-context"
+import NendoTagsProvider from "~/context/nendos-tags-context"
 import { getDrive, getDriveFiles } from "~/lib/google/drive.server"
 import {
   getSheets,
@@ -18,40 +21,13 @@ import {
   getStudents,
 } from "~/lib/google/sheets.server"
 import { requireUserRole } from "~/lib/require-roles.server"
-import { destroyUserSession } from "~/lib/session.server"
+import { redirectToSignin } from "~/lib/responses"
+import { getUserFromSession } from "~/lib/session.server"
 import { filterSegments, parseTags } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
-
-// context
-import DriveFilesProvider from "~/context/drive-files-context"
-import NendoTagsProvider from "~/context/nendos-tags-context"
-import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
-import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
-
-/**
- * StudentFolderIdLayout
- */
-export default function StudentFolderIdLayout() {
-  const { student } = useLoaderData<typeof loader>()
-
-  // JSX -------------------------
-  return (
-    <DriveFilesProvider>
-      <NendoTagsProvider>
-        <div
-          data-name="student.$studentFolderId"
-          className="container mx-auto h-full p-4 sm:p-8"
-        >
-          <div className="mb-4 space-y-4">
-            {student && <StudentHeader student={student} />}
-          </div>
-          <Outlet />
-        </div>
-      </NendoTagsProvider>
-    </DriveFilesProvider>
-  )
-}
+import type { DriveFile, Student } from "~/type.d"
+import StudentHeader from "./components/student-header"
 
 /**
  * Loader
@@ -61,17 +37,21 @@ export default function StudentFolderIdLayout() {
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student.$studentFolderId ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireUserRole(user)
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireUserRole(request, user)
 
-  if (!user || !user.credential) {
-    return destroyUserSession(request, `/?authstate=unauthenticated`)
-  }
   const accessToken = user.credential.accessToken
 
   // get studentFolderId from params
   const studentFolderId = params.studentFolderId
   invariant(studentFolderId, "studentFolder in params is required")
+
+  const url = new URL(request.url)
+  const nendoString = url.searchParams.get("nendo")
+  const tagString = url.searchParams.get("tags")
+  const segmentsString = url.searchParams.get("segments")
+  const extensionsString = url.searchParams.get("extensions")
 
   try {
     const drive = await getDrive(user.credential.accessToken)
@@ -89,65 +69,81 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     driveFiles = driveFiles ? setSelected(driveFiles, true) : []
 
+    // Filter by nendo, tags, segments, extensions
+    driveFiles = getFilteredDriveFiles(
+      driveFiles || [],
+      nendoString,
+      tagString,
+      segmentsString,
+      extensionsString,
+    )
+
     // get StudentData[] from spreadsheet
     const students = await getStudents(sheets)
 
     // get StudentData from folder id
     const student = getStudentByFolderId(studentFolderId, students)
+    if (!student) throw redirectToSignin(request)
 
-    let segments = Array.from(
-      new Set(driveFiles?.map((d) => d.name.split(/[-_.]/)).flat()),
-    )
+    const { nendos, segments, extensions, tags } =
+      getNendosSegmentsExtensionsTags(driveFiles, student)
 
-    segments = filterSegments(segments, student)
+    const headers = new Headers()
 
-    // get ex. "pdf", "document"
-    const extensions =
-      Array.from(new Set(driveFiles?.map((d) => d.mimeType))).map(
-        (ext) => ext.split(/[/.]/).at(-1) || "",
-      ) || []
+    headers.set("Cache-Control", `private, max-age=${60 * 10}`) // 10 minutes
+    // let segments = Array.from(
+    //   new Set(driveFiles?.map((d) => d.name.split(/[-_.]/)).flat()),
+    // )
 
-    const tags: Set<string> = new Set(
-      driveFiles
-        ?.map((df) => {
-          if (df.appProperties?.tags)
-            return parseTags(df.appProperties.tags) || null
-          return null
-        })
-        .filter((g): g is string[] => g !== null)
-        .flat(),
-    )
-    const nendos: Set<string> = new Set(
-      driveFiles
-        ?.map((df) => {
-          if (df.appProperties?.nendo)
-            return df.appProperties.nendo.trim() || null
-          return null
-        })
-        .filter((g): g is string => g !== null)
-        .flat(),
-    )
+    // segments = filterSegments(segments, student)
+
+    // // get ex. "pdf", "document"
+    // const extensions =
+    //   Array.from(new Set(driveFiles?.map((d) => d.mimeType))).map(
+    //     (ext) => ext.split(/[/.]/).at(-1) || "",
+    //   ) || []
+
+    // const tags: Set<string> = new Set(
+    //   driveFiles
+    //     ?.map((df) => {
+    //       if (df.appProperties?.tags)
+    //         return parseTags(df.appProperties.tags) || null
+    //       return null
+    //     })
+    //     .filter((g): g is string[] => g !== null)
+    //     .flat(),
+    // )
+    // const nendos: Set<string> = new Set(
+    //   driveFiles
+    //     ?.map((df) => {
+    //       if (df.appProperties?.nendo)
+    //         return df.appProperties.nendo.trim() || null
+    //       return null
+    //     })
+    //     .filter((g): g is string => g !== null)
+    //     .flat(),
+    // )
 
     return json(
       {
-        extensions,
+        nendoString,
+        tagString,
+        url: request.url,
+        nendos,
         segments,
+        extensions,
+        tags,
         driveFiles,
         student,
-        tags: Array.from(tags),
-        nendos: Array.from(nendos),
         role: user.role,
       },
       {
-        status: 200,
-        headers: {
-          "Cache-Control": `max-age=${60 * 10}`,
-        },
+        headers,
       },
     )
   } catch (error) {
     console.error(error)
-    throw redirect("/?authstate=unauthorized-027")
+    throw redirectToSignin(request)
   }
 }
 
@@ -174,10 +170,143 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 }
 
 /**
+ * StudentFolderIdLayout
+ */
+export default function StudentFolderIdLayout() {
+  const { student } = useLoaderData<typeof loader>()
+
+  // JSX -------------------------
+  return (
+    <DriveFilesProvider>
+      <NendoTagsProvider>
+        <div
+          data-name="student.$studentFolderId"
+          className="container mx-auto h-full p-4 sm:p-8"
+        >
+          <div className="mb-4 space-y-4">
+            {student && <StudentHeader student={student} />}
+          </div>
+          <Outlet />
+        </div>
+      </NendoTagsProvider>
+    </DriveFilesProvider>
+  )
+}
+
+function getFilteredDriveFiles(
+  driveFiles: DriveFile[],
+  nendoString: string | null,
+  tagString: string | null,
+  segmentsString: string | null,
+  extensionsString: string | null,
+) {
+  // filter by nendo
+  if (nendoString) {
+    driveFiles =
+      driveFiles?.filter((df) => {
+        const props = JSON.parse(df.appProperties || "[]")
+        if (props.nendo === nendoString) return true
+        return false
+      }) || []
+  }
+
+  // filter by tag
+  if (tagString) {
+    driveFiles =
+      driveFiles?.filter((df) => {
+        const props = JSON.parse(df.appProperties || "[]")
+        if (props.tags) {
+          const tagsArr = parseTags(props.tags)
+          return tagsArr.includes(tagString || "")
+        }
+        return false
+      }) || []
+  }
+
+  // filter by extensions
+  if (extensionsString) {
+    driveFiles =
+      driveFiles?.filter((df) => {
+        const ext = df.mimeType.split(/[/.]/).at(-1) || ""
+        return ext === extensionsString
+      }) || []
+  }
+
+  // filter by segments
+  if (segmentsString) {
+    driveFiles =
+      driveFiles?.filter((df) => {
+        const segments = df.name.split(/[-_.]/)
+        return segments.includes(segmentsString)
+      }) || []
+  }
+
+  return (
+    driveFiles.sort(
+      (a, b) =>
+        (b.modifiedTime?.getTime() || 0) - (a.modifiedTime?.getTime() || 0),
+    ) || []
+  )
+}
+
+function getNendosSegmentsExtensionsTags(
+  driveFiles: DriveFile[],
+  student: Omit<Student, "users">,
+) {
+  let segments: string[] = Array.from(
+    new Set(driveFiles?.map((d) => d.name.split(/[-_.]/)).flat()),
+  )
+
+  segments = filterSegments(segments, student)
+
+  const extensions: string[] =
+    Array.from(new Set(driveFiles?.map((d) => d.mimeType))).map(
+      (ext) => ext.split(/[/.]/).at(-1) || "",
+    ) || []
+
+  const tags: string[] = Array.from(
+    new Set(
+      driveFiles
+        ?.map((df) => {
+          const appProps = JSON.parse(df.appProperties || "[]")
+          if (appProps.tags) return parseTags(appProps.tags) || null
+          return null
+        })
+        .filter((g): g is string[] => g !== null)
+        .flat(),
+    ),
+  ).sort()
+
+  const nendos: string[] = Array.from(
+    new Set(
+      driveFiles
+        ?.map((df) => {
+          const appProps = JSON.parse(df.appProperties || "[]")
+          if (appProps.nendo) return appProps.nendo.trim() || null
+          return null
+        })
+        .filter((g): g is string => g !== null)
+        .flat(),
+    ),
+  )
+    .sort((a, b) => Number(b) - Number(a))
+    .filter((n): n is string => n !== null)
+
+  return {
+    nendos,
+    segments,
+    extensions,
+    tags,
+  }
+}
+
+/**
  * Error Boundary
  */
 export function ErrorBoundary() {
   const { studentFolderId } = useParams()
+  const error = useRouteError()
+  console.error(error)
   let message = `フォルダID（${studentFolderId}）からフォルダを取得できませんでした。`
   return <ErrorBoundaryDocument message={message} />
 }
