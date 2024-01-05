@@ -88,6 +88,7 @@ export async function getUserById(userId: number): Promise<User | null> {
 }
 
 export async function getRefreshUserById(userId: number): Promise<User | null> {
+  if (!userId) return null
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
