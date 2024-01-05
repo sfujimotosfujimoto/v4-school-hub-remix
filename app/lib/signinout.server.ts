@@ -6,10 +6,10 @@ import { redirect } from "@remix-run/node"
 
 import { prisma } from "./db.server"
 import { getClientFromCode, getUserInfo } from "./google/google.server"
-import { createUserSession } from "./session.server"
 import { checkValidSeigEmail } from "./utils"
 
-import type { TypedResponse } from "@remix-run/node"
+import { redirectToSignin } from "./responses"
+import { updateUser } from "./user.server"
 const SESSION_SECRET = process.env.SESSION_SECRET
 if (!SESSION_SECRET) throw Error("session secret is not set")
 
@@ -26,10 +26,12 @@ const TokenSchema = z.object({
  * signin
  */
 export async function signin({
+  request,
   code,
 }: {
+  request: Request
   code: string
-}): Promise<TypedResponse<never>> {
+}) {
   logger.debug("🍓 signin")
   const { tokens } = await getClientFromCode(code)
 
@@ -50,7 +52,7 @@ export async function signin({
 
   // let refreshTokenExpiryDummy = Date.now() + 1000 * 30 // 30 seconds
   // let refreshTokenExpiry = refreshTokenExpiryDummy
-  let refreshTokenExpiry = Date.now() + 1000 * 60 * 60 * 24 * 14 // 14 days
+  let refreshTokenExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24) // 1 day
 
   logger.info(
     `🍓 signin: new expiry_date ${new Date(expiry_date || 0).toLocaleString(
@@ -66,116 +68,79 @@ export async function signin({
   )
 
   if (!access_token) {
-    throw redirect(`/?authstate=unauthorized-002`)
+    throw redirectToSignin(request, { authstate: "no-access-token" })
   }
 
   const person = await getUserInfo(access_token)
 
   if (!person) {
-    throw redirect(`/?authstate=unauthenticated`)
+    throw redirectToSignin(request, { authstate: "unauthorized" })
   }
 
   if (!checkValidSeigEmail(person.email)) {
-    throw redirect(`/?authstate=not-seig-account`)
+    throw redirectToSignin(request, { authstate: `not-seig-account` })
   }
 
-  let userPrisma = await prisma.user.findUnique({
+  let userPrisma = await prisma.user.upsert({
     where: {
       email: person.email,
     },
-  })
-  // if no user, create in prisma db
-  if (!userPrisma) {
-    userPrisma = await prisma.user.create({
-      data: {
-        first: person.first,
-        last: person.last,
-        email: person.email,
-        picture: person.picture,
-        role: "USER",
-      },
-    })
-  }
-
-  // check if user has stats in prisma db
-  let stats = await prisma.stats.findUnique({
-    where: {
-      userId: userPrisma.id,
+    update: {},
+    create: {
+      first: person.first,
+      last: person.last,
+      email: person.email,
+      picture: person.picture,
+      role: "USER",
     },
   })
 
-  // if no stats, create in prisma db
-  if (!stats) {
-    stats = await prisma.stats.create({
-      data: {
-        userId: userPrisma.id,
-      },
-    })
-  }
-
-  let cred = await prisma.credential.findUnique({
-    where: {
-      userId: userPrisma.id,
-    },
-  })
-
-  if (!cred) {
-    // add credentials to cockroach db
-    cred = await prisma.credential.create({
-      data: {
-        accessToken: access_token,
-        scope: scope,
-        tokenType: token_type,
-        expiry: expiry_date,
-        userId: userPrisma.id,
-        refreshToken: refresh_token,
-        refreshTokenExpiry: refreshTokenExpiry,
-      },
-    })
-  } else {
-    cred = await prisma.credential.update({
+  await prisma.$transaction([
+    prisma.stats.upsert({
       where: {
         userId: userPrisma.id,
       },
-      data: {
+      update: {},
+      create: {
+        userId: userPrisma.id,
+      },
+    }),
+    prisma.credential.upsert({
+      where: {
+        userId: userPrisma.id,
+      },
+      update: {
         accessToken: access_token,
         scope: scope,
         tokenType: token_type,
-        expiry: expiry_date,
+        expiry: new Date(expiry_date),
         refreshToken: refresh_token,
         refreshTokenExpiry: refreshTokenExpiry,
       },
-    })
-  }
+      create: {
+        accessToken: access_token,
+        scope: scope,
+        tokenType: token_type,
+        expiry: new Date(expiry_date),
+        userId: userPrisma.id,
+        refreshToken: refresh_token,
+        refreshTokenExpiry: refreshTokenExpiry,
+      },
+    }),
+  ])
 
   // if user passes email check, set user.activated to true
-  const updatedUser = await prisma.user.update({
-    where: {
-      id: userPrisma.id,
-    },
-    data: {
-      activated: true,
-      stats: {
-        update: {
-          count: {
-            increment: 1,
-          },
-          lastVisited: new Date(),
-        },
-      },
-    },
-  })
+
+  const updatedUser = await updateUser(userPrisma.id)
 
   if (!updatedUser) {
-    redirect(`/?authstate=not-seig-account`)
+    throw redirectToSignin(request, { authstate: `not-seig-account` })
   }
 
-  const userJWT = await updateUserJWT(
-    userPrisma.email,
-    expiry_date,
-    refreshTokenExpiry,
-  )
-  return createUserSession(userJWT, "/student")
+  return {
+    userId: userPrisma.id,
+    accessToken: access_token,
+  }
 }
 
 // used in authenticate
