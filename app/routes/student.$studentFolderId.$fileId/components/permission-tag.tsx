@@ -1,11 +1,11 @@
-import type { Permission } from "~/type.d"
+import type { PermissionGoogle } from "~/type.d"
 import RoleTag from "./role-tag"
 
 export default function PermissionTag({
   permission,
   classes,
 }: {
-  permission: Permission
+  permission: PermissionGoogle
   classes: string
 }) {
   const textStyle = `text-sm sm:text-base truncate`

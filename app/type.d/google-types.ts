@@ -20,6 +20,14 @@ export interface PersonGoogle {
   picture: string
 }
 
+export type PermissionGoogle = {
+  id: string
+  displayName: string
+  type: "user" | "group" | "unknown"
+  emailAddress: string
+  role: "owner" | "writer" | "reader" | "unknown"
+}
+
 // export type DriveFileGoogle = {
 //   id: string
 //   name: string
@@ -61,14 +69,6 @@ export interface PersonGoogle {
 
 // export interface UserBase extends PersonGoogle {
 //   exp: number
-// }
-
-// export type PermissionGoogle = {
-//   id: string
-//   displayName: string
-//   type: "user" | "group" | "unknown"
-//   emailAddress: string
-//   role: "owner" | "writer" | "reader" | "unknown"
 // }
 
 // rexp = refresh token expiry date

@@ -1,12 +1,12 @@
 import { getStudentEmail } from "~/lib/utils"
 
 import PermissionTag from "./permission-tag"
-import type { Permission } from "~/type.d/google-types"
+import type { PermissionGoogle } from "~/type.d"
 
 export default function PermissionTags({
   permissions,
 }: {
-  permissions: Permission[]
+  permissions: PermissionGoogle[]
 }) {
   const owner = permissions.find((p) => p.role === "owner")
   const student = permissions.find((p) => getStudentEmail(p.emailAddress))
