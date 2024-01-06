@@ -1,11 +1,11 @@
-import type { PrismaUser } from "~/type.d"
+import type { UserPrisma } from "~/type.d"
 
 // used in session.server.ts
 //-------------------------------------------
 // LOCAL FUNCTIONS
 //-------------------------------------------
 
-export function returnUser(user: PrismaUser) {
+export function returnUser(user: UserPrisma) {
   const {
     id,
     last,

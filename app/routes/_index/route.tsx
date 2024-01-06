@@ -96,7 +96,7 @@ function LoginButton({ email }: { email?: string | null }) {
           <>
             <div className="mt-8 flex flex-col gap-4">
               <h3 className="text-xl ">Hello, </h3>
-              <h2 className="text-sfblue-400  text-2xl font-bold">{email}</h2>
+              <h2 className="text-2xl  font-bold text-sfblue-400">{email}</h2>
               <NavLinkButton className="mt-4" to={`/student`} size="md">
                 <LogoIcon className="h-7 w-4" />
                 <DriveLogoIcon className="h-4 w-4" />

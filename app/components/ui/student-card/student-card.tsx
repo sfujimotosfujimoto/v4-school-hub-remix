@@ -1,3 +1,5 @@
+import type { Role } from "@prisma/client"
+import clsx from "clsx"
 import { RenewIcon, TimeIcon } from "~/components/icons"
 import {
   checkGoogleMimeType,
@@ -6,13 +8,9 @@ import {
   parseTags,
   stripText,
 } from "~/lib/utils"
-
+import type { DriveFile } from "~/type.d"
 import CheckBox from "./checkbox"
 
-import type { Role } from "@prisma/client"
-
-import type { DriveFile } from "~/type.d"
-import clsx from "clsx"
 export default function StudentCard({
   driveFile,
   role,
