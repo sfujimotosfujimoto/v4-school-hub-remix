@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { PermissionsSchema } from "./permission.schema"
+import { PermissionSchema } from "./permission.schema"
 import { StudentSchema } from "./student.schema"
 
 export const DriveFileMetaSchema = z.object({
@@ -33,7 +33,7 @@ export const DriveFileMetaSchema = z.object({
     })
     .optional(),
   student: StudentSchema.optional(),
-  permissions: PermissionsSchema.optional(),
+  permissions: PermissionSchema.optional(),
 })
 
 export const DriveFileSchema = z.object({
@@ -50,6 +50,7 @@ export const DriveFileSchema = z.object({
   parents: z.array(z.string()).optional(),
   appProperties: z.string().optional(),
   meta: DriveFileMetaSchema.optional(),
+  permissions: z.array(PermissionSchema).optional(),
 })
 
 export const DriveFilesSchema = z.array(DriveFileSchema)
