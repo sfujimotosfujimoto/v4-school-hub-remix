@@ -2,7 +2,7 @@ import { google } from "googleapis"
 
 import type { Auth } from "googleapis"
 import { logger } from "~/logger"
-import type { Person } from "~/type.d"
+import type { PersonGoogle } from "~/type.d"
 
 export async function getClientFromCode(code: string): Promise<{
   client: Auth.OAuth2Client
@@ -70,7 +70,7 @@ export async function getUserInfo(accessToken: string) {
     .then((r) => r.json())
     .catch((e) => {})
 
-  const person: Person = {
+  const person: PersonGoogle = {
     email: resp.email,
     first: resp.given_name,
     last: resp.family_name,

@@ -7,7 +7,7 @@ import {
 import { getUserFromSession } from "~/lib/session.server"
 
 import { json, redirect } from "@remix-run/node"
-import type { ActionType, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 import { logger } from "~/logger"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"
@@ -41,7 +41,7 @@ export async function renameExecuteAction(
 
   if (!result.success) {
     logger.debug(`🍎 result.error ${result.error.errors.join(",")}`)
-    throw json<ActionType>(
+    throw json<ActionTypeGoogle>(
       {
         ok: false,
         type: "rename-execute",

@@ -6,7 +6,7 @@ import { DriveFilesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionType, DriveFile, User } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile, User } from "~/type.d"
 import { CHUNK_SIZE } from "~/lib/config"
 import { arrayIntoChunks } from "~/lib/utils"
 import type { drive_v3 } from "googleapis"
@@ -33,7 +33,7 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
 
   if (!result.success) {
     logger.debug(`✅ result.error ${result.error.errors.join(",")}`)
-    throw json<ActionType>(
+    throw json<ActionTypeGoogle>(
       {
         ok: false,
         type: "undo",
@@ -50,7 +50,7 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
   const result2 = DriveFilesSchema.safeParse(raw)
   if (!result2.success) {
     logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
-    return json<ActionType>({
+    return json<ActionTypeGoogle>({
       ok: false,
       type: "undo",
       error: `データ処理に問題が発生しました。ERROR#:DELETEUNDO002`,
@@ -60,7 +60,7 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
   const driveFiles = result2.data as unknown as DriveFile[]
 
   if (!driveFiles || driveFiles.length === 0)
-    return json<ActionType>({
+    return json<ActionTypeGoogle>({
       ok: false,
       type: "undo",
       error: "ファイルがありません",
@@ -75,10 +75,10 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
   const dfs = mapFilesToDriveFiles(res.data?.files || [])
 
   if (res.error) {
-    return json<ActionType>({ ok: false, type: "undo", error: res.error })
+    return json<ActionTypeGoogle>({ ok: false, type: "undo", error: res.error })
   }
 
-  return json<ActionType>({
+  return json<ActionTypeGoogle>({
     ok: true,
     type: "undo",
     data: {

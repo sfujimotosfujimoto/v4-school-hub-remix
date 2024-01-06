@@ -9,7 +9,6 @@ import { getFolderId, getGakusekiFromString } from "../utils"
 
 import { getClient } from "./google.server"
 import { getStudentDataWithAccessToken } from "./sheets.server"
-import type { Permission } from "~/type.d/google-types"
 
 /**
  * Create a Google Drive Query with given folderId
@@ -121,7 +120,8 @@ export function querySampledStudent(
  */
 export function mapFilesToDriveFiles(
   files: drive_v3.Schema$File[],
-): DriveFile[] {
+): DriveFile
+[] {
   const driveFiles: DriveFile[] = files.map((d) => {
     return mapFilesToDriveFile(d)
   })
@@ -151,7 +151,7 @@ function mapFilesToDriveFile(file: drive_v3.Schema$File): DriveFile {
 
 function convertPermissions(
   permissions: drive_v3.Schema$Permission[] | undefined,
-): Permission[] | undefined {
+): PermissionGoogle[] | undefined {
   if (!permissions) return undefined
 
   return permissions.map((p) => {
@@ -244,14 +244,14 @@ export async function getDriveFiles(
 export async function execPermissions(
   drive: drive_v3.Drive,
   fileId: string,
-): Promise<Permission[]> {
+): Promise<PermissionGoogle[]> {
   const fields = "permissions(id,type,emailAddress,role,displayName)"
   try {
     const list = await drive.permissions.list({
       fileId,
       fields,
     })
-    const permissions = list.data.permissions as Permission[]
+    const permissions = list.data.permissions as PermissionGoogle[]
 
     return permissions
   } catch (error) {

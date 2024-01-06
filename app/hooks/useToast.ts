@@ -1,12 +1,12 @@
 import React from "react"
 import toast from "react-hot-toast"
 
-import type { ActionType } from "~/type.d"
+import type { ActionTypeGoogle } from "~/type.d"
 
 export function useToast(
   executeText: string,
   undoText: string,
-  actionData?: ActionType,
+  actionData?: ActionTypeGoogle,
 ) {
   React.useEffect(() => {
     if (actionData?.error) {

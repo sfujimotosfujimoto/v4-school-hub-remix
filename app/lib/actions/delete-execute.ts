@@ -3,7 +3,7 @@ import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 
 import { json, redirect } from "@remix-run/node"
-import type { ActionType } from "~/type.d"
+import type { ActionTypeGoogle } from "~/type.d"
 import { logger } from "~/logger"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"
@@ -34,7 +34,7 @@ export async function deleteExecuteAction(
 
   if (!result.success) {
     logger.debug(`🍎 result.error ${result.error.errors.join(",")}`)
-    throw json<ActionType>(
+    throw json<ActionTypeGoogle>(
       {
         ok: false,
         type: "delete-execute",

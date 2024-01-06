@@ -3,7 +3,7 @@ import toast from "react-hot-toast"
 import { DriveFilesSchema } from "~/schemas"
 
 import type { Action } from "~/context/drive-files-context"
-import type { ActionType, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 
 /**
  * useRawToDriveFilesContext
@@ -11,7 +11,7 @@ import type { ActionType, DriveFile } from "~/type.d"
  */
 export function useRawToDriveFilesContext(
   driveFilesDispatch: React.Dispatch<Action>,
-  actionData?: ActionType,
+  actionData?: ActionTypeGoogle,
 ) {
   React.useEffect(() => {
     // if no data, do nothing
