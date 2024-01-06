@@ -10,16 +10,9 @@ export type Tokens = {
   refresh_token?: string
 }
 
-export interface Person {
-  last: string
-  first: string
-  email: string
-  picture: string
-}
-
-export interface UserBase extends Person {
-  exp: number
-}
+// export interface UserBase extends Person {
+//   exp: number
+// }
 
 export type Gakunen = "ALL" | "J1" | "J2" | "J3" | "H1" | "H2" | "H3"
 export type Hr = "ALL" | "A" | "B" | "C" | "D" | "E" | "F"
@@ -171,27 +164,6 @@ export type Permission = {
 }
 
 export type State = "idle" | "success" | "loading" | "error"
-
-export type Task = {
-  id: string
-  active: boolean
-  time: number
-  type: "rename" | "move" | "create" | "delete"
-  driveFiles?: DriveFile[]
-  students?: Student[]
-  driveFile?: DriveFile
-}
-
-export type DriveFileMove = Pick<DriveFile, "id" | "parents"> & {
-  meta: Pick<DriveFileMeta, "destination" | "last">
-}
-export type DriveFileRename = Pick<DriveFile, "id"> & {
-  meta: Pick<DriveFileMeta, "file">
-}
-
-export type DriveFileTask = Pick<DriveFile, "id" | "parents"> & {
-  meta: DriveFileMeta
-}
 
 // rexp = refresh token expiry date
 export type Payload = {
