@@ -18,8 +18,8 @@ dependencies:
     specifier: ^2.4.1
     version: 2.4.1(typescript@5.3.3)
   framer-motion:
-    specifier: ^10.17.8
-    version: 10.17.8(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^10.17.9
+    version: 10.17.9(react-dom@18.2.0)(react@18.2.0)
   googleapis:
     specifier: ^129.0.0
     version: 129.0.0
@@ -63,7 +63,7 @@ devDependencies:
     version: 2.4.1(eslint@8.56.0)(react@18.2.0)(typescript@5.3.3)
   '@tailwindcss/typography':
     specifier: ^0.5.10
-    version: 0.5.10(tailwindcss@3.4.0)
+    version: 0.5.10(tailwindcss@3.4.1)
   '@types/papaparse':
     specifier: ^5.3.14
     version: 5.3.14
@@ -89,14 +89,14 @@ devDependencies:
     specifier: ^3.1.1
     version: 3.1.1
   prettier-plugin-tailwindcss:
-    specifier: ^0.5.10
-    version: 0.5.10(prettier@3.1.1)
+    specifier: ^0.5.11
+    version: 0.5.11(prettier@3.1.1)
   prisma:
     specifier: ^5.7.1
     version: 5.7.1
   tailwindcss:
-    specifier: ^3.4.0
-    version: 3.4.0
+    specifier: ^3.4.1
+    version: 3.4.1
   typescript:
     specifier: ^5.3.3
     version: 5.3.3
@@ -1449,7 +1449,7 @@ packages:
     resolution: {integrity: sha512-UY+FGM/2jjMkzQLn8pxcHGMaVLh9aEitG3zY2CiY7XHdLiz3bZOwa6oDxNqEMv7zZkV+cj5DOdz0cQ1BP5Hjgw==}
     dev: true
 
-  /@tailwindcss/typography@0.5.10(tailwindcss@3.4.0):
+  /@tailwindcss/typography@0.5.10(tailwindcss@3.4.1):
     resolution: {integrity: sha512-Pe8BuPJQJd3FfRnm6H0ulKIGoMEQS+Vq01R6M5aCrFB/ccR/shT+0kXLjouGC1gFLm9hopTFN+DMP0pfwRWzPw==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
@@ -1458,7 +1458,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.0
+      tailwindcss: 3.4.1
     dev: true
 
   /@testing-library/dom@8.20.1:
@@ -2090,7 +2090,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001574
-      electron-to-chromium: 1.4.622
+      electron-to-chromium: 1.4.623
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.22.2)
     dev: true
@@ -2586,8 +2586,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /electron-to-chromium@1.4.622:
-    resolution: {integrity: sha512-GZ47DEy0Gm2Z8RVG092CkFvX7SdotG57c4YZOe8W8qD4rOmk3plgeNmiLVRHP/Liqj1wRiY3uUUod9vb9hnxZA==}
+  /electron-to-chromium@1.4.623:
+    resolution: {integrity: sha512-lKoz10iCYlP1WtRYdh5MvocQPWVRoI7ysp6qf18bmeBgR8abE6+I2CsfyNKztRDZvhdWc+krKT6wS7Neg8sw3A==}
     dev: true
 
   /emoji-regex@8.0.0:
@@ -3465,8 +3465,8 @@ packages:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
 
-  /framer-motion@10.17.8(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-Flmw+iVuE3xZGGCF+Oy45RxYuNot0aUg9HngeLf6EdzhC517yV7Kt/dqeazo1drr0xu/PCXEINDc2N96UzlGeQ==}
+  /framer-motion@10.17.9(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-z2NpP8r+XuALoPA7ZVZHm/OoTnwkQNJFBu91sC86o/FYvJ4x7ar3eQnixgwYWFK7kEqOtQ6whtNM37tn1KrOOA==}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -5564,8 +5564,8 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-tailwindcss@0.5.10(prettier@3.1.1):
-    resolution: {integrity: sha512-9UGSejqFxGG6brYjFfTYlJ8zs4L/lvZg1AngFfaC5Fs1otSskASv5IWKmjPu5MlABQUtTKtMArKyYr/hWpXSUg==}
+  /prettier-plugin-tailwindcss@0.5.11(prettier@3.1.1):
+    resolution: {integrity: sha512-AvI/DNyMctyyxGOjyePgi/gqj5hJYClZ1avtQvLlqMT3uDZkRbi4HhGUpok3DRzv9z7Lti85Kdj3s3/1CeNI0w==}
     engines: {node: '>=14.21.3'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'
@@ -6382,8 +6382,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /tailwindcss@3.4.0:
-    resolution: {integrity: sha512-VigzymniH77knD1dryXbyxR+ePHihHociZbXnLZHUyzf2MMs2ZVqlUrZ3FvpXP8pno9JzmILt1sZPD19M3IxtA==}
+  /tailwindcss@3.4.1:
+    resolution: {integrity: sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
