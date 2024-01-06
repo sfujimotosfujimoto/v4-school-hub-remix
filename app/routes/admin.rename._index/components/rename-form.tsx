@@ -2,7 +2,7 @@ import React from "react"
 import { Form, useActionData, useNavigation } from "@remix-run/react"
 
 // types
-import type { ActionType } from "~/type.d"
+import type { ActionTypeGoogle } from "~/type.d"
 
 // components
 import SubmitButton from "~/components/ui/buttons/submit-button"
@@ -17,7 +17,7 @@ import { useTasksContext } from "~/context/tasks-context"
 
 export default function RenameForm() {
   const { state, formData } = useNavigation()
-  const actionData = useActionData<ActionType>()
+  const actionData = useActionData<ActionTypeGoogle>()
   const { renamePageDispatch } = useRenamePageContext()
   const { tasksDispatch } = useTasksContext()
 

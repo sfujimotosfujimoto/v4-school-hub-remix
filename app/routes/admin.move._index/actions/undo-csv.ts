@@ -7,7 +7,7 @@ import { DriveFileMovesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionType, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 import { undoMoveDataExecute } from "./undo"
 
 const FormDataScheme = z.object({
@@ -39,7 +39,7 @@ export async function undoCsvAction(
 
   if (!result.success) {
     logger.debug(`✅ result.error ${result.error.errors.join(",")}`)
-    throw json<ActionType>(
+    throw json<ActionTypeGoogle>(
       {
         ok: false,
         type: "undo-csv",
@@ -58,7 +58,7 @@ export async function undoCsvAction(
     logger.debug(
       `✅ result.error ${result2.error.errors.map((e) => `${e.path}\n`)}`,
     )
-    return json<ActionType>({
+    return json<ActionTypeGoogle>({
       ok: false,
       type: "undo",
       error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO002`,
@@ -73,13 +73,17 @@ export async function undoCsvAction(
 
   if (res.error) {
     toast.error(res.error)
-    return json<ActionType>({ ok: false, type: "undo-csv", error: res.error })
+    return json<ActionTypeGoogle>({
+      ok: false,
+      type: "undo-csv",
+      error: res.error,
+    })
   }
 
   // 23/10/27/(Fri) 12:03:09  ----------------------
   const dfs = mapFilesToDriveFiles(res.data?.files || [])
 
-  return json<ActionType>({
+  return json<ActionTypeGoogle>({
     ok: true,
     type: "undo-csv",
     data: {

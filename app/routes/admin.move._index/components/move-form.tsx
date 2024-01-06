@@ -2,7 +2,7 @@ import React from "react"
 import { Form, useActionData, useNavigation } from "@remix-run/react"
 
 // types
-import type { ActionType } from "~/type.d"
+import type { ActionTypeGoogle } from "~/type.d"
 
 // components
 import SubmitButton from "~/components/ui/buttons/submit-button"
@@ -17,7 +17,7 @@ import { useMovePageContext } from "~/routes/admin.move._index/context/move-page
  */
 export default function MoveForm() {
   const { state, formData } = useNavigation()
-  const actionData = useActionData<ActionType>()
+  const actionData = useActionData<ActionTypeGoogle>()
   const { movePageDispatch } = useMovePageContext()
   const { tasksDispatch } = useTasksContext()
 

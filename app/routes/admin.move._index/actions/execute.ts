@@ -5,7 +5,7 @@ import { DriveFilesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
-import type { ActionType, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 import { logger } from "~/logger"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
@@ -33,7 +33,7 @@ export async function executeAction(request: Request, formData: FormData) {
 
   if (!result.success) {
     logger.debug(`🍎 result.error ${result.error.errors.join(",")}`)
-    throw json<ActionType>(
+    throw json<ActionTypeGoogle>(
       {
         ok: false,
         type: "execute",
@@ -49,7 +49,7 @@ export async function executeAction(request: Request, formData: FormData) {
 
   const driveFiles = DriveFilesSchema.parse(raw) as DriveFile[]
   if (!driveFiles || driveFiles.length === 0)
-    return json<ActionType>({
+    return json<ActionTypeGoogle>({
       ok: false,
       type: "execute",
       error: "ファイルがありません",
@@ -70,7 +70,7 @@ export async function executeAction(request: Request, formData: FormData) {
     //   },
     // })
 
-    return json<ActionType>({
+    return json<ActionTypeGoogle>({
       ok: true,
       type: "execute",
       data: {
@@ -82,7 +82,7 @@ export async function executeAction(request: Request, formData: FormData) {
     if (error instanceof Error) {
       logger.error(`🍎 move: executeAction() error.message: ${error.message}`)
     }
-    return json<ActionType>({
+    return json<ActionTypeGoogle>({
       ok: false,
       type: "execute",
       error: "問題が発生しました。",

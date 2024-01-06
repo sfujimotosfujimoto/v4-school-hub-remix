@@ -12,7 +12,7 @@ import { logger } from "~/logger"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionType, DriveFile, Student } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile, Student } from "~/type.d"
 // Zod Data Type
 const FormDataScheme = z.object({
   // _action: z.string(),
@@ -38,7 +38,7 @@ export async function searchAction(
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
   if (!result.success) {
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       {
         ok: false,
         type: "error",
@@ -53,7 +53,7 @@ export async function searchAction(
   // get id from if `sourceFolderId` is url
   const sourceId = getIdFromUrl(sourceFolderId || "")
   if (!sourceId)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       { ok: false, type: "move", error: "フォルダIDが取得できません" },
       { status: 400 },
     )
@@ -61,7 +61,7 @@ export async function searchAction(
   // create query for Google Drive Search
   const query = queryFolderId(sourceId)
   if (!query)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       { ok: false, type: "move", error: "クエリが取得できません" },
       { status: 400 },
     )
@@ -75,7 +75,7 @@ export async function searchAction(
   // get sheets
   const sheets = await getSheets(accessToken)
   if (!sheets)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       {
         ok: false,
         type: "search",
@@ -88,7 +88,7 @@ export async function searchAction(
   const sourceFolder = await getFileById(drive, sourceId)
   let driveFiles = await getDriveFiles(drive, query)
   if (!driveFiles)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       {
         ok: false,
         type: "search",
@@ -107,7 +107,7 @@ export async function searchAction(
   }
 
   if (!driveFiles)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       {
         ok: false,
         type: "search",
@@ -116,7 +116,7 @@ export async function searchAction(
       { status: 400 },
     )
 
-  return json<ActionType>({
+  return json<ActionTypeGoogle>({
     ok: true,
     type: "search",
     data: {

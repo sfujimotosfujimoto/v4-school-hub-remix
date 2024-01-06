@@ -4,7 +4,7 @@ import { useActionData } from "@remix-run/react"
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import { z } from "zod"
 
-import type { ActionType } from "~/type.d"
+import type { ActionTypeGoogle } from "~/type.d"
 
 // components
 import RenameCards from "../admin.rename._index/components/rename-cards"
@@ -37,7 +37,7 @@ export const config = {
  */
 export default function RenameCsvPage() {
   const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
-  const actionData = useActionData<ActionType>()
+  const actionData = useActionData<ActionTypeGoogle>()
   const { renameCsvPageDispatch } = useRenameCsvPageContext()
 
   useRawToDriveFilesContext(driveFilesDispatch, actionData)

@@ -6,7 +6,7 @@ import { logger } from "~/logger"
 
 // types
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import type { ActionType } from "~/type.d"
+import type { ActionTypeGoogle } from "~/type.d"
 
 // components
 import MoveCards from "./components/move-cards"
@@ -74,7 +74,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
   if (!result.success) {
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       { ok: false, type: "move", error: result.error.message },
       { status: 400 },
     )
