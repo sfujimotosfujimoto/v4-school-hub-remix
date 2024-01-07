@@ -5,36 +5,28 @@ import { logger } from "~/logger"
 import { getUserFromSession } from "~/lib/session.server"
 import { NavLinkButton } from "~/components/buttons/button"
 import DriveLogoIcon from "~/components/icons/drive-logo-icon"
-import type { loader as rootLoader } from "~/root"
-import { useRouteLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+import { redirectToSignin } from "~/lib/responses"
 /**
  * Root loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: _index ${request.url}`)
-  // throw Error("error!!!!!")
-  try {
-    const user = await getUserFromSession(request)
 
-    return json({
-      role: user?.role || null,
-      picture: user?.picture || null,
-      email: user?.email || null,
-    })
-  } catch (error) {
-    console.error(`_index.tsx: ${error}`)
-    return null
-  }
+  const user = await getUserFromSession(request)
+  if (!user) throw redirectToSignin(request)
+  logger.debug("✅ _index/route.tsx ~ 	🌈 user ✅ ", user)
+
+  return json({
+    role: user?.role || null,
+    picture: user?.picture || null,
+    email: user?.email || null,
+  })
 }
 
 export default function Index() {
-  const data = useRouteLoaderData<typeof rootLoader>("root")
-
-  if (!data) {
-    throw Error("no data")
-  }
-
-  const { email } = data
+  // const data = useRouteLoaderData<typeof rootLoader>("root")
+  const { email } = useLoaderData<typeof loader>()
 
   return (
     <section className="mx-auto flex h-full w-screen max-w-7xl flex-col items-center justify-center gap-8">
