@@ -1,7 +1,7 @@
 import { google } from "googleapis"
 
 import type { drive_v3, sheets_v4 } from "googleapis"
-import type { DriveFile, Student } from "~/type.d"
+import type { DriveFile, PermissionGoogle, Student } from "~/type.d"
 
 import { logger } from "~/logger"
 import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"
@@ -120,8 +120,7 @@ export function querySampledStudent(
  */
 export function mapFilesToDriveFiles(
   files: drive_v3.Schema$File[],
-): DriveFile
-[] {
+): DriveFile[] {
   const driveFiles: DriveFile[] = files.map((d) => {
     return mapFilesToDriveFile(d)
   })
@@ -153,7 +152,6 @@ function convertPermissions(
   permissions: drive_v3.Schema$Permission[] | undefined,
 ): PermissionGoogle[] | undefined {
   if (!permissions) return undefined
-
   return permissions.map((p) => {
     let type_: "user" | "group" | "unknown" = "unknown"
     if (isType(p.type)) {
