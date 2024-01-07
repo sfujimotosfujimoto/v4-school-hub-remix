@@ -24,12 +24,13 @@ export default function StudentCard({
   size?: "small" | "big"
   isNavigating?: boolean
 }) {
-  const appProperties = driveFile.appProperties
-  if (!appProperties) return null
-  let appProps = parseAppProperties(appProperties)
-
-  const tags = appProps.tags ? parseTags(appProps.tags) : null
-  const nendo = appProps.nendo
+  let tags = null
+  let nendo = null
+  if (driveFile.appProperties) {
+    let appProps = parseAppProperties(driveFile.appProperties)
+    tags = appProps.tags ? parseTags(appProps.tags) : null
+    nendo = appProps.nendo
+  }
 
   return (
     <>
@@ -41,6 +42,8 @@ export default function StudentCard({
           "opacity-40": isNavigating,
         })}
       >
+        {/* <!-- CHECKBOX --> */}
+        <CheckBox driveFile={driveFile} role={role} />
         <div
           className={`card-body ${
             size === "small" ? "p-2 sm:p-4" : "p-6 sm:p-10"
@@ -142,9 +145,6 @@ export default function StudentCard({
             </div>
           )}
         </div>
-
-        {/* <!-- CHECKBOX --> */}
-        <CheckBox driveFile={driveFile} role={role} />
       </div>
       {/* </a> */}
     </>
