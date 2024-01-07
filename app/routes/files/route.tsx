@@ -18,6 +18,10 @@ export function useGakunen() {
   return useOutletContext<ContextType>()
 }
 
+export const meta: MetaFunction = () => {
+  return [{ title: `ファイル | SCHOOL HUB` }]
+}
+
 /**
  * Files Layout
  * /files
@@ -44,10 +48,6 @@ export default function FilesLayout() {
       </section>
     </TasksProvider>
   )
-}
-
-export const meta: MetaFunction = () => {
-  return [{ title: `ファイル | SCHOOL HUB` }]
 }
 
 /**
