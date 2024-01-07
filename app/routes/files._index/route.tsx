@@ -8,17 +8,21 @@ import { useGakunen } from "../student/route"
 import type { LoaderFunctionArgs } from "@remix-run/node"
 import { json } from "@remix-run/node"
 import { logger } from "~/logger"
-import { authenticate } from "~/lib/authenticate.server"
 import { requireUserRole } from "~/lib/require-roles.server"
-import { destroyUserSession } from "~/lib/session.server"
+import { destroyUserSession, getUserFromSession } from "~/lib/session.server"
+import { redirectToSignin } from "~/lib/responses"
 
 /**
  * loader function
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: files._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireUserRole(user)
+  const user = await getUserFromSession(request)
+
+  if (!user || !user.credential) throw redirectToSignin(request)
+
+  // const { user } = await authenticate(request)
+  await requireUserRole(request, user)
 
   if (!user || !user.credential) {
     return destroyUserSession(request, `/?authstate=unauthenticated`)
