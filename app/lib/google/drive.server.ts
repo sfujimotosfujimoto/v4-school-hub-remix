@@ -49,6 +49,7 @@ export function queryMultipleStudentsAndFilename(
   logger.debug(
     `✅ queryMultipleStudentsAndFilename: folderLinks: ${folderLinks.length}`,
   )
+  logger.debug(`✅ google/drive.server.ts ~ 	🌈 q ✅ ${q.map(decodeURI)}`)
 
   const folderQuery = folderLinks
     .slice(0, 170)
@@ -56,7 +57,10 @@ export function queryMultipleStudentsAndFilename(
     .join(" or ")
 
   // TODO: fullText to name
-  const qQuery = q.map((item) => `fullText contains '${item}'`).join(" and ")
+  const qQuery = q
+    .map((item) => `name contains '${decodeURI(item)}'`)
+    .join(" and ")
+  logger.debug(`✅ google/drive.server.ts ~ 	🌈 qQuery ✅ ${qQuery}`)
 
   if (qQuery) {
     return `(${folderQuery}) and (${qQuery}) and trashed = false`
