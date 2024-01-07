@@ -1,43 +1,37 @@
-import React from "react"
-import { redirect } from "@remix-run/node"
 import type { LoaderFunctionArgs } from "@remix-run/node"
+import { redirect } from "@remix-run/node"
 import { NavLink, Outlet, useLoaderData, useParams } from "@remix-run/react"
-
-import { logger } from "~/logger"
-
-// components
+import React from "react"
 import { LogoIcon } from "~/components/icons"
 import BackButton from "~/components/ui/buttons/back-button"
-
-// functions
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import DriveFilesProvider from "~/context/drive-files-context"
+import NendoTagsProvider from "~/context/nendos-tags-context"
 import {
   getDrive,
   getDriveFiles,
   querySampledStudent,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
+import { getUserFromSession } from "~/lib/session.server"
 import { filterStudentNameSegments } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
-import NendoTagsProvider from "~/context/nendos-tags-context"
-import DriveFilesProvider from "~/context/drive-files-context"
-import { getUserFromSession } from "~/lib/session.server"
-import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { logger } from "~/logger"
 
 /**
  * loader function
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: files.$gakunen.$hr ${request.url}`)
+  const user = await getUserFromSession(request)
 
   // if search params are empty, return empty segments
-  const q = new URL(request.url).searchParams.get("q")
+  let { searchParams } = new URL(request.url)
+  let q = searchParams.get("query")
+  // const q = new URL(request.url).searchParams.get("q")
   if (q) {
     return { segments: [] }
   }
-
-  // const { user } = await authenticate(request)
-  const user = await getUserFromSession(request)
-  // await requireUserRole(user)
 
   if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
@@ -116,7 +110,7 @@ export default function FilesGakunenHrLayout() {
         <BackButton isLink={true} to={`/files`} />
         {/* GO button */}
         <NavLink
-          to={`/files/${gakunen}/${hr}?${searchParams}`}
+          to={`/files/${gakunen}/${hr}?${encodeURI(searchParams)}`}
           className={`btn btn-success btn-sm w-24 shadow-lg  ${
             gakunen === "ALL" || hr === "ALL" ? "btn-disabled" : null
           }`}
@@ -127,13 +121,15 @@ export default function FilesGakunenHrLayout() {
       </div>
 
       {/* Segments */}
-      <div data-name="segments">
-        <Segments
-          checkedSegments={checkedSegments}
-          setCheckedSegments={setCheckedSegments}
-          segments={segments}
-        />
-      </div>
+      {segments && segments.length > 0 && (
+        <div data-name="segments">
+          <Segments
+            checkedSegments={checkedSegments}
+            setCheckedSegments={setCheckedSegments}
+            segments={segments}
+          />
+        </div>
+      )}
       <DriveFilesProvider>
         <NendoTagsProvider>
           <Outlet />
