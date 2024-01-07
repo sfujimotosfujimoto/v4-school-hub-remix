@@ -1,4 +1,5 @@
 import React from "react"
+import { parseAppProperties } from "~/lib/utils"
 
 import type { DriveFile } from "~/type.d"
 
@@ -139,7 +140,11 @@ function driveFilesReducer(dfs: DriveFile[], action: Action): DriveFile[] {
       const nendo = action.payload.nendo
       const baseDriveFiles = action.payload.driveFiles as DriveFile[]
       const filtered = baseDriveFiles
-        .filter((df) => df.appProperties?.nendo === nendo)
+        .filter((df) => {
+          if (!df.appProperties) return null
+          let appProps = parseAppProperties(df.appProperties)
+          return appProps.nendo === nendo
+        })
         .map((df) => {
           return _setSelected(df, true)
         })
@@ -165,7 +170,9 @@ function driveFilesReducer(dfs: DriveFile[], action: Action): DriveFile[] {
 
       const filtered = baseDriveFiles
         .filter((df) => {
-          const tags = df.appProperties?.tags?.split(",").map((t) => t.trim())
+          if (!df.appProperties) return null
+          let appProps = parseAppProperties(df.appProperties)
+          const tags = appProps.tags?.split(",").map((t: string) => t.trim())
           console.log("tags", tags)
           return tags?.includes(tag)
         })
