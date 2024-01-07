@@ -1,10 +1,12 @@
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-
-// components
+import React from "react"
+import { z } from "zod"
+import { CheckIcon } from "~/components/icons"
 import StudentCards from "~/components/ui/student-card/student-cards"
-// functions
+import TaskCards from "~/components/ui/tasks/task-cards"
+import { useDriveFilesContext } from "~/context/drive-files-context"
 import {
   getDrive,
   getDriveFiles,
@@ -12,29 +14,23 @@ import {
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import { requireAdminRole, requireUserRole } from "~/lib/require-roles.server"
+import { redirectToSignin } from "~/lib/responses"
+import { getUserFromSession } from "~/lib/session.server"
+import { parseAppProperties, parseTags } from "~/lib/utils"
+import { convertDriveFiles } from "~/lib/utils-loader"
 import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
-// TODO: move to a component folder and share
-import AllCheckButtons from "../student.$studentFolderId._index/components/all-check-buttons"
-import React from "react"
-import PropertyButton from "../student.$studentFolderId._index/components/property-button"
-import BaseNameButton from "../student.$studentFolderId._index/components/base-name-button"
-import { parseAppProperties, parseTags } from "~/lib/utils"
-import { z } from "zod"
-import { CheckIcon } from "~/components/icons"
-import DeleteButton from "./components/delete-button"
+import type { DriveFile } from "~/type.d"
+import { deleteExecuteAction } from "../../lib/actions/delete-execute"
+import { deleteUndoAction } from "../../lib/actions/delete-undo"
 import { propertyExecuteAction } from "../../lib/actions/property-execute"
 import { renameExecuteAction } from "../../lib/actions/rename-execute"
-import { deleteExecuteAction } from "../../lib/actions/delete-execute"
-import TaskCards from "~/components/ui/tasks/task-cards"
-import { deleteUndoAction } from "../../lib/actions/delete-undo"
-import { getUserFromSession } from "~/lib/session.server"
-import { redirectToSignin } from "~/lib/responses"
-import { convertDriveFiles } from "~/lib/utils-loader"
-import TagPills from "../student.$studentFolderId._index/components/tag-pills"
+import AllCheckButtons from "../student.$studentFolderId._index/components/all-check-buttons"
+import BaseNameButton from "../student.$studentFolderId._index/components/base-name-button"
 import NendoPills from "../student.$studentFolderId._index/components/nendo-pills"
-import { useDriveFilesContext } from "~/context/drive-files-context"
-import type { DriveFile } from "~/type.d"
+import PropertyButton from "../student.$studentFolderId._index/components/property-button"
+import TagPills from "../student.$studentFolderId._index/components/tag-pills"
+import DeleteButton from "./components/delete-button"
 
 /**
  * loader function
@@ -222,7 +218,7 @@ export default function FilesGakunenHrQueryPage() {
   if (driveFiles.length === 0) {
     return (
       <p>
-        <span className="btn btn-xs m-1 bg-slate-300">ファイル名</span>
+        <span className="btn btn-xs m-1 bg-slate-400">ファイル名</span>
         を選択してください。
       </p>
     )

@@ -78,9 +78,9 @@ module.exports = {
         mytheme: {
           primary: "hsl(182, 50%, 60%)",
 
-          secondary: "#e58b8a",
+          secondary: "hsl(1, 65%, 70%)a",
 
-          accent: "#eed8b4",
+          accent: "hsl(33, 70%, 75%)",
 
           neutral: "hsl(182, 50%, 60%)",
 
@@ -90,9 +90,9 @@ module.exports = {
 
           success: "hsl(182, 50%, 60%)",
 
-          warning: "#eed8b4",
+          warning: "hsl(33, 70%, 75%)",
 
-          error: "#e58b8a",
+          error: "hsl(1, 65%, 70%)",
         },
       },
       // "winter",

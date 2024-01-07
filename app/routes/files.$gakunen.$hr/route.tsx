@@ -194,7 +194,7 @@ function Segments({
 
               <label
                 htmlFor={segment}
-                className="btn btn-warning btn-xs m-1 cursor-pointer select-none hover:bg-sfyellow-300 peer-checked:bg-sfred-100"
+                className="btn btn-warning btn-xs m-1 cursor-pointer select-none border-none peer-checked:bg-sfred-100"
               >
                 {segment}
               </label>
