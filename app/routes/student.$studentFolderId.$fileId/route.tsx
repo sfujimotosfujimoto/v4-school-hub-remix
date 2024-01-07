@@ -144,7 +144,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 export default function StudentFolderIdFileIdPage() {
   const { driveFile, permissions, tags } =
     useLoaderData<SerializeFrom<typeof loader>>()
-  console.log("✅ student.$studentFolderId.$fileId/route.tsx ~ 	😀 tags", tags)
+  console.log("✅ student.$studentFolderId.$fileId/route.tsx")
 
   const { role } = useRouteLoaderData("routes/student.$studentFolderId") as {
     role: Role
