@@ -13,19 +13,14 @@ import {
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import { requireAdminRole, requireUserRole } from "~/lib/require-roles.server"
 import { setSelected } from "~/lib/utils.server"
-import type { Role } from "@prisma/client"
-import { authenticate } from "~/lib/authenticate.server"
 import { logger } from "~/logger"
 // TODO: move to a component folder and share
-import TagButtons from "../student.$studentFolderId._index/components/tag-buttons"
-import NendoButtons from "../student.$studentFolderId._index/components/nendo-buttons"
 import AllCheckButtons from "../student.$studentFolderId._index/components/all-check-buttons"
 import React from "react"
 import PropertyButton from "../student.$studentFolderId._index/components/property-button"
 import BaseNameButton from "../student.$studentFolderId._index/components/base-name-button"
-import { parseTags } from "~/lib/utils"
+import { parseAppProperties, parseTags } from "~/lib/utils"
 import { z } from "zod"
-import { useDriveFilesContext } from "~/context/drive-files-context"
 import { CheckIcon } from "~/components/icons"
 import DeleteButton from "./components/delete-button"
 import { propertyExecuteAction } from "../../lib/actions/property-execute"
@@ -33,23 +28,23 @@ import { renameExecuteAction } from "../../lib/actions/rename-execute"
 import { deleteExecuteAction } from "../../lib/actions/delete-execute"
 import TaskCards from "~/components/ui/tasks/task-cards"
 import { deleteUndoAction } from "../../lib/actions/delete-undo"
+import { getUserFromSession } from "~/lib/session.server"
+import { redirectToSignin } from "~/lib/responses"
+import { convertDriveFiles } from "~/lib/utils-loader"
+import TagPills from "../student.$studentFolderId._index/components/tag-pills"
+import NendoPills from "../student.$studentFolderId._index/components/nendo-pills"
+import { useDriveFilesContext } from "~/context/drive-files-context"
 import type { DriveFile } from "~/type.d"
 
 /**
  * loader function
  */
-export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
-  driveFiles: DriveFile[]
-  role: Role
-  tags: string[]
-  nendos: string[]
-}> {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: files.$gakunen.$hr._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireUserRole(user)
-  if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireUserRole(request, user)
 
-  if (!user?.credential) throw redirect("/?authstate-025")
   const accessToken = user.credential.accessToken
 
   // get sheets
@@ -67,6 +62,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
       role: user.role,
       tags: [],
       nendos: [],
+      url: request.url,
     }
   }
 
@@ -92,14 +88,16 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
       role: user.role,
       tags: [],
       nendos: [],
+      url: request.url,
     }
   driveFiles = driveFiles ? setSelected(driveFiles, true) : []
 
   const tags: Set<string> = new Set(
     driveFiles
       ?.map((df) => {
-        if (df.appProperties?.tags)
-          return parseTags(df.appProperties.tags) || null
+        if (!df.appProperties) return null
+        let appProps = parseAppProperties(df.appProperties)
+        if (appProps.tags) return parseTags(appProps.tags) || null
         return null
       })
       .filter((g): g is string[] => g !== null)
@@ -108,8 +106,9 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   const nendos: Set<string> = new Set(
     driveFiles
       ?.map((df) => {
-        if (df.appProperties?.nendo)
-          return df.appProperties.nendo.trim() || null
+        if (!df.appProperties) return null
+        let appProps = parseAppProperties(df.appProperties)
+        if (appProps.nendo) return appProps.nendo.trim() || null
         return null
       })
       .filter((g): g is string => g !== null)
@@ -121,13 +120,9 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
     role: user.role,
     tags: Array.from(tags) || [],
     nendos: Array.from(nendos) || [],
+    url: request.url,
   }
 }
-
-// Zod Data Type
-const FormDataScheme = z.object({
-  _action: z.string(),
-})
 
 /**
  * Action
@@ -135,11 +130,14 @@ const FormDataScheme = z.object({
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: files.$gakunen.$hr._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
 
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-move-001")
+  // Zod Data Type
+  const FormDataScheme = z.object({
+    _action: z.string(),
+  })
 
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
@@ -172,9 +170,6 @@ export async function action({ request }: ActionFunctionArgs) {
     case "delete-execute": {
       logger.debug(`✅ action: delete-execute`)
       return await deleteExecuteAction(request, formData)
-      // logger.debug(`✅ action: "delete": ${fileIdsString}`)
-      // return json({ ok: true })
-      // return json({ ok: true, data: { fileIds } })
     }
 
     case "undo": {
@@ -192,19 +187,42 @@ export async function action({ request }: ActionFunctionArgs) {
  */
 export default function FilesGakunenHrQueryPage() {
   const [isBig, setIsBig] = React.useState(true)
-  let { driveFiles, role, tags, nendos } = useLoaderData<typeof loader>()
 
-  const { driveFiles: _driveFiles } = useDriveFilesContext()
+  // React.useEffect(() => {
+  //   if (isBig) {
+  //     setIsBig(true)
+  //   } else {
+  //     setIsBig(false)
+  //   }
+  // }, [isBig])
+  // get driveFiles from loader
+  let {
+    driveFiles: _driveFiles,
+    role,
+    tags,
+    nendos,
+    url,
+  } = useLoaderData<typeof loader>()
 
-  let baseDriveFiles = React.useMemo(() => {
-    if (!driveFiles) return []
-    return driveFiles
-  }, [driveFiles])
+  // get driveFiles from context
+  const { driveFilesDispatch, driveFiles } = useDriveFilesContext()
+
+  const dfz: DriveFile[] = React.useMemo(() => {
+    if (!_driveFiles) return []
+    const dfz = convertDriveFiles(_driveFiles)
+    return dfz
+  }, [_driveFiles])
+
+  React.useEffect(() => {
+    // convert driveFiles to DriveFile[]
+    // set driveFiles to context
+    driveFilesDispatch({ type: "SET", payload: { driveFiles: dfz } })
+  }, [dfz, driveFilesDispatch])
 
   if (driveFiles.length === 0) {
     return (
       <p>
-        <span className="btn btn-warning btn-xs m-1">ファイル名</span>
+        <span className="btn btn-xs m-1 bg-slate-300">ファイル名</span>
         を選択してください。
       </p>
     )
@@ -219,14 +237,14 @@ export default function FilesGakunenHrQueryPage() {
         {/* PROPERTY BUTTON */}
         {role && ["ADMIN", "SUPER"].includes(role) && (
           <>
-            <PropertyButton driveFiles={_driveFiles} tags={tags} />
-            <BaseNameButton driveFiles={_driveFiles} />
-            <DeleteButton driveFiles={_driveFiles} />
+            <PropertyButton driveFiles={driveFiles} tags={tags} />
+            <BaseNameButton driveFiles={driveFiles} />
+            <DeleteButton driveFiles={driveFiles} />
           </>
         )}
 
         {/* ALLCHECK BUTTONS  {#if _driveFiles && $driveFiles && role}*/}
-        <AllCheckButtons role={role} baseDriveFiles={baseDriveFiles} />
+        <AllCheckButtons role={role} driveFiles={driveFiles} />
 
         {/* SMALL OR BIG  {#if $driveFiles && $driveFiles.length > 0} */}
         {driveFiles && driveFiles.length > 0 && (
@@ -245,21 +263,15 @@ export default function FilesGakunenHrQueryPage() {
       </div>
 
       {/* TAGS & NENDOS */}
-      <div className="mt-2 flex flex-col gap-2">
-        <TagButtons
-          baseDriveFiles={baseDriveFiles}
-          tags={tags}
-          color={"bg-slate-400"}
-        />
-        <NendoButtons
-          baseDriveFiles={baseDriveFiles}
-          nendos={nendos}
-          color={"bg-slate-400"}
-          showAll={true}
-        />
+      <div className="mt-2 flex flex-none flex-wrap gap-1">
+        <NendoPills url={url} nendos={nendos} />
+        {tags.length > 0 && (
+          <div className="divider divider-horizontal mx-0"></div>
+        )}
+        <TagPills url={url} tags={tags} />
       </div>
 
-      {_driveFiles && role && (
+      {driveFiles && role && (
         <>
           {" "}
           <div
@@ -267,18 +279,18 @@ export default function FilesGakunenHrQueryPage() {
             className="absolute right-0 top-0 ml-1 flex gap-1"
           >
             <span className="text-md  rounded-md bg-slate-300 p-1">
-              {_driveFiles.length} files
+              {driveFiles.length} files
             </span>
             <span className="text-md justify-content ml-2 flex items-center gap-1 rounded-md bg-slate-300 px-2 py-1">
               <CheckIcon className="h-3 w-3 font-bold" />
               {
-                _driveFiles?.filter((df) => df.meta?.selected === true).length
+                driveFiles?.filter((df) => df.meta?.selected === true).length
               }{" "}
             </span>
           </div>
           <StudentCards
             role={role}
-            driveFiles={_driveFiles}
+            driveFiles={driveFiles}
             size={isBig ? "big" : "small"}
           />
           {/* <!-- ACTION CARD BLOCK --> */}
