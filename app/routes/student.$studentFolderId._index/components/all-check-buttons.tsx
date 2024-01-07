@@ -5,10 +5,10 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 
 export default function AllCheckButtons({
   role,
-  baseDriveFiles,
+  driveFiles,
 }: {
   role?: Role
-  baseDriveFiles: DriveFile[]
+  driveFiles: DriveFile[]
 }) {
   const { driveFilesDispatch } = useDriveFilesContext()
   const btnCls = `btn-xs border-none btn shadow-md bg-sfred-200 duration-300 hover:-translate-y-[1px] hover:bg-sfred-400`
@@ -23,7 +23,7 @@ export default function AllCheckButtons({
               onClick={() => {
                 driveFilesDispatch({
                   type: "SET",
-                  payload: { driveFiles: baseDriveFiles },
+                  payload: { driveFiles },
                 })
                 driveFilesDispatch({
                   type: "UPDATE_META_SELECTED",
