@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
-import { DriveFilesSchema } from "~/schemas"
+// import { DriveFilesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
@@ -9,6 +9,7 @@ import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 import { logger } from "~/logger"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
+import { convertDriveFiles } from "~/lib/utils-loader"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -46,8 +47,9 @@ export async function executeAction(request: Request, formData: FormData) {
   let { driveFilesString } = result.data
 
   const raw = JSON.parse(driveFilesString || "[]")
+  const driveFiles = convertDriveFiles(raw)
 
-  const driveFiles = DriveFilesSchema.parse(raw) as DriveFile[]
+  // const driveFiles = DriveFilesSchema.parse(raw) as DriveFile[]
   if (!driveFiles || driveFiles.length === 0)
     return json<ActionTypeGoogle>({
       ok: false,

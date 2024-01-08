@@ -35,7 +35,7 @@ export default function MoveCards({
       <article className="mx-auto max-w-5xl p-12">
         <div
           data-name="MoveCards.tsx"
-          className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-200 md:grid-cols-2 xl:grid-cols-3"
+          className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-400 md:grid-cols-2 xl:grid-cols-3"
         >
           {driveFiles &&
             driveFiles.map((d) => {
@@ -67,7 +67,7 @@ function MoveCard({
         <div
           data-name="MoveCard"
           className={`card  shadow-lg transition-all duration-300 lg:card-side ${
-            selected ? "bg-sfgreen-200" : "bg-slate-300"
+            selected ? "bg-sfgreen-400" : "bg-slate-300"
           }`}
         >
           <input
@@ -111,11 +111,23 @@ function MoveCard({
               <div className="flex gap-4">
                 <div className="flex items-center gap-1">
                   <TimeIcon className="h-3 w-4" />
-                  <span>{dateFormat(driveFile.createdTime || "") || ""}</span>
+                  <span>
+                    {dateFormat(
+                      driveFile.createdTime
+                        ? driveFile.createdTime.toISOString()
+                        : "",
+                    ) || ""}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <RenewIcon className="h-3 w-3" />
-                  <span>{dateFormat(driveFile.modifiedTime || "") || ""}</span>
+                  <span>
+                    {dateFormat(
+                      driveFile.modifiedTime
+                        ? driveFile.modifiedTime.toISOString()
+                        : "",
+                    ) || ""}
+                  </span>
                 </div>
               </div>
             )}

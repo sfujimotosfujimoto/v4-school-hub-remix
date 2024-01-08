@@ -309,7 +309,6 @@ async function _findStudentDataFromSegments(
       }
       return df
     } else {
-      console.log("before driveErrorResponse")
       serverErrorResponse(
         `メールアドレス ${df.meta.file?.studentEmail} の生徒が名簿から見つかりません。`,
       )

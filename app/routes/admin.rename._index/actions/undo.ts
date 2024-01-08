@@ -1,16 +1,13 @@
+import { json, redirect } from "@remix-run/node"
+import type { drive_v3 } from "googleapis"
 import { z } from "zod"
+import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
-import { logger } from "~/logger"
-import { DriveFilesSchema } from "~/schemas"
-
-import { json, redirect } from "@remix-run/node"
-
-import type { DriveFile } from "~/type.d"
-import type { RenameActionType } from "../route"
-import type { drive_v3 } from "googleapis"
-import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { arrayIntoChunks } from "~/lib/utils"
+import { convertDriveFiles } from "~/lib/utils-loader"
+import { logger } from "~/logger"
+import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 
 const FormDataScheme = z.object({
   driveFilesString: z.string().optional(),
@@ -34,7 +31,7 @@ export async function undoAction(request: Request, formData: FormData) {
 
   if (!result.success) {
     logger.debug(`✅ result.error ${result.error.errors.join(",")}`)
-    throw json<RenameActionType>(
+    throw json<ActionTypeGoogle>(
       {
         ok: false,
         type: "undo",
@@ -47,28 +44,29 @@ export async function undoAction(request: Request, formData: FormData) {
   let { driveFilesString } = result.data
 
   const raw = JSON.parse(driveFilesString || "[]")
+  const driveFiles = convertDriveFiles(raw)
 
-  for (const file of raw) {
-    file.parents = [""]
-    file.appProperties = {}
-  }
+  // for (const df of driveFiles) {
+  //   df.parents = [""]
+  //   df.appProperties = {}
+  // }
 
-  const result2 = DriveFilesSchema.safeParse(raw)
-  if (!result2.success) {
-    logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
-    return json<RenameActionType>({
-      ok: false,
-      type: "undo",
-      error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO002`,
-    })
-  }
+  // const result2 = DriveFilesSchema.safeParse(raw)
+  // if (!result2.success) {
+  //   logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
+  //   return json<ActionTypeGoogle>({
+  //     ok: false,
+  //     type: "undo",
+  //     error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO002`,
+  //   })
+  // }
 
-  const driveFiles = result2.data as unknown as DriveFile[]
+  // const driveFiles = result2.data as unknown as DriveFile[]
 
   // logger.debug(`✅ driveFiles: ${JSON.stringify(driveFiles, null, 2)}`)
 
   if (!driveFiles)
-    return json<RenameActionType>({
+    return json<ActionTypeGoogle>({
       ok: false,
       type: "error",
       error: "ファイルがありません",
@@ -83,10 +81,10 @@ export async function undoAction(request: Request, formData: FormData) {
   const dfs = mapFilesToDriveFiles(res.data?.files || [])
 
   if (res.error) {
-    return json<RenameActionType>({ ok: false, type: "undo", error: res.error })
+    return json<ActionTypeGoogle>({ ok: false, type: "undo", error: res.error })
   }
 
-  return json<RenameActionType>({
+  return json<ActionTypeGoogle>({
     ok: true,
     type: "undo",
     data: {

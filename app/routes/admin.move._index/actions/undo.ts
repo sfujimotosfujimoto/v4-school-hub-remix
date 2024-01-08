@@ -2,7 +2,7 @@ import { z } from "zod"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-import { DriveFilesSchema } from "~/schemas"
+// import { DriveFilesSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
@@ -10,6 +10,7 @@ import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import type { drive_v3 } from "googleapis"
+import { convertDriveFiles } from "~/lib/utils-loader"
 
 const FormDataScheme = z.object({
   driveFilesString: z.string().optional(),
@@ -46,18 +47,19 @@ export async function undoAction(request: Request, formData: FormData) {
   let { driveFilesString } = result.data
 
   const raw = JSON.parse(driveFilesString || "[]")
+  const driveFiles = convertDriveFiles(raw)
 
-  const result2 = DriveFilesSchema.safeParse(raw)
-  if (!result2.success) {
-    logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
-    return json<ActionTypeGoogle>({
-      ok: false,
-      type: "undo",
-      error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO002`,
-    })
-  }
+  // const result2 = DriveFilesSchema.safeParse(raw)
+  // if (!result2.success) {
+  //   logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
+  //   return json<ActionTypeGoogle>({
+  //     ok: false,
+  //     type: "undo",
+  //     error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO002`,
+  //   })
+  // }
 
-  const driveFiles = result2.data as unknown as DriveFile[]
+  // const driveFiles = result2.data as unknown as DriveFile[]
 
   if (!driveFiles || driveFiles.length === 0)
     return json<ActionTypeGoogle>({

@@ -2,15 +2,15 @@ import { z } from "zod"
 import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-import { DriveFilesRenameSchema } from "~/schemas"
+// import { DriveFilesRenameSchema } from "~/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { DriveFile } from "~/type.d"
-import type { RenameActionType } from "../route"
+import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 import type { drive_v3 } from "googleapis"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"
+import { convertDriveFiles } from "~/lib/utils-loader"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -37,7 +37,7 @@ export async function executeAction(request: Request, formData: FormData) {
 
   if (!result.success) {
     logger.debug(`✅ result.error ${result.error.errors}`)
-    throw json<RenameActionType>(
+    throw json<ActionTypeGoogle>(
       {
         ok: false,
         type: "error",
@@ -50,10 +50,11 @@ export async function executeAction(request: Request, formData: FormData) {
   let { driveFilesString } = result.data
 
   const raw = JSON.parse(driveFilesString || "[]")
+  const driveFiles = convertDriveFiles(raw)
 
-  const driveFiles = DriveFilesRenameSchema.parse(raw) as DriveFile[]
+  // const driveFiles = DriveFilesRenameSchema.parse(raw) as DriveFile[]
   if (!driveFiles || driveFiles.length === 0)
-    return json<RenameActionType>({
+    return json<ActionTypeGoogle>({
       ok: false,
       type: "error",
       error: "ファイルがありません",
@@ -63,7 +64,7 @@ export async function executeAction(request: Request, formData: FormData) {
     const drive = await getDrive(user.credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-rename-014")
     const files = await renameDriveFiles(drive, driveFiles)
-    return json<RenameActionType>({
+    return json<ActionTypeGoogle>({
       ok: true,
       type: "execute",
       data: { files },
@@ -71,7 +72,7 @@ export async function executeAction(request: Request, formData: FormData) {
   } catch (error: unknown) {
     if (error instanceof Error) return { error: error.message }
     else
-      return json<RenameActionType>({
+      return json<ActionTypeGoogle>({
         ok: false,
         type: "error",
         error: "エラーが発生しました。",

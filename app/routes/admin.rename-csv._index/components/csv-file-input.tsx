@@ -36,9 +36,7 @@ export default function CsvFileInput({
     if (!file) return
     async function setCsv(file: File) {
       const data = await readCsvFileToObj(file)
-      console.log("✅ data", data)
       const dfs = parseCsvObjToDriveFileRename(data)
-      console.log("✅ dfs", dfs)
       driveFilesDispatch({
         type: "SET",
         payload: {

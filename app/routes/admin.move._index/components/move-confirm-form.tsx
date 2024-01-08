@@ -31,6 +31,8 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
     // filter only selected files
 
     const dfs = driveFiles.filter((df) => df.meta?.selected === true)
+
+    console.log("✅ components/move-confirm-form.tsx ~ 	🌈 dfs ✅ ", dfs)
     tasksDispatch({
       type: "SET",
       payload: {

@@ -1,14 +1,12 @@
+import { json, redirect } from "@remix-run/node"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
+import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
-import { DriveFilesSchema } from "~/schemas"
-
-import { json, redirect } from "@remix-run/node"
-
-import type { ActionTypeGoogle, DriveFile } from "~/type.d"
 import { undoRenameDataExecute } from "~/routes/admin.rename._index/actions/undo"
+import type { ActionTypeGoogle } from "~/type.d"
 
 const FormDataScheme = z.object({
   driveFilesSerialized: z.string().optional(),
@@ -38,8 +36,9 @@ export async function undoAction(request: Request, formData: FormData) {
   let { driveFilesSerialized } = result.data
 
   const raw = JSON.parse(driveFilesSerialized || "[]")
+  const driveFiles = convertDriveFiles(raw)
 
-  const driveFiles = DriveFilesSchema.parse(raw) as DriveFile[]
+  // const driveFiles = DriveFilesSchema.parse(raw) as DriveFile[]
   if (!driveFiles)
     return json<ActionTypeGoogle>({
       ok: false,

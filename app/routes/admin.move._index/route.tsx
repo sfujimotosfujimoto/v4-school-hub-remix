@@ -1,35 +1,25 @@
-import { z } from "zod"
-import { json, redirect } from "@remix-run/node"
-import { useActionData, useLoaderData } from "@remix-run/react"
-
-import { logger } from "~/logger"
-
-// types
+import type { Role } from "@prisma/client"
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import type { ActionTypeGoogle } from "~/type.d"
-
-// components
-import MoveCards from "./components/move-cards"
-import MoveConfirmForm from "./components/move-confirm-form"
-import MoveForm from "./components/move-form"
+import { json } from "@remix-run/node"
+import { useActionData, useLoaderData } from "@remix-run/react"
+import { z } from "zod"
 import TaskCards from "~/components/ui/tasks/task-cards"
-
-// functions
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { useDriveFilesContext } from "~/context/drive-files-context"
+import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
+import { useToast } from "~/hooks/useToast"
 import { requireAdminRole } from "~/lib/require-roles.server"
+import { logger } from "~/logger"
+import type { ActionTypeGoogle } from "~/type.d"
+import { executeAction } from "./actions/execute"
 import { searchAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
 import { undoCsvAction } from "./actions/undo-csv"
-
-// context
-import { useDriveFilesContext } from "~/context/drive-files-context"
-
-// hooks
-import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
-import { useToast } from "~/hooks/useToast"
-import { authenticate } from "~/lib/authenticate.server"
-import { executeAction } from "./actions/execute"
-import type { Role } from "@prisma/client"
-import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import MoveCards from "./components/move-cards"
+import MoveConfirmForm from "./components/move-confirm-form"
+import MoveForm from "./components/move-form"
+import { getUserFromSession } from "~/lib/session.server"
+import { redirectToSignin } from "~/lib/responses"
 
 export const config = {
   // TODO: set maxDuration for production
@@ -42,12 +32,9 @@ export const config = {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin.move._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
-
-  if (!user || !user.credential) {
-    throw redirect("/?authstate=unauthenticated")
-  }
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
 
   return {
     role: user.role,
@@ -65,11 +52,10 @@ const FormDataScheme = z.object({
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.move._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
 
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-move-001")
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
@@ -129,8 +115,9 @@ export default function MovePage() {
   const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
   const { role } = useLoaderData<{ role: Role }>()
 
-  const actionData = useActionData<ActionType>()
+  const actionData = useActionData<ActionTypeGoogle>()
 
+  console.log("✅ admin.move._index/route.tsx ~ 	🌈 actionData ✅ ", actionData)
   // validate raw driveFiles and set to driveFilesContext
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
 
@@ -140,7 +127,7 @@ export default function MovePage() {
     <>
       <article
         data-name="admin.move._index"
-        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-400 bg-slate-50 p-8 shadow-lg"
+        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-500 bg-slate-50 p-8 shadow-lg"
       >
         {/* MOVE FORM */}
         <MoveForm />

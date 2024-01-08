@@ -1,35 +1,23 @@
-import { z } from "zod"
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import { json } from "@remix-run/node"
 import { useActionData } from "@remix-run/react"
-
-import { logger } from "~/logger"
-
-//update
-// types
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import type { ActionTypeGoogle } from "~/type.d"
-
-// components
-import RenameCards from "./components/rename-cards"
-import RenameConfirmForm from "./components/rename-confirm-form"
-import RenameForm from "./components/rename-form"
+import { z } from "zod"
 import TaskCards from "~/components/ui/tasks/task-cards"
-
-// functions
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { useDriveFilesContext } from "~/context/drive-files-context"
+import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
+import { useToast } from "~/hooks/useToast"
+import { requireAdminRole } from "~/lib/require-roles.server"
+import { redirectToSignin } from "~/lib/responses"
+import { getUserFromSession } from "~/lib/session.server"
+import { logger } from "~/logger"
+import type { ActionTypeGoogle } from "~/type.d"
 import { executeAction } from "./actions/execute"
 import { searchRenameAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
-import { requireAdminRole } from "~/lib/require-roles.server"
-
-// context
-import { useDriveFilesContext } from "~/context/drive-files-context"
-import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
-
-// hooks
-import { useToast } from "~/hooks/useToast"
-import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import RenameCards from "./components/rename-cards"
+import RenameConfirmForm from "./components/rename-confirm-form"
+import RenameForm from "./components/rename-form"
 
 export const config = {
   maxDuration: 60,
