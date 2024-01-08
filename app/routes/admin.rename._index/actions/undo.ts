@@ -7,7 +7,7 @@ import { DriveFilesSchema } from "~/schemas"
 import { json, redirect } from "@remix-run/node"
 
 import type { DriveFile } from "~/type.d"
-import type { ActionType } from "../route"
+import type { RenameActionType } from "../route"
 import type { drive_v3 } from "googleapis"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { arrayIntoChunks } from "~/lib/utils"
@@ -34,7 +34,7 @@ export async function undoAction(request: Request, formData: FormData) {
 
   if (!result.success) {
     logger.debug(`✅ result.error ${result.error.errors.join(",")}`)
-    throw json<ActionType>(
+    throw json<RenameActionType>(
       {
         ok: false,
         type: "undo",
@@ -56,7 +56,7 @@ export async function undoAction(request: Request, formData: FormData) {
   const result2 = DriveFilesSchema.safeParse(raw)
   if (!result2.success) {
     logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
-    return json<ActionType>({
+    return json<RenameActionType>({
       ok: false,
       type: "undo",
       error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO002`,
@@ -68,7 +68,7 @@ export async function undoAction(request: Request, formData: FormData) {
   // logger.debug(`✅ driveFiles: ${JSON.stringify(driveFiles, null, 2)}`)
 
   if (!driveFiles)
-    return json<ActionType>({
+    return json<RenameActionType>({
       ok: false,
       type: "error",
       error: "ファイルがありません",
@@ -83,10 +83,10 @@ export async function undoAction(request: Request, formData: FormData) {
   const dfs = mapFilesToDriveFiles(res.data?.files || [])
 
   if (res.error) {
-    return json<ActionType>({ ok: false, type: "undo", error: res.error })
+    return json<RenameActionType>({ ok: false, type: "undo", error: res.error })
   }
 
-  return json<ActionType>({
+  return json<RenameActionType>({
     ok: true,
     type: "undo",
     data: {

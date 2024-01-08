@@ -1,14 +1,13 @@
 import { z } from "zod"
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import { useActionData } from "@remix-run/react"
 
 import { logger } from "~/logger"
 
 //update
 // types
-import type { drive_v3 } from "googleapis"
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import type { DriveFile } from "~/type.d"
+import type { ActionTypeGoogle } from "~/type.d"
 
 // components
 import RenameCards from "./components/rename-cards"
@@ -28,8 +27,9 @@ import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 
 // hooks
 import { useToast } from "~/hooks/useToast"
-import { authenticate } from "~/lib/authenticate.server"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { redirectToSignin } from "~/lib/responses"
+import { getUserFromSession } from "~/lib/session.server"
 
 export const config = {
   maxDuration: 60,
@@ -40,49 +40,45 @@ export const config = {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin.rename._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
-
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-rename-001")
-  // const { folderId } = params
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
 
   return null
 }
 
-export type ActionType = {
-  ok: boolean
-  type: string
-  error?: string
-  data?:
-    | {
-        sourceFolder?: drive_v3.Schema$File
-        driveFiles: DriveFile[]
-      }
-    | {
-        files: drive_v3.Schema$File[]
-      }
-}
-
-// Zod Data Type
-const FormDataScheme = z.object({
-  _action: z.string(),
-})
+// export type RenameActionType = {
+//   ok: boolean
+//   type: string
+//   error?: string
+//   data?:
+//     | {
+//         sourceFolder?: drive_v3.Schema$File
+//         driveFiles: { [key: string]: any }[]
+//       }
+//     | {
+//         files: drive_v3.Schema$File[]
+//       }
+// }
 
 /**
  * Action Function
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.rename._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
-  if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
 
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
+
+  // Zod Data Type
+  const FormDataScheme = z.object({
+    _action: z.string(),
+  })
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
   if (!result.success) {
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       { ok: false, type: "rename", error: result.error.message },
       { status: 400 },
     )
@@ -124,7 +120,7 @@ export async function action({ request }: ActionFunctionArgs) {
  */
 export default function RenamePage() {
   const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
-  const actionData = useActionData<ActionType>()
+  const actionData = useActionData<ActionTypeGoogle>()
 
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
 
@@ -138,7 +134,7 @@ export default function RenamePage() {
     <>
       <article
         data-name="admin.rename._index"
-        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-400 bg-slate-50 p-8 shadow-lg"
+        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-500 bg-slate-50 p-8 shadow-lg"
       >
         {/* FORM */}
         <RenameForm />

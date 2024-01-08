@@ -1,5 +1,7 @@
+import { json, redirect } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
+import { serverErrorResponse } from "~/lib/errors"
 import {
   execPermissions,
   getDrive,
@@ -15,12 +17,13 @@ import {
 import { getUserFromSession } from "~/lib/session.server"
 import { getIdFromUrl, getStudentEmail } from "~/lib/utils"
 import { logger } from "~/logger"
-
-import { json, redirect } from "@remix-run/node"
-
-import type { ActionType } from "../route"
-import type { DriveFile, Gakunen, Hr, Student } from "~/type.d"
-import { serverErrorResponse } from "~/lib/errors"
+import type {
+  ActionTypeGoogle,
+  DriveFile,
+  Gakunen,
+  Hr,
+  Student,
+} from "~/type.d"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -58,7 +61,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
   if (!result.success) {
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       {
         ok: false,
         type: "error",
@@ -92,14 +95,14 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   // get id from if `sourceFolderId` is url
   const sourceId = getIdFromUrl(sourceFolderId || "")
   if (!sourceId)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       { ok: false, type: "error", error: "フォルダIDが取得できません" },
       { status: 400 },
     )
 
   const query = queryFolderId(sourceId)
   if (!query)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       {
         ok: false,
         type: "error",
@@ -115,7 +118,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   const driveFiles = await getDriveFilesWithStudentFolder(drive, sheets, query)
 
   if (!driveFiles)
-    return json<ActionType>(
+    return json<ActionTypeGoogle>(
       {
         ok: false,
         type: "error",
@@ -155,7 +158,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     `🍎 7. action: data.driveFiles.length: ${data.driveFiles.length}`,
   )
 
-  return json<ActionType>({
+  return json<ActionTypeGoogle>({
     ok: true,
     type: "search",
     data,

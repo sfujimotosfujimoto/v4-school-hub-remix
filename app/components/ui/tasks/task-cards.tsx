@@ -28,7 +28,7 @@ export default function TaskCards({ taskType }: { taskType: Task["type"] }) {
   return (
     <div
       data-name="TaskCards"
-      className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-200 md:grid-cols-2 xl:grid-cols-3"
+      className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-400 md:grid-cols-2 xl:grid-cols-3"
     >
       {tasks &&
         tasks.length > 0 &&

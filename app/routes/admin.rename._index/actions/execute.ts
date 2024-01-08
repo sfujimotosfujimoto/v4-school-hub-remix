@@ -7,7 +7,7 @@ import { DriveFilesRenameSchema } from "~/schemas"
 import { json, redirect } from "@remix-run/node"
 
 import type { DriveFile } from "~/type.d"
-import type { ActionType } from "../route"
+import type { RenameActionType } from "../route"
 import type { drive_v3 } from "googleapis"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"
@@ -37,7 +37,7 @@ export async function executeAction(request: Request, formData: FormData) {
 
   if (!result.success) {
     logger.debug(`✅ result.error ${result.error.errors}`)
-    throw json<ActionType>(
+    throw json<RenameActionType>(
       {
         ok: false,
         type: "error",
@@ -53,7 +53,7 @@ export async function executeAction(request: Request, formData: FormData) {
 
   const driveFiles = DriveFilesRenameSchema.parse(raw) as DriveFile[]
   if (!driveFiles || driveFiles.length === 0)
-    return json<ActionType>({
+    return json<RenameActionType>({
       ok: false,
       type: "error",
       error: "ファイルがありません",
@@ -63,11 +63,15 @@ export async function executeAction(request: Request, formData: FormData) {
     const drive = await getDrive(user.credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-rename-014")
     const files = await renameDriveFiles(drive, driveFiles)
-    return json<ActionType>({ ok: true, type: "execute", data: { files } })
+    return json<RenameActionType>({
+      ok: true,
+      type: "execute",
+      data: { files },
+    })
   } catch (error: unknown) {
     if (error instanceof Error) return { error: error.message }
     else
-      return json<ActionType>({
+      return json<RenameActionType>({
         ok: false,
         type: "error",
         error: "エラーが発生しました。",

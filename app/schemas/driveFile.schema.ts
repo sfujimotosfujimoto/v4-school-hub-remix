@@ -33,7 +33,7 @@ export const DriveFileMetaSchema = z.object({
     })
     .optional(),
   student: StudentSchema.optional(),
-  permissions: PermissionSchema.optional(),
+  permissions: z.array(PermissionSchema).optional(),
 })
 
 export const DriveFileSchema = z.object({

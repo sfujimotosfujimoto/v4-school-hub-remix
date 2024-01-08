@@ -63,7 +63,7 @@ function RenameCard({
         <div
           data-name="RenameCard"
           className={`card  shadow-lg transition-all duration-300 lg:card-side ${
-            selected ? "bg-sfgreen-200" : "bg-slate-300"
+            selected ? "bg-sfgreen-400" : "bg-slate-300"
           }`}
         >
           <input
@@ -103,11 +103,23 @@ function RenameCard({
               <div className="flex gap-4">
                 <div className="flex items-center gap-1">
                   <TimeIcon className="h-3 w-4" />
-                  <span>{dateFormat(driveFile.createdTime || "") || ""}</span>
+                  <span>
+                    {dateFormat(
+                      driveFile.createdTime
+                        ? driveFile.createdTime.toISOString()
+                        : "",
+                    ) || ""}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <RenewIcon className="h-3 w-3" />
-                  <span>{dateFormat(driveFile.modifiedTime || "") || ""}</span>
+                  <span>
+                    {dateFormat(
+                      driveFile.modifiedTime
+                        ? driveFile.modifiedTime.toISOString()
+                        : "",
+                    ) || ""}
+                  </span>
                 </div>
               </div>
             )}
@@ -121,6 +133,7 @@ function RenameCard({
                   <a
                     href={driveFile.meta.studentFolder?.folderLink}
                     target="_blank"
+                    rel="noreferrer"
                   >
                     <h3 className="text-xs">{driveFile.meta.file.name}</h3>
                   </a>

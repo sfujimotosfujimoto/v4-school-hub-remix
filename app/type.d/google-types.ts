@@ -1,5 +1,5 @@
 import type { drive_v3 } from "googleapis"
-import type { DriveFile } from "./zod-types"
+// import type { DriveFile } from "./zod-types"
 
 export type ActionTypeGoogle = {
   ok: boolean
@@ -8,7 +8,7 @@ export type ActionTypeGoogle = {
   data?:
     | {
         sourceFolder?: drive_v3.Schema$File
-        driveFiles: DriveFile[]
+        driveFiles: { [key: string]: any }[]
       }
     | { files: drive_v3.Schema$File[] }
 }

@@ -1,9 +1,9 @@
 import React from "react"
 import toast from "react-hot-toast"
-import { DriveFilesSchema } from "~/schemas"
 
 import type { Action } from "~/context/drive-files-context"
-import type { ActionTypeGoogle, DriveFile } from "~/type.d"
+import { convertDriveFiles } from "~/lib/utils-loader"
+import type { ActionTypeGoogle } from "~/type.d"
 
 /**
  * useRawToDriveFilesContext
@@ -11,7 +11,7 @@ import type { ActionTypeGoogle, DriveFile } from "~/type.d"
  */
 export function useRawToDriveFilesContext(
   driveFilesDispatch: React.Dispatch<Action>,
-  actionData?: ActionTypeGoogle,
+  actionData?: ActionTypeGoogle | undefined,
 ) {
   React.useEffect(() => {
     // if no data, do nothing
@@ -21,20 +21,25 @@ export function useRawToDriveFilesContext(
     const rawDriveFiles = actionData?.data?.driveFiles ?? []
 
     // validate rawDriveFiles using zod
-    const result = DriveFilesSchema.safeParse(rawDriveFiles)
-    if (!result.success) {
+    // const result = DriveFilesSchema.safeParse(rawDriveFiles)
+    // if (!result.success) {
+    //   toast.error(`データの読み込みに失敗しました。`)
+    //   return
+    // }
+    // // set to _driveFiles
+    // const _driveFiles = result.data as unknown as DriveFile[]
+
+    const dfd = convertDriveFiles(rawDriveFiles)
+
+    if (!dfd) {
       toast.error(`データの読み込みに失敗しました。`)
       return
     }
-
-    // set to _driveFiles
-    const _driveFiles = result.data as unknown as DriveFile[]
-
     // set to driveFiles in Context
     driveFilesDispatch({
       type: "SET_AND_UPDATE_META_SELECTED",
       payload: {
-        driveFiles: _driveFiles,
+        driveFiles: dfd,
         selected: true,
       },
     })
