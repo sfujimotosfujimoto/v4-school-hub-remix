@@ -96,7 +96,7 @@ export default function StudentLayout() {
           {/* <!-- Right Content --> */}
           <div
             data-name="__rightside-content"
-            className="drawer-content flex h-full flex-col items-center justify-start"
+            className="drawer-content relative flex h-full flex-col items-center justify-start"
           >
             <Outlet context={{ setGakunen, gakunen, hr, setHr, drawerRef }} />
 

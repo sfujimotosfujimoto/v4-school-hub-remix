@@ -1,7 +1,8 @@
 import type { LoaderFunctionArgs } from "@remix-run/node"
 import { redirect } from "@remix-run/node"
-import { NavLink, Outlet, useLoaderData, useParams } from "@remix-run/react"
+import { Outlet, useLoaderData, useParams } from "@remix-run/react"
 import React from "react"
+import { NavLinkButton } from "~/components/buttons/button"
 import { LogoIcon } from "~/components/icons"
 import BackButton from "~/components/ui/buttons/back-button"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
@@ -109,15 +110,16 @@ export default function FilesGakunenHrLayout() {
         {/* Back Button */}
         <BackButton isLink={true} to={`/files`} />
         {/* GO button */}
-        <NavLink
+        <NavLinkButton
           to={`/files/${gakunen}/${hr}?${encodeURI(searchParams)}`}
-          className={`btn btn-success btn-sm w-24 shadow-lg  ${
+          className={` ${
             gakunen === "ALL" || hr === "ALL" ? "btn-disabled" : null
           }`}
+          size="sm"
         >
           <LogoIcon className="h-7 w-4" />
           <span className=" ml-2 sm:ml-4 sm:inline">GO</span>
-        </NavLink>
+        </NavLinkButton>
       </div>
 
       {/* Segments */}
@@ -194,7 +196,7 @@ function Segments({
 
               <label
                 htmlFor={segment}
-                className="btn btn-warning btn-xs m-1 cursor-pointer select-none border-none peer-checked:bg-sfred-100"
+                className="btn btn-warning btn-xs m-1 cursor-pointer select-none border-none peer-checked:bg-sfred-300"
               >
                 {segment}
               </label>
