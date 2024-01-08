@@ -8,7 +8,7 @@ export default function GakunenButtons({
   setGakunen: React.Dispatch<React.SetStateAction<Gakunen>>
 }) {
   return (
-    <ul className={`join border-none bg-sfyellow-200 font-bold`}>
+    <ul className={`join border-none bg-sfyellow-300 font-bold`}>
       <GakunenButton
         gakunen={gakunen}
         gakunenBase="ALL"
