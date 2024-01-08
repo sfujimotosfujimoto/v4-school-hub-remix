@@ -78,7 +78,7 @@ module.exports = {
         mytheme: {
           primary: "hsl(182, 50%, 60%)",
 
-          secondary: "hsl(1, 65%, 70%)a",
+          secondary: "hsl(1, 65%, 70%)",
 
           accent: "hsl(33, 70%, 75%)",
 
