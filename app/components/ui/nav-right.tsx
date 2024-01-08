@@ -16,7 +16,8 @@ import { Form, NavLink, useLoaderData } from "@remix-run/react"
 import ImageIcon from "../util/image-icon"
 
 import { z } from "zod"
-import { User } from "~/type.d"
+import type { User } from "~/type.d"
+import { NavLinkButton } from "../buttons/button"
 
 const userSchema = z.object({
   role: z.string().optional(),
@@ -109,7 +110,7 @@ export default function NavRight() {
                     onMouseEnter={() => setIsHover(true)}
                     onMouseLeave={() => setIsHover(false)}
                   >
-                    <summary className="transform border-0  bg-sfyellow-200 px-2 py-1 text-xs font-semibold shadow-md hover:scale-[1.05] hover:bg-sfyellow-300 hover:active:bg-sfyellow-400">
+                    <summary className="transform border-0  bg-sfyellow-300 px-2 py-1 text-xs font-semibold shadow-md hover:scale-[1.05] hover:bg-sfyellow-300 hover:active:bg-sfyellow-400">
                       <Dashboard className="h-4 w-4 sm:hidden" />
                       <span className="hidden sm:block">ADMIN</span>
                     </summary>
@@ -186,6 +187,16 @@ export default function NavRight() {
               </>
             )}
             <li>
+              <NavLinkButton
+                to="/student"
+                size="xs"
+                // className={`${btnCss} border-0 p-1 shadow-md`}
+              >
+                <ClassIcon className="h-4 w-4 sm:hidden" />
+                <span className="hidden sm:block">クラス</span>
+              </NavLinkButton>
+            </li>
+            {/* <li>
               <NavLink
                 to="/student"
                 className={`${btnCss} border-0 p-1 shadow-md`}
@@ -193,7 +204,7 @@ export default function NavRight() {
                 <ClassIcon className="h-4 w-4 sm:hidden" />
                 <span className="hidden sm:block">クラス</span>
               </NavLink>
-            </li>
+            </li> */}
             <li>
               <NavLink
                 to="/files"
