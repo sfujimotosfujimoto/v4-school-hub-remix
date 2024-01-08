@@ -1,37 +1,91 @@
-import React from "react"
-import { json, redirect } from "@remix-run/node"
-import { useActionData } from "@remix-run/react"
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
+import { json } from "@remix-run/node"
+import { useActionData } from "@remix-run/react"
+import React from "react"
 import { z } from "zod"
-
-import type { ActionTypeGoogle } from "~/type.d"
-
-// components
-import RenameCards from "../admin.rename._index/components/rename-cards"
-import RenameCsvForm from "./components/rename-csv-form"
-import SourceFolderHeader from "./components/source-folder-header"
 import TaskCards from "~/components/ui/tasks/task-cards"
-
-// functions
+import { useDriveFilesContext } from "~/context/drive-files-context"
+import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
+import { useToast } from "~/hooks/useToast"
 import { requireAdminRole } from "~/lib/require-roles.server"
+import { redirectToSignin } from "~/lib/responses"
+import { getUserFromSession } from "~/lib/session.server"
+import { logger } from "~/logger"
+import type { ActionTypeGoogle } from "~/type.d"
 import { executeAction } from "../admin.rename._index/actions/execute"
 import { searchRenameAction } from "../admin.rename._index/actions/search"
 import { undoAction } from "../admin.rename._index/actions/undo"
-
-// context
+import RenameCards from "../admin.rename._index/components/rename-cards"
+import RenameCsvForm from "./components/rename-csv-form"
+import SourceFolderHeader from "./components/source-folder-header"
 import { useRenameCsvPageContext } from "./context/rename-csv-page-context"
-import { useDriveFilesContext } from "~/context/drive-files-context"
-
-// hooks
-import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
-import { useToast } from "~/hooks/useToast"
-import { authenticate } from "~/lib/authenticate.server"
-import { logger } from "~/logger"
 
 export const config = {
   maxDuration: 60,
 }
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  logger.debug(`🍿 loader: admin.rename-csv._index ${request.url}`)
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
+
+  return null
+}
+
+// Zod Data Type
+const FormDataScheme = z.object({
+  _action: z.string(),
+})
+
+/**
+ * Action
+ */
+export async function action({ request }: ActionFunctionArgs) {
+  logger.debug(`🍺 action: admin.rename-csv._index ${request.url}`)
+  const user = await getUserFromSession(request)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
+
+  const formData = await request.formData()
+  const result = FormDataScheme.safeParse(Object.fromEntries(formData))
+
+  if (!result.success) {
+    return json({ ok: false, error: result.error.message }, { status: 400 })
+  }
+
+  let { _action } = result.data
+
+  switch (_action) {
+    /*
+       SEARCH ACTION
+     */
+    case "search": {
+      formData.append("gakunen", "")
+      formData.append("segment", "")
+
+      return await searchRenameAction(request, formData)
+    }
+
+    /**
+     * EXECUTE ACTION
+     */
+
+    case "execute": {
+      return await executeAction(request, formData)
+    }
+
+    /**
+     * UNDO CSV ACTION
+     */
+    case "undo": {
+      return await undoAction(request, formData)
+    }
+
+    default:
+      break
+  }
+}
 /**
  * RenameCsv Page
  */
@@ -89,71 +143,4 @@ export default function RenameCsvPage() {
       </article>
     </>
   )
-}
-
-export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`🍿 loader: admin.rename-csv._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
-
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-rename-001")
-  // const { folderId } = params
-
-  return null
-}
-
-// Zod Data Type
-const FormDataScheme = z.object({
-  _action: z.string(),
-})
-
-/**
- * Action
- */
-export async function action({ request }: ActionFunctionArgs) {
-  logger.debug(`🍺 action: admin.rename-csv._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
-
-  if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
-
-  const formData = await request.formData()
-  const result = FormDataScheme.safeParse(Object.fromEntries(formData))
-
-  if (!result.success) {
-    return json({ ok: false, error: result.error.message }, { status: 400 })
-  }
-
-  let { _action } = result.data
-
-  switch (_action) {
-    /*
-       SEARCH ACTION
-     */
-    case "search": {
-      formData.append("gakunen", "")
-      formData.append("segment", "")
-
-      return await searchRenameAction(request, formData)
-    }
-
-    /**
-     * EXECUTE ACTION
-     */
-
-    case "execute": {
-      return await executeAction(request, formData)
-    }
-
-    /**
-     * UNDO CSV ACTION
-     */
-    case "undo": {
-      return await undoAction(request, formData)
-    }
-
-    default:
-      break
-  }
 }
