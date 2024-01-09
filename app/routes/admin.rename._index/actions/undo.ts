@@ -1,8 +1,10 @@
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
+import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
 import { arrayIntoChunks } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
@@ -17,15 +19,11 @@ export async function undoAction(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: undoAction()`)
   // get user
   const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-renameundo-001", 302)
-
-  // if no user or credential redirect
-  if (!user || !user.credential)
-    throw redirect(`/authstate=unauthorized-renameundo-019`)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
 
   const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirect("/?authstate=unauthorized-renameundo-020")
+  if (!drive) throw redirectToSignin(request)
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 

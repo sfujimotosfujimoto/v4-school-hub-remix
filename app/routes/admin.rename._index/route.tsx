@@ -7,7 +7,6 @@ import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
-import { requireAdminRole } from "~/lib/require-roles.server"
 import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
@@ -34,29 +33,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return null
 }
 
-// export type RenameActionType = {
-//   ok: boolean
-//   type: string
-//   error?: string
-//   data?:
-//     | {
-//         sourceFolder?: drive_v3.Schema$File
-//         driveFiles: { [key: string]: any }[]
-//       }
-//     | {
-//         files: drive_v3.Schema$File[]
-//       }
-// }
-
 /**
  * Action Function
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.rename._index ${request.url}`)
 
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
-  await requireAdminRole(request, user)
+  // const user = await getUserFromSession(request)
+  // if (!user || !user.credential) throw redirectToSignin(request)
+  // await requireAdminRole(request, user)
 
   // Zod Data Type
   const FormDataScheme = z.object({

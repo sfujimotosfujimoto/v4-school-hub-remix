@@ -11,6 +11,8 @@ import type { drive_v3 } from "googleapis"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"
 import { convertDriveFiles } from "~/lib/utils-loader"
+import { redirectToSignin } from "~/lib/responses"
+import { requireAdminRole } from "~/lib/require-roles.server"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -24,14 +26,11 @@ const FormDataScheme = z.object({
 export async function executeAction(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: executeAction()`)
   const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-rename-001", 302)
-
-  // if no user or credential redirect
-  if (!user || !user.credential) throw redirect(`/authstate=unauthorized-012`)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
 
   const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirect("/?authstate=unauthorized-rename-013")
+  if (!drive) throw redirectToSignin(request)
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 

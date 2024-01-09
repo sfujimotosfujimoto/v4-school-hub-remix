@@ -157,9 +157,7 @@ export default function StudentFolderIdFileIdPage() {
     <>
       <div className="flex items-center gap-4">
         <BackButton />
-        {driveFile && driveFile.parents && (
-          <ToFolderButton parentId={driveFile.parents[0]} />
-        )}
+        {df && df.parents && <ToFolderButton parentId={df.parents[0]} />}
         {/* PROPERTY BUTTON */}
         {role && ["ADMIN", "SUPER"].includes(role) && (
           <>
@@ -172,12 +170,12 @@ export default function StudentFolderIdFileIdPage() {
 
       {/* Student file card */}
       <div className="mt-4">
-        {driveFile && (
+        {df && (
           <a
             id="_StudentCard"
             target="_blank"
             rel="noopener noreferrer"
-            href={`${df.link}`}
+            href={`${df.webViewLink}`}
           >
             <StudentCard role={role} driveFile={df} thumbnailSize={"big"} />
           </a>

@@ -46,6 +46,7 @@ export const DriveFileSchema = z.object({
   thumbnailLink: z.string().optional(),
   createdTime: z.date().optional(),
   modifiedTime: z.date().optional(),
+  webViewLink: z.string().optional(),
   webContentLink: z.string().optional(),
   parents: z.array(z.string()).optional(),
   appProperties: z.string().optional(),

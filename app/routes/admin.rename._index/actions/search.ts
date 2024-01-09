@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
 import { serverErrorResponse } from "~/lib/errors"
@@ -14,6 +14,8 @@ import {
   getStudentByGakunenHrHrNo,
   getStudents,
 } from "~/lib/google/sheets.server"
+import { requireAdminRole } from "~/lib/require-roles.server"
+import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
 import { getIdFromUrl, getStudentEmail } from "~/lib/utils"
 import { logger } from "~/logger"
@@ -53,9 +55,9 @@ const FormDataScheme = z.object({
 export async function searchRenameAction(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: searchAction()`)
   const user = await getUserFromSession(request)
-  if (!user) throw redirect("/?authstate=unauthenticated", 302)
+  if (!user || !user.credential) throw redirectToSignin(request)
+  await requireAdminRole(request, user)
 
-  if (!user || !user.credential) throw redirect(`/?authstate=unauthorized-021`)
   const accessToken = user.credential.accessToken
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
@@ -83,13 +85,13 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   // get drive
   const drive = await getDrive(accessToken)
   if (!drive) {
-    return redirect("/?authstate=unauthorized-022")
+    throw new Response("unauthorized", { status: 400 })
   }
 
   // get sheets
   const sheets = await getSheets(accessToken)
   if (!sheets) {
-    return redirect("/?authstate=unauthorized-nosheets")
+    throw new Response("no-folder", { status: 400 })
   }
 
   // get id from if `sourceFolderId` is url
