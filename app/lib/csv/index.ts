@@ -1,6 +1,6 @@
 import Papa from "papaparse"
 
-import type { DriveFile, DriveFileMove, DriveFileTask, Task } from "~/type.d"
+import type { DriveFile, DriveFileMove, DriveFileTask, Task } from "~/types"
 
 // readCsvFileToObj reads csv file and returns an array of objects
 // the first line is header

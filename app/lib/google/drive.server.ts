@@ -1,7 +1,7 @@
 import { google } from "googleapis"
 
 import type { drive_v3, sheets_v4 } from "googleapis"
-import type { DriveFile, PermissionGoogle, Student } from "~/type.d"
+import type { DriveFile, PermissionGoogle, Student } from "~/types"
 
 import { logger } from "~/logger"
 import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"

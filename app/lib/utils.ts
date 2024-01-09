@@ -1,4 +1,4 @@
-import type { DriveFile, Student } from "~/type.d"
+import type { DriveFile, Student } from "~/types"
 
 export function filterStudentDataByGakunen(
   gakunen: string,

@@ -1,4 +1,4 @@
-import type { UserPrisma } from "~/type.d"
+import type { UserPrisma } from "~/types"
 
 // used in session.server.ts
 //-------------------------------------------

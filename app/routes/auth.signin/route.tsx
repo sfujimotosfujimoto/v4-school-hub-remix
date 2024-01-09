@@ -11,7 +11,7 @@ import {
   updateSession,
 } from "~/lib/session.server"
 import { redirectToSignin } from "~/lib/responses"
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 import { Form, useNavigation } from "@remix-run/react"
 import clsx from "clsx"
 import { LogoIcon } from "~/components/icons"

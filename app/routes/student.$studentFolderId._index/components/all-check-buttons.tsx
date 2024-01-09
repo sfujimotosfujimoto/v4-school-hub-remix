@@ -1,4 +1,4 @@
-import type { DriveFile } from "~/type.d"
+import type { DriveFile } from "~/types"
 import type { Role } from "@prisma/client"
 import { CheckIcon, XIcon } from "~/components/icons"
 import { useDriveFilesContext } from "~/context/drive-files-context"

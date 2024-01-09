@@ -2,7 +2,7 @@ import { formatDate } from "~/lib/utils"
 
 import { Form } from "@remix-run/react"
 
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 
 /**
  * Form

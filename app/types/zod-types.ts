@@ -3,7 +3,7 @@ import type {
   DriveFileMetaSchema,
   DriveFileSchema,
   StudentSchema,
-} from "~/schemas"
+} from "~/types/schemas"
 
 export type Student = z.infer<typeof StudentSchema>
 export type DriveFile = z.infer<typeof DriveFileSchema>

@@ -10,7 +10,7 @@ import { useToast } from "~/hooks/useToast"
 import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-import type { ActionTypeGoogle } from "~/type.d"
+import type { ActionTypeGoogle } from "~/types"
 import { executeAction } from "./actions/execute"
 import { searchRenameAction } from "./actions/search"
 import { undoAction } from "./actions/undo"
@@ -38,10 +38,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.rename._index ${request.url}`)
-
-  // const user = await getUserFromSession(request)
-  // if (!user || !user.credential) throw redirectToSignin(request)
-  // await requireAdminRole(request, user)
 
   // Zod Data Type
   const FormDataScheme = z.object({

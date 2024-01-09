@@ -8,7 +8,7 @@ import {
   parseTags,
   stripText,
 } from "~/lib/utils"
-import type { DriveFile } from "~/type.d"
+import type { DriveFile } from "~/types"
 import CheckBox from "./checkbox"
 
 export default function StudentCard({

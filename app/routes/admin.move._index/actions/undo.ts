@@ -6,7 +6,7 @@ import { logger } from "~/logger"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionTypeGoogle, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import type { drive_v3 } from "googleapis"

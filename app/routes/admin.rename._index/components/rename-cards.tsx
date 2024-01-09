@@ -2,7 +2,7 @@ import { RenewIcon, TimeIcon } from "~/components/icons"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { dateFormat } from "~/lib/utils"
 
-import type { DriveFile } from "~/type.d"
+import type { DriveFile } from "~/types"
 
 export default function RenameCards({
   driveFiles,

@@ -7,7 +7,7 @@ import {
 import { getUserFromSession } from "~/lib/session.server"
 
 import { json, redirect } from "@remix-run/node"
-import type { ActionTypeGoogle, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { logger } from "~/logger"
 import { arrayIntoChunks } from "~/lib/utils"
 import { CHUNK_SIZE } from "~/lib/config"

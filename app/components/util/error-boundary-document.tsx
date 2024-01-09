@@ -1,7 +1,7 @@
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react"
 import { ErrorIcon } from "../icons"
 import BackButton from "../ui/buttons/back-button"
-import { getErrorMessage } from "~/lib/utils"
+// import { getErrorMessage } from "~/lib/utils"
 
 export default function ErrorBoundaryDocument({
   heading = "Something went wrong",
@@ -15,7 +15,8 @@ export default function ErrorBoundaryDocument({
   const error = useRouteError()
 
   if (isRouteErrorResponse(error)) {
-    message = getErrorMessage(error.data)
+    message = error.data
+    // message = getErrorMessage(error.data)
   }
   return (
     <main className="flex h-full justify-center">

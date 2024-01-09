@@ -1,4 +1,4 @@
-import type { PermissionGoogle } from "~/type.d"
+import type { PermissionGoogle } from "~/types"
 import RoleTag from "./role-tag"
 
 export default function PermissionTag({

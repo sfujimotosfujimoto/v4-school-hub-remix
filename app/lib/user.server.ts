@@ -1,7 +1,7 @@
 import type { Role } from "@prisma/client"
 
 import { logger } from "~/logger"
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 import { prisma } from "./db.server"
 import { returnUser } from "./return-user"
 

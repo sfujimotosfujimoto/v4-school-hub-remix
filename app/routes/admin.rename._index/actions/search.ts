@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
-import { serverErrorResponse } from "~/lib/errors"
+import { errors } from "~/lib/errors"
 import {
   execPermissions,
   getDrive,
@@ -19,13 +19,7 @@ import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
 import { getIdFromUrl, getStudentEmail } from "~/lib/utils"
 import { logger } from "~/logger"
-import type {
-  ActionTypeGoogle,
-  DriveFile,
-  Gakunen,
-  Hr,
-  Student,
-} from "~/type.d"
+import type { ActionTypeGoogle, DriveFile, Gakunen, Hr, Student } from "~/types"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -85,13 +79,13 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   // get drive
   const drive = await getDrive(accessToken)
   if (!drive) {
-    throw new Response("unauthorized", { status: 400 })
+    throw errors.google()
   }
 
   // get sheets
   const sheets = await getSheets(accessToken)
   if (!sheets) {
-    throw new Response("no-folder", { status: 400 })
+    throw errors.google()
   }
 
   // get id from if `sourceFolderId` is url
@@ -311,7 +305,7 @@ async function _findStudentDataFromSegments(
       }
       return df
     } else {
-      serverErrorResponse(
+      errors.server(
         `メールアドレス ${df.meta.file?.studentEmail} の生徒が名簿から見つかりません。`,
       )
     }

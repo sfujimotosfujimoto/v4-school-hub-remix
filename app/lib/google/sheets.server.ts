@@ -5,7 +5,7 @@ import { getFolderId } from "../utils"
 import { getClient } from "./google.server"
 
 import type { sheets_v4 } from "googleapis"
-import type { Gakunen, Hr, Student } from "~/type.d"
+import type { Gakunen, Hr, Student } from "~/types"
 import { logger } from "~/logger"
 
 /**

@@ -1,5 +1,5 @@
 import type { z } from "zod"
-import type { CredentialSchema, StatsSchema, UserSchema } from "~/schemas"
+import type { CredentialSchema, StatsSchema, UserSchema } from "~/types/schemas"
 
 export type {
   Credential as CredentialPrisma,
