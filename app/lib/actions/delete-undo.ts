@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { logger } from "~/logger"
 import { DriveFilesSchema } from "~/types/schemas"
 
@@ -19,14 +19,9 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
   logger.debug("🍎 delte: deleteUndoAction()")
 
   // get user
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated", 302)
+  const { user, credential } = await getUserFromSessionOrRedirect(request)
 
-  // if no user or credential redirect
-  if (!user || !user.credential) throw redirect(`/authstate=unauthorized-031`)
-
-  const drive = await getDrive(user.credential.accessToken)
+  const drive = await getDrive(credential.accessToken)
   if (!drive) throw redirect("/?authstate=unauthorized-030")
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))

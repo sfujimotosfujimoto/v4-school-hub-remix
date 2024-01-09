@@ -23,13 +23,10 @@ export async function propertyExecuteAction(
 ) {
   logger.debug(`🍎 action: propertyExecuteAction()`)
 
-  const user = await getUserFromSessionOrRedirect(request)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  // if no user or credential redirect
-  if (!user || !user.credential) throw redirect(`/authstate=unauthorized-012`)
-
-  const accessToken = user.credential.accessToken
-  const drive = await getDrive(user.credential.accessToken)
+  const accessToken = credential.accessToken
+  const drive = await getDrive(credential.accessToken)
   if (!drive) throw redirect("/?authstate=unauthorized-013")
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
@@ -63,8 +60,6 @@ export async function propertyExecuteAction(
 
   const resArr = await Promise.all([...promises])
   const res = resArr.filter((d) => d).flat()
-
-  console.log("✅ res.length: ", res.length)
 
   return json({ ok: true, data: { res } })
 }

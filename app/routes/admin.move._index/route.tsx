@@ -35,7 +35,7 @@ export const config = {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin.move._index ${request.url}`)
-  const user = await getUserFromSessionOrRedirect(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
   return {
@@ -119,7 +119,6 @@ export default function MovePage() {
 
   const actionData = useActionData<ActionTypeGoogle>()
 
-  console.log("✅ admin.move._index/route.tsx ~ 	🌈 actionData ✅ ", actionData)
   // validate raw driveFiles and set to driveFilesContext
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
 

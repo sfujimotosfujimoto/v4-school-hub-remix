@@ -1,8 +1,4 @@
-import {
-  redirect,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node"
+import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { z } from "zod"
 import { requireAdminRole } from "~/lib/require-roles.server"
@@ -67,12 +63,8 @@ export default function AdminPage() {
 // activtated,last, first, stats.count, stats.lastVisited
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin._index ${request.url}`)
-  const user = await getUserFromSessionOrRedirect(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
-
-  if (!user || !user.credential) {
-    throw redirect("/?authstate=unauthenticated")
-  }
 
   const users = await getUsers()
 

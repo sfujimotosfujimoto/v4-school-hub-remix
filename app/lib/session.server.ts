@@ -5,7 +5,7 @@ import { createCookieSessionStorage, redirect } from "@remix-run/node"
 import { SESSION_MAX_AGE } from "./config"
 
 import type { TypedResponse } from "@remix-run/node"
-import type { User } from "~/types"
+import type { Credential, User } from "~/types"
 import { getRefreshUserById, getUserById } from "./user.server"
 import { redirectToSignin } from "./responses"
 const SESSION_SECRET = process.env.SESSION_SECRET
@@ -79,9 +79,10 @@ export async function getUserFromSession(
   return user
 }
 
-export async function getUserFromSessionOrRedirect(
-  request: Request,
-): Promise<User> {
+export async function getUserFromSessionOrRedirect(request: Request): Promise<{
+  user: User
+  credential: Omit<Credential, "userId">
+}> {
   logger.debug(
     `👑 getUserFromSession: request ${request.url}, ${request.method}`,
   )
@@ -101,7 +102,7 @@ export async function getUserFromSessionOrRedirect(
       request.url
     }`,
   )
-  return user
+  return { user, credential: user.credential }
 }
 
 export async function getRefreshUserFromSession(

@@ -26,13 +26,10 @@ export async function renameExecuteAction(
 ) {
   logger.debug(`🍎 action: renameExecuteAction()`)
 
-  const user = await getUserFromSessionOrRedirect(request)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  // if no user or credential redirect
-  if (!user || !user.credential) throw redirect(`/authstate=unauthorized-012`)
-
-  const accessToken = user.credential.accessToken
-  const drive = await getDrive(user.credential.accessToken)
+  const accessToken = credential.accessToken
+  const drive = await getDrive(credential.accessToken)
   if (!drive) throw redirect("/?authstate=unauthorized-013")
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
@@ -66,8 +63,6 @@ export async function renameExecuteAction(
   const resArr = await Promise.all([...promises])
   const res = resArr.filter((d) => d).flat()
 
-  console.log("✅ res.length: ", res.length)
-
   return json({ ok: true, data: { res } })
 }
 
@@ -84,13 +79,9 @@ async function _renameDriveFiles(
 
   const driveFiles: DriveFile[] = []
 
-  console.log("✅ actions/rename-execute.ts ~ 	😀 before for loop")
   for (let i = 0; i < fileIds.length; i++) {
     const fileId = fileIds[i]
-    console.log(
-      "✅ actions/rename-execute.ts ~ 	😀 inside for loop: fileId",
-      fileId,
-    )
+
     const file = await getFileById(drive, fileId)
     if (!file) {
       logger.debug(`🍎 file not found: ${fileId}`)
@@ -103,19 +94,12 @@ async function _renameDriveFiles(
     }
 
     const newDf = await updateDriveFileMetaName(df, baseName)
-    console.log("✅ actions/rename-execute.ts ~ 	😀 newDf", newDf)
-
     if (!newDf) continue
     driveFiles.push(newDf)
     logger.debug(`renameDriveFiles -- update idx:${i} of chunk: ${idx}`)
   }
-  console.log("✅ actions/rename-execute.ts ~ 	😀 after for loop")
-  const files = await renameDriveFiles(drive, driveFiles)
 
-  console.log(
-    "✅ actions/rename-execute.ts ~ 	😀 new files",
-    files.map((f) => f.name),
-  )
+  const files = await renameDriveFiles(drive, driveFiles)
 
   logger.debug(
     `renameDriveFiles -- finished ${files.length} files of chunk: ${idx}`,

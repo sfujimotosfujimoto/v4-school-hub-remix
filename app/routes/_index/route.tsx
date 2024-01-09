@@ -12,7 +12,7 @@ import { useLoaderData } from "@remix-run/react"
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: _index ${request.url}`)
 
-  const user = await getUserFromSessionOrRedirect(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   logger.debug("✅ _index/route.tsx ~ 	🌈 user ✅ ", user)
 
   return json({
