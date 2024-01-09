@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
-import { serverErrorResponse } from "~/lib/errors"
+import { errors } from "~/lib/errors"
 import {
   execPermissions,
   getDrive,
@@ -79,13 +79,13 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   // get drive
   const drive = await getDrive(accessToken)
   if (!drive) {
-    throw new Response("unauthorized", { status: 400 })
+    throw errors.google()
   }
 
   // get sheets
   const sheets = await getSheets(accessToken)
   if (!sheets) {
-    throw new Response("no-folder", { status: 400 })
+    throw errors.google()
   }
 
   // get id from if `sourceFolderId` is url
@@ -305,7 +305,7 @@ async function _findStudentDataFromSegments(
       }
       return df
     } else {
-      serverErrorResponse(
+      errors.server(
         `メールアドレス ${df.meta.file?.studentEmail} の生徒が名簿から見つかりません。`,
       )
     }

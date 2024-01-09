@@ -39,10 +39,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.rename._index ${request.url}`)
 
-  // const user = await getUserFromSession(request)
-  // if (!user || !user.credential) throw redirectToSignin(request)
-  // await requireAdminRole(request, user)
-
   // Zod Data Type
   const FormDataScheme = z.object({
     _action: z.string(),
