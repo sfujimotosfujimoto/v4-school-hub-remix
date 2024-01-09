@@ -84,7 +84,7 @@ module.exports = {
 
           accent: "hsl(33, 75%, 80%)",
 
-          neutral: "theme('colors.slate.200')",
+          neutral: "#ffffff",
 
           "base-100": "#ffffff",
 

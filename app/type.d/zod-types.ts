@@ -8,5 +8,3 @@ import type {
 export type Student = z.infer<typeof StudentSchema>
 export type DriveFile = z.infer<typeof DriveFileSchema>
 export type DriveFileMeta = z.infer<typeof DriveFileMetaSchema>
-
-// export type DriveFileData = z.infer<typeof DriveFileDataSchema>
