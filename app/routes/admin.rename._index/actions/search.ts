@@ -19,13 +19,7 @@ import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSession } from "~/lib/session.server"
 import { getIdFromUrl, getStudentEmail } from "~/lib/utils"
 import { logger } from "~/logger"
-import type {
-  ActionTypeGoogle,
-  DriveFile,
-  Gakunen,
-  Hr,
-  Student,
-} from "~/type.d"
+import type { ActionTypeGoogle, DriveFile, Gakunen, Hr, Student } from "~/types"
 
 // Zod Data Type
 const FormDataScheme = z.object({

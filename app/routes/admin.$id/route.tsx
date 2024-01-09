@@ -7,8 +7,8 @@ import type {
   MetaFunction,
 } from "@remix-run/node"
 
-import type { User } from "~/type.d"
-import { UserSchema } from "~/schemas"
+import type { User } from "~/types"
+import { UserSchema } from "~/types/schemas"
 
 // components
 import AdminForm from "./components/admin-form"

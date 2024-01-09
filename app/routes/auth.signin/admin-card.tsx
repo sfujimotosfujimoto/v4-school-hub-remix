@@ -1,5 +1,5 @@
 import { formatDate } from "~/lib/utils"
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 
 export default function AdminCard({ user }: { user: User }) {
   return (

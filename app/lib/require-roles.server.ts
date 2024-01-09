@@ -1,6 +1,6 @@
 import { logger } from "~/logger"
 
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 import { redirectToSignin } from "./responses"
 
 export async function requireUserRole(request: Request, user: User) {

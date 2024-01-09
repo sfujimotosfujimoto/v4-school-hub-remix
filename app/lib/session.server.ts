@@ -5,7 +5,7 @@ import { createCookieSessionStorage, redirect } from "@remix-run/node"
 import { SESSION_MAX_AGE } from "./config"
 
 import type { TypedResponse } from "@remix-run/node"
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 import { getRefreshUserById, getUserById } from "./user.server"
 const SESSION_SECRET = process.env.SESSION_SECRET
 if (!SESSION_SECRET) throw Error("session secret is not set")

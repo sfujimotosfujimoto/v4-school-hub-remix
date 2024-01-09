@@ -9,7 +9,7 @@ import { getUserFromSession } from "~/lib/session.server"
 import { arrayIntoChunks } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
-import type { ActionTypeGoogle, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/types"
 
 const FormDataScheme = z.object({
   driveFilesString: z.string().optional(),

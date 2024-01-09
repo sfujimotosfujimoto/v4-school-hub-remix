@@ -1,4 +1,4 @@
-import type { Gakunen } from "~/type.d"
+import type { Gakunen } from "~/types"
 
 export default function GakunenButtons({
   gakunen,

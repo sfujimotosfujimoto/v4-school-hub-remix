@@ -2,7 +2,7 @@ import React from "react"
 import { Form, useActionData, useNavigation } from "@remix-run/react"
 
 // types
-import type { ActionTypeGoogle } from "~/type.d"
+import type { ActionTypeGoogle } from "~/types"
 
 // components
 import SubmitButton from "~/components/ui/buttons/submit-button"

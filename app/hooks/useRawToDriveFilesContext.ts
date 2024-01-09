@@ -3,7 +3,7 @@ import toast from "react-hot-toast"
 
 import type { Action } from "~/context/drive-files-context"
 import { convertDriveFiles } from "~/lib/utils-loader"
-import type { ActionTypeGoogle } from "~/type.d"
+import type { ActionTypeGoogle } from "~/types"
 
 /**
  * useRawToDriveFilesContext

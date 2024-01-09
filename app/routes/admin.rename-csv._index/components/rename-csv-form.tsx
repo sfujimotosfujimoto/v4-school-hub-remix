@@ -2,7 +2,7 @@ import React from "react"
 import { Form, useNavigation } from "@remix-run/react"
 
 // types
-import type { DriveFile } from "~/type.d"
+import type { DriveFile } from "~/types"
 
 // components
 import CsvFileInput from "./csv-file-input"

@@ -12,7 +12,7 @@ import {
   RenameIcon,
   UserIcon,
 } from "../icons"
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 import { z } from "zod"
 import React from "react"
 

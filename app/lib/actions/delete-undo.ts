@@ -2,11 +2,11 @@ import { z } from "zod"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-import { DriveFilesSchema } from "~/schemas"
+import { DriveFilesSchema } from "~/types/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionTypeGoogle, DriveFile, User } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile, User } from "~/types"
 import { CHUNK_SIZE } from "~/lib/config"
 import { arrayIntoChunks } from "~/lib/utils"
 import type { drive_v3 } from "googleapis"

@@ -7,7 +7,7 @@ import { Form, useNavigation } from "@remix-run/react"
 
 import { useLoadingModal } from "../loading-modal"
 
-import type { Task } from "~/type.d"
+import type { Task } from "~/types"
 
 /**
  * TaskCard

@@ -16,7 +16,7 @@ import { Form, NavLink, useLoaderData } from "@remix-run/react"
 import ImageIcon from "../util/image-icon"
 
 import { z } from "zod"
-import type { User } from "~/type.d"
+import type { User } from "~/types"
 import { NavLinkButton } from "../buttons/button"
 
 const userSchema = z.object({

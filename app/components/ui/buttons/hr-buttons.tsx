@@ -1,4 +1,4 @@
-import type { Hr } from "~/type.d"
+import type { Hr } from "~/types"
 import type { Role } from "@prisma/client"
 
 export default function HrButtons({

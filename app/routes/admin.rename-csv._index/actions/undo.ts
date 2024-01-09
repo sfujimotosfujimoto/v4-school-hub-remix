@@ -6,7 +6,7 @@ import { getUserFromSession } from "~/lib/session.server"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
 import { undoRenameDataExecute } from "~/routes/admin.rename._index/actions/undo"
-import type { ActionTypeGoogle } from "~/type.d"
+import type { ActionTypeGoogle } from "~/types"
 
 const FormDataScheme = z.object({
   driveFilesSerialized: z.string().optional(),

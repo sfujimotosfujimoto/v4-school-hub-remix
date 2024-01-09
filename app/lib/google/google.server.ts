@@ -2,7 +2,7 @@ import { google } from "googleapis"
 
 import type { Auth } from "googleapis"
 import { logger } from "~/logger"
-import type { PersonGoogle } from "~/type.d"
+import type { PersonGoogle } from "~/types"
 
 export async function getClientFromCode(code: string): Promise<{
   client: Auth.OAuth2Client

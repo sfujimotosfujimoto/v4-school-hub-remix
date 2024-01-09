@@ -3,11 +3,11 @@ import { z } from "zod"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-import { DriveFileMovesSchema } from "~/schemas"
+import { DriveFileMovesSchema } from "~/types/schemas"
 
 import { json, redirect } from "@remix-run/node"
 
-import type { ActionTypeGoogle, DriveFile } from "~/type.d"
+import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { undoMoveDataExecute } from "./undo"
 
 const FormDataScheme = z.object({
