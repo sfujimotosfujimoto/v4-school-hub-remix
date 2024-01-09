@@ -7,6 +7,7 @@ import { SESSION_MAX_AGE } from "./config"
 import type { TypedResponse } from "@remix-run/node"
 import type { User } from "~/types"
 import { getRefreshUserById, getUserById } from "./user.server"
+import { redirectToSignin } from "./responses"
 const SESSION_SECRET = process.env.SESSION_SECRET
 if (!SESSION_SECRET) throw Error("session secret is not set")
 
@@ -75,6 +76,34 @@ export async function getUserFromSession(
     }`,
   )
 
+  return user
+}
+
+export async function getUserFromSessionOrRedirect(
+  request: Request,
+): Promise<User | null> {
+  logger.debug(
+    `👑 getUserFromSession: request ${request.url}, ${request.method}`,
+  )
+
+  const session = await sessionStorage.getSession(request.headers.get("Cookie"))
+
+  const userId = Number(session.get("userId") || 0)
+
+  const user = await getUserById(userId)
+  if (!user) {
+    return null
+  }
+
+  logger.debug(
+    `👑 getUserFromSession: exp ${new Date(
+      user.credential?.expiry || 0,
+    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })} -- request.url ${
+      request.url
+    }`,
+  )
+
+  if (!user || !user.credential) throw redirectToSignin(request)
   return user
 }
 
