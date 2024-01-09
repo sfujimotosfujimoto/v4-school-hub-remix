@@ -1,11 +1,11 @@
-import type { UserPrisma } from "~/types"
+import type { User } from "~/types"
 
 // used in session.server.ts
 //-------------------------------------------
 // LOCAL FUNCTIONS
 //-------------------------------------------
 
-export function returnUser(user: UserPrisma) {
+export function returnUser(user: User) {
   const {
     id,
     last,
@@ -32,6 +32,7 @@ export function returnUser(user: UserPrisma) {
       credential: null,
       stats: user.stats || null,
     }
+
   if (!user.stats)
     return {
       id,
@@ -46,9 +47,9 @@ export function returnUser(user: UserPrisma) {
       credential:
         {
           accessToken: user.credential.accessToken,
-          expiry: Number(user.credential.expiry),
+          expiry: user.credential.expiry,
           refreshToken: user.credential.refreshToken,
-          refreshTokenExpiry: Number(user.credential.refreshTokenExpiry),
+          refreshTokenExpiry: user.credential.refreshTokenExpiry,
           createdAt: user.credential.createdAt,
         } || null,
       stats: null,
@@ -73,9 +74,9 @@ export function returnUser(user: UserPrisma) {
     role,
     credential: {
       accessToken,
-      expiry: Number(expiry),
+      expiry,
       refreshToken,
-      refreshTokenExpiry: Number(user.credential.refreshTokenExpiry),
+      refreshTokenExpiry: user.credential.refreshTokenExpiry,
       createdAt: credCreatedAt,
     },
     stats: {

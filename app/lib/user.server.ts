@@ -9,10 +9,10 @@ export const selectUser = {
   id: true,
   first: true,
   last: true,
-  picture: true,
   email: true,
-  activated: true,
+  picture: true,
   role: true,
+  activated: true,
   createdAt: true,
   updatedAt: true,
   credential: {
@@ -48,10 +48,11 @@ export async function getUserByEmail(email: string): Promise<User | null> {
     },
   })
 
-  console.log(
-    "✅ services/user.server.ts ~ 	🌈 user.credential.expiry ✅ ",
-    user?.credential?.expiry,
-    new Date(user?.credential?.expiry || 0).toLocaleString(),
+  logger.debug(
+    `✅ services/user.server.ts ~ 	🌈 user.credential.expiry ✅ ${user
+      ?.credential?.expiry} - ${new Date(
+      user?.credential?.expiry || 0,
+    ).toLocaleString()}`,
   )
 
   if (!user || !user.credential) {
@@ -163,11 +164,6 @@ export async function getUsers(): Promise<User[] | null> {
   logger.debug(`✅ getUsers`)
   const users = await prisma.user.findMany({
     orderBy: [
-      // {
-      //   stats: {
-      //     count: "desc",
-      //   },
-      // },
       {
         stats: {
           lastVisited: "desc",
