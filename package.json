@@ -9,11 +9,11 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.1",
+    "@prisma/client": "^5.8.0",
     "@remix-run/node": "^2.4.1",
     "@remix-run/react": "^2.4.1",
     "@remix-run/serve": "^2.4.1",
-    "framer-motion": "^10.17.9",
+    "framer-motion": "^10.17.12",
     "googleapis": "^129.0.0",
     "immer": "^10.0.3",
     "isbot": "^3.8.0",
@@ -39,7 +39,7 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.11",
-    "prisma": "^5.7.1",
+    "prisma": "^5.8.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
   },
