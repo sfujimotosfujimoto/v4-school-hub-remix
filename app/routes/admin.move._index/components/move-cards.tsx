@@ -74,10 +74,6 @@ function MoveCard({
             type="checkbox"
             checked={selected}
             onChange={() => {
-              console.log(
-                "✅ components/move-cards.tsx ~ 	😀 input.check",
-                selected,
-              )
               driveFilesDispatch({
                 type: "SET_CHECK",
                 payload: { id: driveFile.id, checked: !selected },

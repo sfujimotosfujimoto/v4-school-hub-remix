@@ -19,7 +19,6 @@ export default function DeleteButton({
     state === "submitting" && formData?.get("_action") === "delete-execute"
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    console.log("✅ components/delete-button.tsx ~ 	😀 tasksDispatch delete")
     tasksDispatch({
       type: "SET",
       payload: {

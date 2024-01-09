@@ -15,7 +15,6 @@ export default function CsvUndoFileInput() {
     state === "submitting" && formData?.get("_action") === "undo-csv"
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    console.log("✅ components/csv-undo-file-input.tsx ~ 	😀 handleChange")
     // setFile(e.target.files?.[0] || null)
 
     const file = e.target.files?.[0]
@@ -24,18 +23,11 @@ export default function CsvUndoFileInput() {
     const df = parseCsvObjToDriveFileMove(data)
     const dString = JSON.stringify(df)
     setDriveFilesString(dString)
-    console.log(
-      "✅ components/csv-undo-file-input.tsx ~ 	😀 handleChange file:",
-      file,
-    )
+
     if (dialogEl.current) dialogEl.current.showModal()
   }
 
   function handleInputClick(e: React.MouseEvent<HTMLInputElement>) {
-    console.log(
-      "✅ components/csv-undo-file-input.tsx ~ 	😀 clicked",
-      e.currentTarget.files,
-    )
     e.currentTarget.files = null
   }
 

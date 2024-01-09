@@ -32,7 +32,6 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
 
     const dfs = driveFiles.filter((df) => df.meta?.selected === true)
 
-    console.log("✅ components/move-confirm-form.tsx ~ 	🌈 dfs ✅ ", dfs)
     tasksDispatch({
       type: "SET",
       payload: {
@@ -48,8 +47,6 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) {
     e.preventDefault()
-
-    console.log("✅ admin.move._index/route.tsx ~ 	😀 clicked")
 
     const dfs = driveFiles.filter((df) => df.meta?.selected === true)
     tasksDispatch({
