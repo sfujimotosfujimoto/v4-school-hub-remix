@@ -18,7 +18,10 @@ import { undoCsvAction } from "./actions/undo-csv"
 import MoveCards from "./components/move-cards"
 import MoveConfirmForm from "./components/move-confirm-form"
 import MoveForm from "./components/move-form"
-import { getUserFromSession } from "~/lib/session.server"
+import {
+  getUserFromSession,
+  getUserFromSessionOrRedirect,
+} from "~/lib/session.server"
 import { redirectToSignin } from "~/lib/responses"
 
 export const config = {
@@ -32,8 +35,7 @@ export const config = {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin.move._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const user = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
   return {

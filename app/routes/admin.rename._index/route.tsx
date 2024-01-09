@@ -7,8 +7,7 @@ import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle } from "~/types"
 import { executeAction } from "./actions/execute"
@@ -27,8 +26,7 @@ export const config = {
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin.rename._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  await getUserFromSessionOrRedirect(request)
 
   return null
 }

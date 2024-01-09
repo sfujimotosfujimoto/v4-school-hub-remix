@@ -81,7 +81,7 @@ export async function getUserFromSession(
 
 export async function getUserFromSessionOrRedirect(
   request: Request,
-): Promise<User | null> {
+): Promise<User> {
   logger.debug(
     `👑 getUserFromSession: request ${request.url}, ${request.method}`,
   )
@@ -91,9 +91,8 @@ export async function getUserFromSessionOrRedirect(
   const userId = Number(session.get("userId") || 0)
 
   const user = await getUserById(userId)
-  if (!user) {
-    return null
-  }
+
+  if (!user || !user.credential) throw redirectToSignin(request)
 
   logger.debug(
     `👑 getUserFromSession: exp ${new Date(
@@ -102,8 +101,6 @@ export async function getUserFromSessionOrRedirect(
       request.url
     }`,
   )
-
-  if (!user || !user.credential) throw redirectToSignin(request)
   return user
 }
 

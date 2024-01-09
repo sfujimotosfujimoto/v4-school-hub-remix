@@ -1,22 +1,16 @@
-import { useLoaderData } from "@remix-run/react"
 import {
   redirect,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node"
-
-import type { User } from "~/types"
-
-// components
-import Tables from "./components/tables"
-// functions
-import { getUsers } from "~/lib/user.server"
+import { useLoaderData } from "@remix-run/react"
 import { z } from "zod"
-import { logger } from "~/logger"
-import { authenticate } from "~/lib/authenticate.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
-// context
-// hooks
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
+import { getUsers } from "~/lib/user.server"
+import { logger } from "~/logger"
+import type { User } from "~/types"
+import Tables from "./components/tables"
 
 const userSchema = z.array(
   z.object({
@@ -73,8 +67,8 @@ export default function AdminPage() {
 // activtated,last, first, stats.count, stats.lastVisited
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin._index ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
+  const user = await getUserFromSessionOrRedirect(request)
+  await requireAdminRole(request, user)
 
   if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")

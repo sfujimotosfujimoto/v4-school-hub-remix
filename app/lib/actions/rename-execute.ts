@@ -4,7 +4,7 @@ import {
   getFileById,
   mapFilesToDriveFiles,
 } from "~/lib/google/drive.server"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 
 import { json, redirect } from "@remix-run/node"
 import type { ActionTypeGoogle, DriveFile } from "~/types"
@@ -26,9 +26,7 @@ export async function renameExecuteAction(
 ) {
   logger.debug(`🍎 action: renameExecuteAction()`)
 
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated", 302)
+  const user = await getUserFromSessionOrRedirect(request)
 
   // if no user or credential redirect
   if (!user || !user.credential) throw redirect(`/authstate=unauthorized-012`)

@@ -2,19 +2,17 @@
 import { DriveLogo, LogoIcon, LogoTextIcon } from "~/components/icons"
 import { type LoaderFunctionArgs, json } from "@remix-run/node"
 import { logger } from "~/logger"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { NavLinkButton } from "~/components/buttons/button"
 import DriveLogoIcon from "~/components/icons/drive-logo-icon"
 import { useLoaderData } from "@remix-run/react"
-import { redirectToSignin } from "~/lib/responses"
 /**
  * Root loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: _index ${request.url}`)
 
-  const user = await getUserFromSession(request)
-  if (!user) throw redirectToSignin(request)
+  const user = await getUserFromSessionOrRedirect(request)
   logger.debug("✅ _index/route.tsx ~ 	🌈 user ✅ ", user)
 
   return json({
