@@ -15,6 +15,7 @@ import {
 import type { User } from "~/types"
 import { z } from "zod"
 import React from "react"
+import clsx from "clsx"
 
 const userSchema = z.object({
   role: z.string().optional(),
@@ -40,11 +41,16 @@ export default function Navigation() {
   return (
     <header
       data-name="Navigation"
-      className={`navbar sticky top-0 z-10 w-screen border-b border-stone-200  p-0 sm:border-0 ${
-        loading ? "bg-slate-800 bg-opacity-20 " : "bg-white bg-opacity-90 "
-      }`}
+      className={`navbar sticky top-0 z-10 w-screen border-b border-stone-200  p-0 sm:border-0`}
     >
-      <div className="navbar bg-base-100">
+      <div
+        className={clsx(
+          `navbar bg-base-100 bg-opacity-70 transition-colors ease-in-out`,
+          {
+            "animate-pulse bg-sfgreen-600 bg-opacity-10 duration-500": loading,
+          },
+        )}
+      >
         <div className="flex-1">
           <a href="/" className="btn btn-ghost btn-sm flex gap-0 text-xl">
             <LogoIcon

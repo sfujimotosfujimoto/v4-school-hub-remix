@@ -11,7 +11,7 @@ export default function HrButtons({
   role?: Role
 }) {
   return (
-    <ul className={`join border-none bg-sfyellow-300 font-bold`}>
+    <ul className={`join border-none bg-sfyellow-200 font-bold`}>
       <HrButton hr={hr} hrBase="ALL" setHr={setHr} />
       <HrButton hr={hr} hrBase="A" setHr={setHr} />
       <HrButton hr={hr} hrBase="B" setHr={setHr} />
