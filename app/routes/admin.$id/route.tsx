@@ -1,22 +1,18 @@
-import { redirect } from "@remix-run/node"
-import { useLoaderData } from "@remix-run/react"
 import type { Role } from "@prisma/client"
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node"
-
-import type { User } from "~/types"
-import { UserSchema } from "~/types/schemas"
-
-// components
-import AdminForm from "./components/admin-form"
-// functions
+import { redirect } from "@remix-run/node"
+import { useLoaderData } from "@remix-run/react"
 import { requireAdminRole } from "~/lib/require-roles.server"
 import { deleteUserById, getUserById, updateUserById } from "~/lib/user.server"
 import { logger } from "~/logger"
-import { authenticate } from "~/lib/authenticate.server"
+import type { User } from "~/types"
+import { UserSchema } from "~/types/schemas"
+import AdminForm from "./components/admin-form"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 
 /**
  * Page
@@ -55,8 +51,8 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   id: string
 }> {
   logger.debug(`🍿 loader: admin.$id ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
+  const { user } = await getUserFromSessionOrRedirect(request)
+  await requireAdminRole(request, user)
 
   if (!user || !user.credential) {
     throw redirect("/?authstate=unauthenticated")
@@ -83,8 +79,8 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
  */
 export async function action({ request, params }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.$id ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
+  const { user } = await getUserFromSessionOrRedirect(request)
+  await requireAdminRole(request, user)
 
   if (!user) throw redirect("/?authstate=unauthenticated")
 

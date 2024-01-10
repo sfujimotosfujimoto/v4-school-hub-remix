@@ -1,4 +1,4 @@
-export default function LogoText({ ...rest }) {
+export default function LogoTextIcon({ ...rest }) {
   return (
     <svg
       width="316"

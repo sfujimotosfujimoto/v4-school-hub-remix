@@ -1,4 +1,4 @@
-export default function Logo({ ...rest }) {
+export default function LogoIcon({ ...rest }) {
   return (
     <svg
       viewBox="0 0 73 95"

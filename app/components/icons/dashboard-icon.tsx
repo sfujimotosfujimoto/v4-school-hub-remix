@@ -1,4 +1,4 @@
-export default function Logo({ ...rest }) {
+export default function DashboardIcon({ ...rest }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

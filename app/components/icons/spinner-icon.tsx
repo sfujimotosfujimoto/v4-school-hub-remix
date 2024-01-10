@@ -1,4 +1,4 @@
-export default function Spinner({ ...rest }) {
+export default function SpinnerIcon({ ...rest }) {
   return (
     <svg
       width="24"

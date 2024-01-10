@@ -1,14 +1,13 @@
+import type { Role } from "@prisma/client"
+import { Form, useNavigation } from "@remix-run/react"
 import React from "react"
+import toast from "react-hot-toast"
 import { LoadingIcon } from "~/components/icons"
 import { useLoadingModal } from "~/components/ui/loading-modal"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useTasksContext } from "~/context/tasks-context"
-import { useMovePageContext } from "~/routes/admin.move._index/context/move-page-context"
-
-import { Form, useNavigation } from "@remix-run/react"
 import { arrayIntoChunks } from "~/lib/utils"
-import toast from "react-hot-toast"
-import type { Role } from "@prisma/client"
+import { useMovePageContext } from "~/routes/admin.move._index/context/move-page-context"
 
 export default function MoveConfirmForm({ role }: { role: Role }) {
   const dialogEl = React.useRef<HTMLDialogElement>(null)

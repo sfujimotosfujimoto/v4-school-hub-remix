@@ -1,19 +1,10 @@
-import React from "react"
 import { Form, useActionData, useNavigation } from "@remix-run/react"
-
-// types
-import type { ActionTypeGoogle } from "~/types"
-
-// components
+import React from "react"
 import SubmitButton from "~/components/ui/buttons/submit-button"
-// functions
-
-// context
-import { useRenamePageContext } from "~/routes/admin.rename/context/rename-page-context"
 import { useLoadingModal } from "~/components/ui/loading-modal"
 import { useTasksContext } from "~/context/tasks-context"
-
-// hooks
+import { useRenamePageContext } from "~/routes/admin.rename/context/rename-page-context"
+import type { ActionTypeGoogle } from "~/types"
 
 export default function RenameForm() {
   const { state, formData } = useNavigation()

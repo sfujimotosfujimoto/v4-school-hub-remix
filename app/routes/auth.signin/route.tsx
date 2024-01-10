@@ -1,23 +1,20 @@
-import { initializeClient } from "~/lib/google/google.server"
-
-import { redirect } from "@remix-run/node"
-// import { Link } from "@remix-run/react"
-
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import { logger } from "~/logger"
+import { redirect } from "@remix-run/node"
+import { Form, useNavigation } from "@remix-run/react"
+import clsx from "clsx"
+import { Button } from "~/components/buttons/button"
+import { LogoIcon } from "~/components/icons"
+import DriveLogoIcon from "~/components/icons/drive-logo-icon"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { initializeClient } from "~/lib/google/google.server"
+import { redirectToSignin } from "~/lib/responses"
 import {
   getRefreshUserFromSession,
   getUserFromSession,
   updateSession,
 } from "~/lib/session.server"
-import { redirectToSignin } from "~/lib/responses"
+import { logger } from "~/logger"
 import type { User } from "~/types"
-import { Form, useNavigation } from "@remix-run/react"
-import clsx from "clsx"
-import { LogoIcon } from "~/components/icons"
-import DriveLogoIcon from "~/components/icons/drive-logo-icon"
-import { Button } from "~/components/buttons/button"
-import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 /**
  * Root loader

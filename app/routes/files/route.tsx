@@ -1,11 +1,9 @@
 import type { MetaFunction } from "@remix-run/node"
-import React from "react"
-
 import { Outlet, useOutletContext } from "@remix-run/react"
-
-import type { Gakunen, Hr } from "~/types"
-import TasksProvider from "~/context/tasks-context"
+import React from "react"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import TasksProvider from "~/context/tasks-context"
+import type { Gakunen, Hr } from "~/types"
 
 type ContextType = {
   gakunen: Gakunen

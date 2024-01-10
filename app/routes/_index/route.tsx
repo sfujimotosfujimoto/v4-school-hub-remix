@@ -1,10 +1,9 @@
 // components
-import { DriveLogo, LogoIcon, LogoTextIcon } from "~/components/icons"
+import { LogoIcon, LogoTextIcon, DriveLogoIcon } from "~/components/icons"
 import { type LoaderFunctionArgs, json } from "@remix-run/node"
 import { logger } from "~/logger"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { NavLinkButton } from "~/components/buttons/button"
-import DriveLogoIcon from "~/components/icons/drive-logo-icon"
 import { useLoaderData } from "@remix-run/react"
 /**
  * Root loader
@@ -63,7 +62,7 @@ function Explanation() {
       </span>
       とは生徒の
       <span className="underline decoration-sfred-200 decoration-2">
-        <DriveLogo className="inline h-3 w-3" />
+        <DriveLogoIcon className="inline h-3 w-3" />
         Google Drive
       </span>{" "}
       と連携するアプリです。

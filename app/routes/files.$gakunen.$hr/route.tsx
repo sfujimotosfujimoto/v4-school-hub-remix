@@ -14,7 +14,7 @@ import {
   querySampledStudent,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { filterStudentNameSegments } from "~/lib/utils"
 import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
@@ -24,7 +24,8 @@ import { logger } from "~/logger"
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: files.$gakunen.$hr ${request.url}`)
-  const user = await getUserFromSession(request)
+  const { credential } = await getUserFromSessionOrRedirect(request)
+  const accessToken = credential.accessToken
 
   // if search params are empty, return empty segments
   let { searchParams } = new URL(request.url)
@@ -33,10 +34,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (q) {
     return { segments: [] }
   }
-
-  if (!user || !user.credential) throw redirect("/?authstate=unauthenticated")
-
-  const accessToken = user.credential.accessToken
 
   // get sheets
   const sheets = await getSheets(accessToken)
@@ -58,7 +55,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   logger.debug(`🍿 loader: files.$gakunen.$hr query ${query}`)
 
-  const drive = await getDrive(user.credential.accessToken)
+  const drive = await getDrive(credential.accessToken)
   if (!drive) throw redirect("/?authstate=unauthorized-024")
 
   // get all files from Drive

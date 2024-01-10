@@ -1,18 +1,14 @@
-import React from "react"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node"
 import { json } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node"
-
-// components
+import React from "react"
 import GakunenButtons from "~/components/ui/buttons/gakunen-buttons"
 import HrButtons from "~/components/ui/buttons/hr-buttons"
-// functions
-// hooks
-import { useGakunen } from "../student/route"
-import { destroyUserSession, getUserFromSession } from "~/lib/session.server"
 import { requireUserRole } from "~/lib/require-roles.server"
-import { logger } from "~/logger"
 import { redirectToSignin } from "~/lib/responses"
+import { destroyUserSession, getUserFromSession } from "~/lib/session.server"
+import { logger } from "~/logger"
+import { useGakunen } from "../student/route"
 
 /**
  * loader function

@@ -1,10 +1,7 @@
-import React from "react"
 import { Form, useNavigation } from "@remix-run/react"
-
-// components
+import React from "react"
 import { LoadingIcon } from "~/components/icons"
 import { useLoadingModal } from "~/components/ui/loading-modal"
-// context
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useTasksContext } from "~/context/tasks-context"
 import { useRenamePageContext } from "~/routes/admin.rename/context/rename-page-context"

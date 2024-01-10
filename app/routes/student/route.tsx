@@ -1,23 +1,23 @@
-import React from "react"
-import { json, redirect } from "@remix-run/node"
-import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
+import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react"
+import React from "react"
 
 // components
-import Sidebar from "./components/sidebar"
 import { MenuIcon } from "~/components/icons"
+import Sidebar from "./components/sidebar"
 // functions
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { getSheets, getStudents } from "~/lib/google/sheets.server"
+import { redirectToSignin } from "~/lib/responses"
+import { getUserFromSession } from "~/lib/session.server"
 import { filterStudentDataByGakunen } from "~/lib/utils"
 import { logger } from "~/logger"
-import { getUserFromSession } from "~/lib/session.server"
-import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import type { Gakunen, Hr } from "~/types"
-import { redirectToSignin } from "~/lib/responses"
 
 /**
  * loader function

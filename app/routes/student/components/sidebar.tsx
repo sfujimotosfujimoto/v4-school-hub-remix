@@ -1,7 +1,6 @@
 import { SpinnerIcon } from "~/components/icons"
-
-import StudentNameLink from "./student-name-link"
 import type { Student } from "~/types"
+import StudentNameLink from "./student-name-link"
 
 function getFolderId(folderUrl: string): string | null {
   if (!folderUrl) return null
