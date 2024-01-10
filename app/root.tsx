@@ -12,7 +12,6 @@ import type {
 import MotionWrapper from "./components/ui/motion-wrapper"
 import { json } from "@remix-run/node"
 import {
-  isRouteErrorResponse,
   Link,
   Links,
   LiveReload,
@@ -201,104 +200,39 @@ export default function App() {
 
 export function ErrorBoundary() {
   let error = useRouteError()
-  if (isRouteErrorResponse(error)) {
-    console.error(`${error.status}: ${error.statusText}:${error}`)
-    let errorMessage = "An error occurred."
-    switch (error.status) {
-      case 401: {
-        errorMessage = "You are not authorized."
-        break
-      }
-      case 403: {
-        errorMessage = "You are not authenticated."
-        break
-      }
-      case 500: {
-        errorMessage = "Something went wrong in the server."
-        break
-      }
-      default: {
-        errorMessage = "Something went wrong. (default)"
-      }
-    }
+  console.error("root error:", error)
+  return (
+    <html lang="en" data-theme="mytheme">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <ErrorDocument>
+          <h1 className="text-xl">
+            Something went wrong. Please try again later.
+          </h1>
 
-    return (
-      <html lang="en" data-theme="mytheme">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <Meta />
-          <Links />
-        </head>
-        <body>
-          {/* MAIN */}
-          <div
-            data-name="root.tsx"
-            className="mx-auto grid h-full grid-rows-layout text-sfblue-300"
-          >
-            <main className="h-full ">
-              <ErrorDocument>
-                <h1 className="text-xl">
-                  {`${errorMessage} : ${error.status}` ||
-                    "Something went wrong. Please try again later."}
-                </h1>
-
-                <p className="text-lg">
-                  Contact:
-                  <a
-                    href="mailto:s-fujimoto@seig-boys.jp"
-                    className="ml-2 font-semibold underline hover:text-sfred-200 "
-                  >
-                    s-fujimoto[at]seig-boys.jp
-                  </a>
-                </p>
-                <BackToHomeButton />
-              </ErrorDocument>
-            </main>
-            <Footer />
-          </div>
-
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </body>
-      </html>
-    )
-  } else {
-    return (
-      <html lang="en" data-theme="mytheme">
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <Meta />
-          <Links />
-        </head>
-        <body>
-          {/* MAIN */}
-          <div
-            data-name="root.tsx"
-            className="mx-auto grid h-full grid-rows-layout text-sfblue-300"
-          >
-            <main className="h-full ">
-              <ErrorDocument>
-                <p className="text-2xl">
-                  Something went wrong. Please try again later.
-                </p>
-                <BackToHomeButton />
-              </ErrorDocument>
-            </main>
-            <Footer />
-          </div>
-
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </body>
-      </html>
-    )
-  }
+          <p className="text-lg">
+            Contact:
+            <a
+              href="mailto:sfujimotosfujimoto@gmail.com"
+              className="ml-2 font-semibold underline hover:text-sfred-200 "
+            >
+              sfujimotosfujimoto[at]gmail.com
+            </a>
+          </p>
+          <BackToHomeButton />
+        </ErrorDocument>
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  )
 }
-
 function BackToHomeButton() {
   return (
     <Link
