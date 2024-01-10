@@ -57,7 +57,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export const meta: MetaFunction = () => {
   return [
     {
-      title: "SCHOOL HUB",
+      title: "SCHOOL HUB TEACHER",
     },
   ]
 }

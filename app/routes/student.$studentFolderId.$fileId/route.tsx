@@ -133,7 +133,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
     {
-      title: `SCHOOL HUB`,
+      title: `SCHOOL HUB TEACHER`,
     },
   ]
 }

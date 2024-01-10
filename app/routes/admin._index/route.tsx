@@ -85,7 +85,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export const meta: MetaFunction = () => {
-  return [{ title: "ADMIN | SCHOOL HUB" }]
+  return [{ title: "ADMIN | SCHOOL HUB TEACHER" }]
 }
 
 /*

@@ -22,13 +22,13 @@ export default function PermissionTags({
       <h2 className={` ${h2Style}`}>生徒</h2>
       <div className={`${gridStyle} gap-4`}>
         {student && (
-          <PermissionTag permission={student} classes="bg-sfgreen-100" />
+          <PermissionTag permission={student} classes="bg-sfgreen-300" />
         )}
       </div>
       <h2 className={`mt-4 ${h2Style}`}>オーナー</h2>
       <div className={`${gridStyle} gap-4`}>
         {owner && (
-          <PermissionTag permission={owner} classes="bg-sfyellow-100" />
+          <PermissionTag permission={owner} classes="bg-sfyellow-200" />
         )}
       </div>
       <h2 className={`mt-4 ${h2Style}`}>共有</h2>
@@ -38,7 +38,7 @@ export default function PermissionTags({
             <PermissionTag
               key={p.id}
               permission={p}
-              classes={"bg-sfyellow-100"}
+              classes={"bg-sfyellow-200"}
             />
           ))}
       </div>

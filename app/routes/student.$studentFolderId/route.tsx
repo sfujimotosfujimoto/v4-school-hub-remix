@@ -96,7 +96,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
   return [
     {
-      title: `${title} | SCHOOL HUB`,
+      title: `${title} | SCHOOL HUB TEACHER`,
     },
   ]
 }

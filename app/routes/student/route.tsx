@@ -134,7 +134,7 @@ export function useGakunen() {
 export const meta: MetaFunction = () => {
   return [
     {
-      title: `クラス | SCHOOL HUB`,
+      title: `クラス | SCHOOL HUB TEACHER`,
     },
   ]
 }
