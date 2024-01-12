@@ -37,48 +37,55 @@ export async function getStudents(
   const meiboSheetId = process.env.GOOGLE_API_MEIBO_SHEET_URI
   invariant(meiboSheetId, "No meibo sheet id")
 
+  let resp
   try {
-    const resp = await sheets.spreadsheets.values.get({
+    // logger.debug(`✅ getStudents: before resp`)
+    resp = await sheets.spreadsheets.values.get({
       spreadsheetId: meiboSheetId,
       range: "MEIBO!A2:J916",
       valueRenderOption: "UNFORMATTED_VALUE",
     })
-
-    const data = resp.data.values
-
-    if (!data || data.length === 0) {
-      throw new Error(`Could not get data"`)
-    }
-
-    let students: Student[] = data.map((d) => {
-      return {
-        gakuseki: (d[0] || 0) as number,
-        gakunen: d[1] as string,
-        hr: d[2] as string,
-        hrNo: Number(d[3]) as number,
-        last: d[4] as string,
-        first: d[5] as string,
-        sei: d[6] as string,
-        mei: d[7] as string,
-        email: d[8] as string,
-        folderLink: (d[9] || null) as string | null,
-      }
-    })
-
-    // filter gakunen
-    if (gakunen !== "ALL") {
-      students = students.filter((d) => d.gakunen === gakunen)
-    }
-
-    // filter hr
-    if (hr !== "ALL") {
-      students = students.filter((d) => d.hr === hr)
-    }
-
-    return students
-  } catch (err) {
-    throw Error(`Something went wrong getting data from spreadsheet. ${err}`)
+    // logger.debug(`✅ getStudents: after resp`)
+  } catch (error) {
+    // logger.debug(`✅ getStudents: in trycatch error`)
+    return []
   }
+
+  if (!resp) {
+    return []
+  }
+  const data = resp.data.values
+  // logger.debug(`✅ getStudents: after data`)
+  if (!data || data.length === 0) {
+    return []
+  }
+
+  let students: Student[] = data.map((d) => {
+    return {
+      gakuseki: (d[0] || 0) as number,
+      gakunen: d[1] as string,
+      hr: d[2] as string,
+      hrNo: Number(d[3]) as number,
+      last: d[4] as string,
+      first: d[5] as string,
+      sei: d[6] as string,
+      mei: d[7] as string,
+      email: d[8] as string,
+      folderLink: (d[9] || null) as string | null,
+    }
+  })
+
+  // filter gakunen
+  if (gakunen !== "ALL") {
+    students = students.filter((d) => d.gakunen === gakunen)
+  }
+
+  // filter hr
+  if (hr !== "ALL") {
+    students = students.filter((d) => d.hr === hr)
+  }
+
+  return students
 }
 
 export function getStudentByFolderId(

@@ -231,11 +231,16 @@ export async function getDriveFiles(
 
   if (!query || query === "") return null
 
-  let files: drive_v3.Schema$File[] = await execFilesList(drive, query)
+  try {
+    let files: drive_v3.Schema$File[] = await execFilesList(drive, query)
 
-  if (!files) return null
+    if (!files) return null
 
-  return mapFilesToDriveFiles(files)
+    return mapFilesToDriveFiles(files)
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
 
 /**
@@ -297,36 +302,44 @@ export async function getDrive(
 //-------------------------------------------
 // PRIVATE FUNCTIONS
 //-------------------------------------------
-async function execFilesList(drive: drive_v3.Drive, query: string) {
+async function execFilesList(
+  drive: drive_v3.Drive,
+  query: string,
+): Promise<drive_v3.Schema$File[]> {
   let count = 0
   let files: drive_v3.Schema$File[] = []
   let nextPageToken = undefined
 
   const MaxSize = 3000
 
-  do {
-    const list: any = await drive.files.list({
-      pageSize: 300,
-      pageToken: nextPageToken,
-      q: query,
-      fields: QUERY_FILES_FIELDS,
-    })
-    if (list.data.files) {
-      files = files.concat(list.data.files)
-    }
-    nextPageToken = list.data.nextPageToken
+  try {
+    do {
+      const list: any = await drive.files.list({
+        pageSize: 300,
+        pageToken: nextPageToken,
+        q: query,
+        fields: QUERY_FILES_FIELDS,
+      })
+      if (list.data.files) {
+        files = files.concat(list.data.files)
+      }
+      nextPageToken = list.data.nextPageToken
 
-    logger.debug(
-      `✅ execFilesList: files: ${
-        files.length
-      } files: count: ${count++}, nextPageToken: ${!!nextPageToken}`,
-    )
-    // if (list.data.nextPageToken) nextPageToken = list.data.nextPageToken
-  } while (nextPageToken && files.length < MaxSize)
-  // files.forEach((f, idx) => {
-  //   logger.debug(`✅ file: ${idx}: ${f.name}`)
-  // })
-  return files
+      logger.debug(
+        `✅ execFilesList: files: ${
+          files.length
+        } files: count: ${count++}, nextPageToken: ${!!nextPageToken}`,
+      )
+      // if (list.data.nextPageToken) nextPageToken = list.data.nextPageToken
+    } while (nextPageToken && files.length < MaxSize)
+    // files.forEach((f, idx) => {
+    //   logger.debug(`✅ file: ${idx}: ${f.name}`)
+    // })
+    return files
+  } catch (error) {
+    console.error(error)
+    return []
+  }
 }
 
 /*
