@@ -123,7 +123,7 @@ export const links: LinksFunction = () => {
     {
       rel: "icon",
       href: "/favicon.png",
-      type: "image/x-icon",
+      type: "image/png",
     },
     {
       rel: "icon",
