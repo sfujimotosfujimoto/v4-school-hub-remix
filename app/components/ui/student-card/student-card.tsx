@@ -110,24 +110,26 @@ export default function StudentCard({
 
           {driveFile && size === "big" && (
             <figure className="!rounded-2xl">
-              {driveFile.hasThumbnail &&
+              {/* {driveFile.hasThumbnail &&
                 driveFile.thumbnailLink &&
-                !checkGoogleMimeType(driveFile) && (
-                  <img
-                    className="object-contain"
-                    width={thumbnailSize === "small" ? "300" : "1000"}
-                    height={thumbnailSize === "small" ? "300" : "1000"}
-                    src={
-                      thumbnailSize === "small"
-                        ? driveFile.thumbnailLink
-                        : driveFile.thumbnailLink?.split("=")[0]
-                    }
-                    alt={driveFile.name}
-                    referrerPolicy="no-referrer"
-                  />
-                )}
+                !checkGoogleMimeType(driveFile) && ( */}
+              {driveFile.thumbnailLink && (
+                <img
+                  className="object-contain"
+                  width={thumbnailSize === "small" ? "300" : "1000"}
+                  height={thumbnailSize === "small" ? "300" : "1000"}
+                  src={
+                    thumbnailSize === "small"
+                      ? driveFile.thumbnailLink
+                      : driveFile.thumbnailLink?.split("=")[0]
+                  }
+                  alt={driveFile.name}
+                  referrerPolicy="no-referrer"
+                />
+              )}
             </figure>
           )}
+
           {driveFile.meta?.studentFolder && size === "small" && (
             <div className="flex items-center gap-2 text-sm">
               <div>
