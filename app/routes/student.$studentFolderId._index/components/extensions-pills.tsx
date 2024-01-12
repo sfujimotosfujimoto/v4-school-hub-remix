@@ -1,5 +1,4 @@
 import { useNavigation } from "@remix-run/react"
-
 import { NavLinkPill } from "~/components/buttons/button"
 
 function setSearchParams(url: string, key: string, value: string) {

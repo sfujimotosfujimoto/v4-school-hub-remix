@@ -1,9 +1,7 @@
+import type { ActionFunctionArgs } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import { destroyUserSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-
-import { json } from "@remix-run/node"
-
-import type { ActionFunctionArgs } from "@remix-run/node"
 
 /**
  * Action for signout

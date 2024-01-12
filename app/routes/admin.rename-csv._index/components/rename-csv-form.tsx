@@ -1,16 +1,10 @@
-import React from "react"
 import { Form, useNavigation } from "@remix-run/react"
-
-// types
-import type { DriveFile } from "~/types"
-
-// components
-import CsvFileInput from "./csv-file-input"
+import React from "react"
 import SubmitButton from "~/components/ui/buttons/submit-button"
-// functions
-import { convertDriveFileToCsv } from "~/lib/csv"
-// context
 import { useDriveFilesContext } from "~/context/drive-files-context"
+import { convertDriveFileToCsv } from "~/lib/csv"
+import type { DriveFile } from "~/types"
+import CsvFileInput from "./csv-file-input"
 
 /**
  * RenameCsvForm

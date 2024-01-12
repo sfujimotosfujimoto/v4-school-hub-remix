@@ -1,4 +1,4 @@
-import type { Role } from "@prisma/client"
+import type { Role, User } from "@prisma/client"
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -10,7 +10,6 @@ import { requireAdminRole } from "~/lib/require-roles.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { deleteUserById, getUserById, updateUserById } from "~/lib/user.server"
 import { logger } from "~/logger"
-import type { User } from "~/types"
 import { UserSchema } from "~/types/schemas"
 import AdminForm from "./components/admin-form"
 

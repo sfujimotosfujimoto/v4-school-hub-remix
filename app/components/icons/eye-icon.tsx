@@ -1,4 +1,4 @@
-export default function RenameIcon({ ...rest }) {
+export default function EyeIcon({ ...rest }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

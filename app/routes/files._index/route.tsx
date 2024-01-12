@@ -1,37 +1,25 @@
+import type { LoaderFunctionArgs } from "@remix-run/node"
+import { json } from "@remix-run/node"
+import { NavLink, useLoaderData } from "@remix-run/react"
 import { LogoIcon } from "~/components/icons"
 import GakunenButtons from "~/components/ui/buttons/gakunen-buttons"
 import HrButtons from "~/components/ui/buttons/hr-buttons"
-
-import { NavLink, useLoaderData } from "@remix-run/react"
-
-import { useGakunen } from "../student/route"
-import type { LoaderFunctionArgs } from "@remix-run/node"
-import { json } from "@remix-run/node"
-import { logger } from "~/logger"
 import { requireUserRole } from "~/lib/require-roles.server"
-import { getUserFromSession } from "~/lib/session.server"
-import { redirectToSignin } from "~/lib/responses"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
+import { logger } from "~/logger"
+import { useGakunen } from "../student/route"
 
 /**
  * loader function
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: files._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   await requireUserRole(request, user)
 
-  return json(
-    {
-      role: user?.role,
-    },
-    // {
-    //   status: 200,
-    //   headers: {
-    //     "Cache-Control": `max-age=${60 * 10}`,
-    //   },
-    // },
-  )
+  return json({
+    role: user?.role,
+  })
 }
 
 export default function FilesPage() {

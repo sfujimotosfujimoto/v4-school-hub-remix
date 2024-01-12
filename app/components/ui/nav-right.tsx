@@ -1,4 +1,6 @@
+import { Form, NavLink, useLoaderData } from "@remix-run/react"
 import React from "react"
+import { z } from "zod"
 import {
   ClassIcon,
   Dashboard,
@@ -10,14 +12,9 @@ import {
   RenameIcon,
   UserIcon,
 } from "~/components/icons"
-
-import { Form, NavLink, useLoaderData } from "@remix-run/react"
-
-import ImageIcon from "../util/image-icon"
-
-import { z } from "zod"
 import type { User } from "~/types"
 import { NavLinkButton } from "../buttons/button"
+import ImageIcon from "../util/image-icon"
 
 const userSchema = z.object({
   role: z.string().optional(),

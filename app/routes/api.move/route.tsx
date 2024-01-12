@@ -1,16 +1,15 @@
 import { redirect, type ActionFunctionArgs, json } from "@remix-run/node" // or cloudflare/deno
-import { authenticate } from "~/lib/authenticate.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
 import { logger } from "~/logger"
-import { getUserFromSession } from "~/lib/session.server"
+import {
+  getUserFromSession,
+  getUserFromSessionOrRedirect,
+} from "~/lib/session.server"
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   logger.debug(`🍺 action: api.move ${request.url}`)
-  const { user } = await authenticate(request)
-  await requireAdminRole(user)
-
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated-move-001")
+  const { user } = await getUserFromSessionOrRedirect(request)
+  await requireAdminRole(request, user)
 
   switch (request.method) {
     case "POST": {

@@ -1,9 +1,8 @@
-import { signin } from "~/lib/signinout.server"
-
 import type { LoaderFunctionArgs } from "@remix-run/node"
-import { logger } from "~/logger"
 import { redirectToSignin } from "~/lib/responses"
 import { createUserSession } from "~/lib/session.server"
+import { signin } from "~/lib/signinout.server"
+import { logger } from "~/logger"
 
 /**
  * Loader function

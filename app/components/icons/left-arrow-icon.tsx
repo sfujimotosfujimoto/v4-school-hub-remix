@@ -1,4 +1,4 @@
-export default function LeftArrow({ ...rest }) {
+export default function LeftArrowIcon({ ...rest }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

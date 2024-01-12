@@ -1,4 +1,9 @@
-import { CheckIcon, DriveLogo, RenewIcon, TimeIcon } from "~/components/icons"
+import {
+  CheckIcon,
+  DriveLogoIcon,
+  RenewIcon,
+  TimeIcon,
+} from "~/components/icons"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { createURLFromId, dateFormat } from "~/lib/utils"
 
@@ -154,7 +159,7 @@ function MoveCard({
               className="btn btn-neutral btn-sm mt-1 w-24"
               rel="noreferrer"
             >
-              <DriveLogo className="h-3 w-3" />
+              <DriveLogoIcon className="h-3 w-3" />
             </a>
           </div>
         </div>
