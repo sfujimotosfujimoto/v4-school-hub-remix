@@ -24,6 +24,37 @@ const userSchema = z.array(
   }),
 )
 
+/**
+ * Loader
+ */
+// activtated,last, first, stats.count, stats.lastVisited
+export async function loader({ request }: LoaderFunctionArgs) {
+  logger.debug(`🍿 loader: admin._index ${request.url}`)
+  const { user } = await getUserFromSessionOrRedirect(request)
+  await requireAdminRole(request, user)
+
+  const users = await getUsers()
+
+  if (!users) return { users: null }
+  const filtered: Partial<User>[] = users?.map((u) => {
+    return {
+      activated: u.activated,
+      last: u.last,
+      first: u.first,
+      stats: {
+        count: u.stats?.count || 0,
+        lastVisited: u.stats?.lastVisited || new Date(),
+      },
+    }
+  })
+
+  return { users: filtered }
+}
+
+export const meta: MetaFunction = () => {
+  return [{ title: "ADMIN | SCHOOL HUB TEACHER" }]
+}
+
 export type PartialUsers = z.infer<typeof userSchema>
 
 /**
@@ -56,52 +87,3 @@ export default function AdminPage() {
     </section>
   )
 }
-
-/**
- * Loader
- */
-// activtated,last, first, stats.count, stats.lastVisited
-export async function loader({ request }: LoaderFunctionArgs) {
-  logger.debug(`🍿 loader: admin._index ${request.url}`)
-  const { user } = await getUserFromSessionOrRedirect(request)
-  await requireAdminRole(request, user)
-
-  const users = await getUsers()
-
-  if (!users) return { users: null }
-  const filtered: Partial<User>[] = users?.map((u) => {
-    return {
-      activated: u.activated,
-      last: u.last,
-      first: u.first,
-      stats: {
-        count: u.stats?.count || 0,
-        lastVisited: u.stats?.lastVisited || new Date(),
-      },
-    }
-  })
-
-  return { users: filtered }
-}
-
-export const meta: MetaFunction = () => {
-  return [{ title: "ADMIN | SCHOOL HUB TEACHER" }]
-}
-
-/*
-
-    <section
-      data-name="admin._index.tsx"
-      className="h-full p-8 mx-auto overflow-x-auto"
-    >
-      <div className="w-full h-full mx-auto overflow-x-hidden">
-        <div className="mb-4">
-          <h1 className="text-5xl">Admin</h1>
-        </div>
-
-        <div className="overflow-x-auto">
-          {users && <AdminCards users={parsedUsers} />}
-        </div>
-      </div>
-    </section>
-*/
