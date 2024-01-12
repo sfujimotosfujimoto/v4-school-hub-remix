@@ -32,11 +32,9 @@ const CACHE_MAX_AGE = 60 * 10 // 10 minutes
  * Root loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
-  // if (new URL(request.url).pathname !== "/") return null
   logger.debug(`🍿 loader: root ${request.url}`)
 
   const headers = new Headers()
-
   headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 1 hour
 
   const user = await getUserFromSession(request)

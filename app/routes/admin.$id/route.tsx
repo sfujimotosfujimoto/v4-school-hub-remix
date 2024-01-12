@@ -15,35 +15,6 @@ import { UserSchema } from "~/types/schemas"
 import AdminForm from "./components/admin-form"
 
 /**
- * Page
- */
-export default function AdminIdPage() {
-  let { targetUser } = useLoaderData<typeof loader>()
-
-  const result = UserSchema.safeParse(targetUser)
-
-  let user: User | null = null
-  if (result.success) {
-    user = result.data
-  }
-
-  // const user = rawUserToUser(targetUser)
-
-  return (
-    <section
-      data-name="admin.$id.tsx"
-      className="grid h-full w-full grid-cols-1 place-content-center p-8"
-    >
-      <article className="mx-auto h-full w-full max-w-sm rounded-md border-4 border-sfgreen-200 bg-slate-50 p-8 shadow-md">
-        <div className="grid grid-cols-1 place-content-center">
-          {user && <AdminForm user={user} />}
-        </div>
-      </article>
-    </section>
-  )
-}
-
-/**
  * Loader
  */
 export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
@@ -53,11 +24,6 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
   logger.debug(`🍿 loader: admin.$id ${request.url}`)
   const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
-
-  if (!user || !user.credential) {
-    throw redirect("/?authstate=unauthenticated")
-    // throw await destroyUserSession(request, `/?authstate=unauthenticated`)
-  }
 
   const { id } = params
 
@@ -141,4 +107,33 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     username = `${data.targetUser.last}${data.targetUser.first}`
   }
   return [{ title: `${username ? username : "ユーザー"} | SCHOOL HUB TEACHER` }]
+}
+
+/**
+ * Page
+ */
+export default function AdminIdPage() {
+  let { targetUser } = useLoaderData<typeof loader>()
+
+  const result = UserSchema.safeParse(targetUser)
+
+  let user: User | null = null
+  if (result.success) {
+    user = result.data
+  }
+
+  // const user = rawUserToUser(targetUser)
+
+  return (
+    <section
+      data-name="admin.$id.tsx"
+      className="grid h-full w-full grid-cols-1 place-content-center p-8"
+    >
+      <article className="mx-auto h-full w-full max-w-sm rounded-md border-4 border-sfgreen-200 bg-slate-50 p-8 shadow-md">
+        <div className="grid grid-cols-1 place-content-center">
+          {user && <AdminForm user={user} />}
+        </div>
+      </article>
+    </section>
+  )
 }

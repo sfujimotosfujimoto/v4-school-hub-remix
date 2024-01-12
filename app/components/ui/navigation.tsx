@@ -14,7 +14,6 @@ import {
 } from "../icons"
 import type { User } from "~/types"
 import { z } from "zod"
-import React from "react"
 import clsx from "clsx"
 
 const userSchema = z.object({
