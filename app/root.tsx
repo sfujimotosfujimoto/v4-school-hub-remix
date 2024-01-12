@@ -76,6 +76,56 @@ export const links: LinksFunction = () => {
       href: "/apple-touch-icon.png",
     },
     {
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "152x152",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "144x144",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "120x120",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "114x114",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "76x76",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "72x72",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "60x60",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "apple-touch-icon",
+      sizes: "57x57",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "icon",
+      href: "/favicon.png",
+      type: "image/x-icon",
+    },
+    {
       rel: "icon",
       href: "/favicon.ico",
       type: "image/x-icon",

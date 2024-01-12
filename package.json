@@ -13,7 +13,7 @@
     "@remix-run/node": "^2.4.1",
     "@remix-run/react": "^2.4.1",
     "@remix-run/serve": "^2.4.1",
-    "framer-motion": "^10.17.12",
+    "framer-motion": "^10.18.0",
     "googleapis": "^129.0.0",
     "immer": "^10.0.3",
     "isbot": "^3.8.0",
