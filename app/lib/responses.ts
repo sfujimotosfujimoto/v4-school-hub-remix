@@ -4,11 +4,16 @@ export function redirectToSignin(
   request: Request,
   urlParams: { [key: string]: string } = { authstate: "unauthorized" },
   headers?: Headers,
+  isRedirect = false,
 ): void {
-  urlParams = {
-    ...urlParams,
-    redirect: request.url,
-  }
+  urlParams = isRedirect
+    ? {
+        ...urlParams,
+        redirect: request.url,
+      }
+    : {
+        ...urlParams,
+      }
 
   const urlParamString = new URLSearchParams(urlParams).toString()
 
