@@ -32,84 +32,64 @@ export const selectUser = {
   },
 }
 
-// Get UserBase
-// used in `getUserBaseFromSession`
-export async function getUserByEmail(email: string): Promise<User | null> {
-  logger.debug(`👑 getUserByEmail: email: ${email}`)
-  const user: User | null = await prisma.user.findUnique({
-    where: {
-      email,
-      credential: {
-        expiry: { gt: new Date() },
-      },
-    },
-    select: {
-      ...selectUser,
-    },
-  })
-
-  logger.debug(
-    `✅ services/user.server.ts ~ 	🌈 user.credential.expiry ✅ ${user
-      ?.credential?.expiry} - ${new Date(
-      user?.credential?.expiry || 0,
-    ).toLocaleString()}`,
-  )
-
-  if (!user || !user.credential) {
-    return null
-  }
-
-  if (!user.stats) user.stats = null
-
-  return user
-  // return returnUser(user)
-}
 export async function getUserById(userId: number): Promise<User | null> {
   logger.debug(`👑 getUserById: userId: ${userId}`)
-  const user: User | null = await prisma.user.findUnique({
-    where: {
-      id: userId,
-      credential: {
-        expiry: { gt: new Date() },
-      },
-    },
-    select: {
-      ...selectUser,
-    },
-  })
 
-  if (!user || !user.credential) {
+  try {
+    const user: User | null = await prisma.user.findUnique({
+      where: {
+        id: userId,
+        credential: {
+          expiry: { gt: new Date() },
+        },
+      },
+      select: {
+        ...selectUser,
+      },
+    })
+
+    if (!user || !user.credential) {
+      return null
+    }
+
+    if (!user.stats) user.stats = null
+
+    return user
+    // return returnUser(user)
+  } catch (error) {
+    console.error(`getUserById: ${error}`)
     return null
   }
-
-  if (!user.stats) user.stats = null
-
-  return user
-  // return returnUser(user)
 }
 
 export async function getRefreshUserById(userId: number): Promise<User | null> {
   if (!userId) return null
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-      credential: {
-        refreshTokenExpiry: { gt: new Date() },
-      },
-    },
-    select: {
-      ...selectUser,
-    },
-  })
 
-  if (!user || !user.credential) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+        credential: {
+          refreshTokenExpiry: { gt: new Date() },
+        },
+      },
+      select: {
+        ...selectUser,
+      },
+    })
+
+    if (!user || !user.credential) {
+      return null
+    }
+
+    if (!user.stats) user.stats = null
+
+    return user
+    // return returnUser(user)
+  } catch (error) {
+    console.error(`getRefreshUserById: ${error}`)
     return null
   }
-
-  if (!user.stats) user.stats = null
-
-  return user
-  // return returnUser(user)
 }
 
 export async function updateUserById(
@@ -162,48 +142,92 @@ export async function deleteUserById(id: number): Promise<boolean> {
 
 export async function getUsers(): Promise<User[] | null> {
   logger.debug(`✅ getUsers`)
-  const users = await prisma.user.findMany({
-    orderBy: [
-      {
-        stats: {
-          lastVisited: "desc",
-        },
-      },
-      {
-        updatedAt: "desc",
-      },
-    ],
-    select: {
-      ...selectUser,
-    },
-  })
 
-  if (!users) {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: [
+        {
+          stats: {
+            lastVisited: "desc",
+          },
+        },
+        {
+          updatedAt: "desc",
+        },
+      ],
+      select: {
+        ...selectUser,
+      },
+    })
+
+    if (!users) {
+      return null
+    }
+
+    return returnUsers(users)
+  } catch (error) {
+    console.error(`getUsers: ${error}`)
     return null
   }
-
-  return returnUsers(users)
 }
 
 export async function updateUser(userId: number) {
-  return await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      activated: true,
-      stats: {
-        update: {
-          count: {
-            increment: 1,
+  try {
+    return await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        activated: true,
+        stats: {
+          update: {
+            count: {
+              increment: 1,
+            },
+            lastVisited: new Date(),
           },
-          lastVisited: new Date(),
         },
       },
-    },
-  })
+    })
+  } catch (error) {
+    console.error(`updateUser: ${error}`)
+    return null
+  }
 }
 
 function returnUsers(prismaUsers: User[]) {
   return prismaUsers.map((user) => returnUser(user))
 }
+
+// // Get UserBase
+// // used in `getUserBaseFromSession`
+// export async function getUserByEmail(email: string): Promise<User | null> {
+//   logger.debug(`👑 getUserByEmail: email: ${email}`)
+//   const user: User | null = await prisma.user.findUnique({
+//     where: {
+//       email,
+//       credential: {
+//         expiry: { gt: new Date() },
+//       },
+//     },
+//     select: {
+//       ...selectUser,
+//     },
+//   })
+
+//   logger.debug(
+//     `✅ services/user.server.ts ~ 	🌈 user.credential.expiry ✅ ${user
+//       ?.credential?.expiry} - ${new Date(
+//       user?.credential?.expiry || 0,
+//     ).toLocaleString()}`,
+//   )
+
+//   if (!user || !user.credential) {
+//     return null
+//   }
+
+//   if (!user.stats) user.stats = null
+
+//   return user
+//   // return returnUser(user)
+// }
