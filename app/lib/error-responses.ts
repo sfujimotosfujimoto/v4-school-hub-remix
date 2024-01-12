@@ -1,9 +1,9 @@
-export const errors: { [key: string]: (message?: string) => void } = {}
+export const errorResponses: { [key: string]: (message?: string) => void } = {}
 
 /**
  * 400
  */
-errors.badRequest = (message = "エラーが発生しました。") => {
+errorResponses.badRequest = (message = "エラーが発生しました。") => {
   throw new Response(message, {
     status: 400,
   })
@@ -12,19 +12,19 @@ errors.badRequest = (message = "エラーが発生しました。") => {
 /**
  * 401
  */
-errors.unauthorized = (message = "アクセス権限がありません。") => {
+errorResponses.unauthorized = (message = "アクセス権限がありません。") => {
   throw new Response(message, {
     status: 401,
   })
 }
 
-errors.expired = (message = "アクセス期限が切れました。") => {
+errorResponses.expired = (message = "アクセス期限が切れました。") => {
   throw new Response(message, {
     status: 401,
   })
 }
 
-errors.account = (
+errorResponses.account = (
   message = "保護者・生徒Googleアカウントでログインをしてください。",
 ) => {
   throw new Response(message, {
@@ -35,7 +35,7 @@ errors.account = (
 /**
  * 403
  */
-errors.forbidden = (message = "アクセス権限がありません。") => {
+errorResponses.forbidden = (message = "アクセス権限がありません。") => {
   throw new Response(message, {
     status: 403,
   })
@@ -44,7 +44,7 @@ errors.forbidden = (message = "アクセス権限がありません。") => {
 /**
  * 408
  */
-errors.timeout = (message = "処理に時間がかかりすぎました。") => {
+errorResponses.timeout = (message = "処理に時間がかかりすぎました。") => {
   throw new Response(message, {
     status: 408,
   })
@@ -53,7 +53,7 @@ errors.timeout = (message = "処理に時間がかかりすぎました。") => 
 /**
  * 500
  */
-errors.google = (
+errorResponses.google = (
   message = "Googleフォルダがないか、名簿のGoogleSheetが共有されていません。",
 ) => {
   throw new Response(message, {
@@ -61,7 +61,7 @@ errors.google = (
   })
 }
 
-errors.server = (message = "サーバー側で問題が発生しました。") => {
+errorResponses.server = (message = "サーバー側で問題が発生しました。") => {
   throw new Response(message, {
     status: 500,
   })
