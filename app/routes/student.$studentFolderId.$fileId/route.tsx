@@ -33,6 +33,8 @@ import PropertyButton from "../student.$studentFolderId._index/components/proper
 import PermissionTags from "./components/permission-tags"
 import ToFolderButton from "./components/to-folder-button"
 
+const CACHE_MAX_AGE = 60 * 10 // 10 minutes
+
 /**
  * Loader Function
  */
@@ -57,11 +59,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   // call drive
   const permissions = await execPermissions(drive, fileId)
 
-  return {
-    driveFile,
-    permissions,
-    tags,
-  }
+  const headers = new Headers()
+  headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
+
+  return json(
+    {
+      driveFile,
+      permissions,
+      tags,
+    },
+    {
+      headers,
+    },
+  )
 }
 
 // Zod Data Type

@@ -17,6 +17,9 @@ module.exports = {
         wiggle: "wiggle 0.5s ease-in-out infinite",
       },
       colors: {
+        sfgreentransparent: {
+          400: "hsla(182, 40%, 50%, 0.3)",
+        },
         sfgreen: {
           50: "hsl(182, 70%, 80%)",
           100: "hsl(182, 65%, 75%)",
@@ -25,6 +28,9 @@ module.exports = {
           400: "hsl(182, 50%, 60%)",
           500: "hsl(182, 45%, 55%)",
           600: "hsl(182, 40%, 50%)",
+        },
+        sfredtransparent: {
+          400: "hsla(1, 50%, 55%, 0.3)",
         },
         sfred: {
           50: "hsl(1, 80%, 85%)",

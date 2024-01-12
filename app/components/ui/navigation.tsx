@@ -47,7 +47,8 @@ export default function Navigation() {
         className={clsx(
           `navbar bg-base-100 bg-opacity-70 transition-colors ease-in-out`,
           {
-            "animate-pulse bg-sfgreen-600 bg-opacity-10 duration-500": loading,
+            "from-sfgreentransparent-400 to-sfredtransparent-400 animate-pulse bg-opacity-5 bg-gradient-to-r via-slate-200  via-60% to-90% duration-500":
+              loading,
           },
         )}
       >

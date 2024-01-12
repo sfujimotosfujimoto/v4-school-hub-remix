@@ -9,7 +9,6 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node"
-import MotionWrapper from "./components/ui/motion-wrapper"
 import { json } from "@remix-run/node"
 import {
   Link,
@@ -21,13 +20,14 @@ import {
   ScrollRestoration,
   useRouteError,
 } from "@remix-run/react"
-
 import Footer from "./components/ui/footer"
 import LoadingModalProvider from "./components/ui/loading-modal"
+import MotionWrapper from "./components/ui/motion-wrapper"
 import Navigation from "./components/ui/navigation"
 import ErrorDocument from "./components/util/error-document"
 import { getUserFromSession } from "./lib/session.server"
 
+const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 /**
  * Root loader
  */
@@ -36,15 +36,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: root ${request.url}`)
 
   const headers = new Headers()
-  headers.set("Cache-Control", `private, max-age=${60 * 10}`) // 10 minutes
+
+  headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 1 hour
+
   const user = await getUserFromSession(request)
 
   try {
-    return json({
-      role: user?.role || null,
-      picture: user?.picture || null,
-      email: user?.email || null,
-    })
+    return json(
+      {
+        role: user?.role || null,
+        picture: user?.picture || null,
+        email: user?.email || null,
+      },
+      {
+        headers,
+      },
+    )
   } catch (error) {
     console.error(`root.tsx: ${error}`)
     return null
