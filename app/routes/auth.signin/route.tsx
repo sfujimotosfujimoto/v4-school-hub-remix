@@ -17,7 +17,7 @@ import { logger } from "~/logger"
 import type { User } from "~/types"
 
 /**
- * Root loader
+ * Loader
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: auth.signin ${request.url}`)
