@@ -2,10 +2,10 @@ import { json, redirect } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
 import { CHUNK_SIZE } from "~/lib/config"
+import { errorResponses } from "~/lib/error-responses"
 import { getDrive } from "~/lib/google/drive.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { arrayIntoChunks } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
@@ -22,12 +22,14 @@ const FormDataScheme = z.object({
  */
 export async function executeAction(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: executeAction()`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user, credential } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
-  const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirectToSignin(request)
+  const drive = await getDrive(credential.accessToken)
+
+  if (!drive) {
+    throw errorResponses.google()
+  }
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
@@ -57,7 +59,7 @@ export async function executeAction(request: Request, formData: FormData) {
     })
 
   try {
-    const drive = await getDrive(user.credential.accessToken)
+    const drive = await getDrive(credential.accessToken)
     if (!drive) throw redirect("/?authstate=unauthorized-rename-014")
     const files = await renameDriveFiles(drive, driveFiles)
     return json<ActionTypeGoogle>({

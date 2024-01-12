@@ -9,11 +9,7 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
 import { requireAdminRole } from "~/lib/require-roles.server"
-import { redirectToSignin } from "~/lib/responses"
-import {
-  getUserFromSession,
-  getUserFromSessionOrRedirect,
-} from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle } from "~/types"
 import { executeAction } from "./actions/execute"
@@ -54,8 +50,7 @@ const FormDataScheme = z.object({
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.move._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
   const formData = await request.formData()

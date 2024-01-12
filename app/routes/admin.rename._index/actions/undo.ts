@@ -2,10 +2,10 @@ import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
+import { errorResponses } from "~/lib/error-responses"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { arrayIntoChunks } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
@@ -18,12 +18,13 @@ const FormDataScheme = z.object({
 export async function undoAction(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: undoAction()`)
   // get user
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user, credential } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
-  const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirectToSignin(request)
+  const drive = await getDrive(credential.accessToken)
+  if (!drive) {
+    throw errorResponses.google()
+  }
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
@@ -100,14 +101,12 @@ export async function undoRenameDataExecute(
 ) {
   logger.debug(`✅ in undoRenameDataExecute: ${driveFiles.length}`)
 
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) {
-    return { error: "エラーが発生しました。" }
-  }
-  const accessToken = user.credential.accessToken
+  const { credential } = await getUserFromSessionOrRedirect(request)
+
+  const accessToken = credential.accessToken
   const drive = await getDrive(accessToken)
   if (!drive) {
-    return { error: "エラーが発生しました。" }
+    throw errorResponses.google()
   }
   try {
     const files = await undoRenameDriveFiles(drive, driveFiles)

@@ -15,7 +15,10 @@ import {
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import { requireAdminRole, requireUserRole } from "~/lib/require-roles.server"
 import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import {
+  getUserFromSession,
+  getUserFromSessionOrRedirect,
+} from "~/lib/session.server"
 import { parseAppProperties, parseTags } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { setSelected } from "~/lib/utils.server"
@@ -31,17 +34,17 @@ import NendoPills from "../student.$studentFolderId._index/components/nendo-pill
 import PropertyButton from "../student.$studentFolderId._index/components/property-button"
 import TagPills from "../student.$studentFolderId._index/components/tag-pills"
 import DeleteButton from "./components/delete-button"
+import { errorResponses } from "~/lib/error-responses"
 
 /**
  * loader function
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: files.$gakunen.$hr._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user, credential } = await getUserFromSessionOrRedirect(request)
   await requireUserRole(request, user)
 
-  const accessToken = user.credential.accessToken
+  const accessToken = credential.accessToken
 
   // get sheets
   const sheets = await getSheets(accessToken)
@@ -64,15 +67,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   // get StudentData from sheet
   let students = await getStudents(sheets)
-  if (!students || students.length === 0)
-    throw redirect(`/?authstate=no-student-data`)
+  if (students.length === 0) {
+    throw errorResponses.google()
+  }
 
   students = students.filter((s) => s.gakunen === gakunen && s.hr === hr)
 
   // create querystring from gakunen/hr/query
   const searchQuery = queryMultipleStudentsAndFilename(students, gakunen, hr, q)
 
-  const drive = await getDrive(user.credential.accessToken)
+  const drive = await getDrive(credential.accessToken)
   if (!drive) throw redirect("/?authstate=unauthorized")
 
   // get Files from Drive

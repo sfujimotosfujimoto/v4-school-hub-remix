@@ -8,8 +8,7 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useRawToDriveFilesContext } from "~/hooks/useRawToDriveFilesContext"
 import { useToast } from "~/hooks/useToast"
 import { requireAdminRole } from "~/lib/require-roles.server"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle } from "~/types"
 import { executeAction } from "../admin.rename._index/actions/execute"
@@ -26,8 +25,7 @@ export const config = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin.rename-csv._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
   return null
@@ -43,8 +41,7 @@ const FormDataScheme = z.object({
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: admin.rename-csv._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
   const formData = await request.formData()

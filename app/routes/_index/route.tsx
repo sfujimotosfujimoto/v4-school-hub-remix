@@ -2,7 +2,7 @@
 import { LogoIcon, LogoTextIcon, DriveLogoIcon } from "~/components/icons"
 import { type LoaderFunctionArgs, json } from "@remix-run/node"
 import { logger } from "~/logger"
-import { getUserFromSessionOrRedirect } from "~/lib/session.server"
+import { getUserFromSession } from "~/lib/session.server"
 import { NavLinkButton } from "~/components/buttons/button"
 import { useLoaderData } from "@remix-run/react"
 /**
@@ -10,9 +10,7 @@ import { useLoaderData } from "@remix-run/react"
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: _index ${request.url}`)
-
-  const { user } = await getUserFromSessionOrRedirect(request)
-  logger.debug("✅ _index/route.tsx ~ 	🌈 user ✅ ", user)
+  const user = await getUserFromSession(request)
 
   return json({
     role: user?.role || null,

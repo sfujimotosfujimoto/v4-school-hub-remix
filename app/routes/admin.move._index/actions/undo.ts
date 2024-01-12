@@ -1,9 +1,13 @@
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
+import { errorResponses } from "~/lib/error-responses"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
-import { getUserFromSession } from "~/lib/session.server"
+import {
+  getUserFromSession,
+  getUserFromSessionOrRedirect,
+} from "~/lib/session.server"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
@@ -17,15 +21,12 @@ export async function undoAction(request: Request, formData: FormData) {
   logger.debug("🍎 move: undoAction()")
 
   // get user
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated", 302)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  // if no user or credential redirect
-  if (!user || !user.credential) throw redirect(`/authstate=unauthorized-019`)
-
-  const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirect("/?authstate=unauthorized-020")
+  const drive = await getDrive(credential.accessToken)
+  if (!drive) {
+    throw errorResponses.google()
+  }
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 

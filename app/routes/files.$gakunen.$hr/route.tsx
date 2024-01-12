@@ -8,6 +8,7 @@ import BackButton from "~/components/ui/buttons/back-button"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import DriveFilesProvider from "~/context/drive-files-context"
 import NendoTagsProvider from "~/context/nendos-tags-context"
+import { errorResponses } from "~/lib/error-responses"
 import {
   getDrive,
   getDriveFiles,
@@ -45,8 +46,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (gakunen === "ALL" || hr === "ALL") return { segments: [] }
 
   let students = await getStudents(sheets)
-  if (!students || students.length === 0)
-    throw redirect(`/?authstate=no-student-data`)
+  if (students.length === 0) {
+    throw errorResponses.google()
+  }
 
   students = students.filter((s) => s.gakunen === gakunen && s.hr === hr)
 

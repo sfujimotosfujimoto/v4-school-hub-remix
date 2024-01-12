@@ -1,9 +1,10 @@
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
+import { errorResponses } from "~/lib/error-responses"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
@@ -18,15 +19,12 @@ const FormDataScheme = z.object({
 
 export async function executeAction(request: Request, formData: FormData) {
   logger.debug(`🍎 move: executeAction()`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated", 302)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  // if no user or credential redirect
-  if (!user || !user.credential) throw redirect(`/authstate=unauthorized-012`)
-
-  const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirect("/?authstate=unauthorized-013")
+  const drive = await getDrive(credential.accessToken)
+  if (!drive) {
+    throw errorResponses.google()
+  }
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
@@ -56,19 +54,12 @@ export async function executeAction(request: Request, formData: FormData) {
     })
 
   try {
-    const drive = await getDrive(user.credential.accessToken)
-    if (!drive) throw redirect("/?authstate=unauthorized-014")
+    const drive = await getDrive(credential.accessToken)
+    if (!drive) {
+      throw errorResponses.google()
+    }
 
     const files = await moveDriveFiles(drive, driveFiles)
-
-    // // TODO: checking defer
-    // return defer({
-    //   ok: true,
-    //   type: "execute",
-    //   data: {
-    //     driveFiles: mapFilesToDriveFiles(files),
-    //   },
-    // })
 
     return json<ActionTypeGoogle>({
       ok: true,

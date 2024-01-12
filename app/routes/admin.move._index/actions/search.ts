@@ -1,5 +1,6 @@
 import { json, redirect } from "@remix-run/node"
 import { z } from "zod"
+import { errorResponses } from "~/lib/error-responses"
 import {
   getDrive,
   getDriveFiles,
@@ -7,32 +8,21 @@ import {
   queryFolderId,
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { getGakusekiFromString, getIdFromUrl, getSchoolYear } from "~/lib/utils"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile, Student } from "~/types"
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  // _action: z.string(),
   sourceFolderId: z.string().optional(),
   tagsString: z.string().optional(),
-  // driveFilesString: z.string().optional(),
-  // driveFileMovesString: z.string().optional(),
-  // driveFilesSerialized: z.string().optional(),
 })
-export async function searchAction(
-  request: Request,
-  formData: FormData,
-  // sourceFolderId?: string,
-  // tags?: string,
-) {
+export async function searchAction(request: Request, formData: FormData) {
   logger.debug("🍎 move: searchAction()")
-  const user = await getUserFromSession(request)
-  if (!user) throw redirect("/?authstate=unauthenticated", 302)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  if (!user || !user.credential) throw redirect(`/?authstate=unauthorized-015`)
-  const accessToken = user.credential.accessToken
+  const accessToken = credential.accessToken
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
@@ -97,6 +87,9 @@ export async function searchAction(
     )
 
   const students = await getStudents(sheets)
+  if (students.length === 0) {
+    throw errorResponses.google()
+  }
 
   driveFiles = addDestinationToDriveFiles(driveFiles, students)
 

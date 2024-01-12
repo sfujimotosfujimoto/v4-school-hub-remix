@@ -9,7 +9,7 @@ import {
   getStudents,
 } from "~/lib/google/sheets.server"
 import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { filterSegments, parseTags } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { setSelected } from "~/lib/utils.server"
@@ -21,6 +21,7 @@ import FileCount from "./components/file-count"
 import NendoPills from "./components/nendo-pills"
 import SegmentPills from "./components/segment-pills"
 import TagPills from "./components/tag-pills"
+import { errorResponses } from "~/lib/error-responses"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
@@ -34,12 +35,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student.$studentFolderId ${request.url}`)
 
   const { studentFolderId } = params
-  if (!studentFolderId) throw Error("id route parameter must be defined")
+  if (!studentFolderId) {
+    throw errorResponses.badRequest(`GoogleフォルダIDが設定されていません。`)
+  }
 
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user, credential } = await getUserFromSessionOrRedirect(request)
 
-  const accessToken = user.credential.accessToken
+  const accessToken = credential.accessToken
 
   const url = new URL(request.url)
   const nendoString = url.searchParams.get("nendo")
@@ -48,7 +50,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const extensionsString = url.searchParams.get("extensions")
 
   try {
-    const drive = await getDrive(user.credential.accessToken)
+    const drive = await getDrive(accessToken)
     if (!drive) throw redirectToSignin(request)
 
     // get sheets
@@ -74,10 +76,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     // get StudentData[] from spreadsheet
     const students = await getStudents(sheets)
+    if (students.length === 0) {
+      throw errorResponses.google()
+    }
 
     // get StudentData from folder id
     const student = getStudentByFolderId(studentFolderId, students)
-    if (!student) throw redirectToSignin(request)
+    if (!student) {
+      throw errorResponses.google()
+    }
 
     const { nendos, segments, extensions, tags } =
       getNendosSegmentsExtensionsTags(driveFiles, student)

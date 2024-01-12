@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node"
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react"
 import React from "react"
 
@@ -13,30 +13,26 @@ import Sidebar from "./components/sidebar"
 // functions
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { filterStudentDataByGakunen } from "~/lib/utils"
 import { logger } from "~/logger"
 import type { Gakunen, Hr } from "~/types"
+import { errorResponses } from "~/lib/error-responses"
 
 /**
  * loader function
  */
-
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student ${request.url}`)
 
-  const user = await getUserFromSession(request)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  if (!user || !user.credential) {
-    throw redirectToSignin(request)
-  }
-  const accessToken = user.credential.accessToken
+  const accessToken = credential.accessToken
 
   // get sheets
   const sheets = await getSheets(accessToken)
   if (!sheets) {
-    throw redirect("/?authstate=unauthenticated")
+    throw errorResponses.google()
   }
 
   // get StudentData[]

@@ -1,12 +1,13 @@
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { DriveFileMovesSchema } from "~/types/schemas"
 import { undoMoveDataExecute } from "./undo"
+import { errorResponses } from "~/lib/error-responses"
 
 const FormDataScheme = z.object({
   driveFilesString: z.string().optional(),
@@ -23,15 +24,12 @@ export async function undoCsvAction(
   logger.debug("🍎 move: undoCsvAction()")
   logger.debug(`✅ formData: ${JSON.stringify(formData, null, 2)}`)
   // get user
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated", 302)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  // if no user or credential redirect
-  if (!user || !user.credential) throw redirect(`/authstate=unauthorized-17`)
-
-  const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirect("/?authstate=unauthorized-018")
+  const drive = await getDrive(credential.accessToken)
+  if (!drive) {
+    throw errorResponses.google()
+  }
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 

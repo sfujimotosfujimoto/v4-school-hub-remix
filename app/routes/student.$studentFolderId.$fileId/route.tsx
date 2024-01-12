@@ -7,7 +7,6 @@ import type {
 } from "@remix-run/node"
 import { json } from "@remix-run/node"
 import { useLoaderData, useParams, useRouteLoaderData } from "@remix-run/react"
-import invariant from "tiny-invariant"
 import { z } from "zod"
 import BackButton from "~/components/ui/buttons/back-button"
 import StudentCard from "~/components/ui/student-card/student-card"
@@ -22,8 +21,7 @@ import {
   getFileById,
 } from "~/lib/google/drive.server"
 import { requireAdminRole, requireUserRole } from "~/lib/require-roles.server"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { parseTags } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
@@ -32,6 +30,7 @@ import BaseNameButton from "../student.$studentFolderId._index/components/base-n
 import PropertyButton from "../student.$studentFolderId._index/components/property-button"
 import PermissionTags from "./components/permission-tags"
 import ToFolderButton from "./components/to-folder-button"
+import { errorResponses } from "~/lib/error-responses"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
@@ -40,17 +39,18 @@ const CACHE_MAX_AGE = 60 * 10 // 10 minutes
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student.$studentFolderId.$fileId  ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user, credential } = await getUserFromSessionOrRedirect(request)
   await requireUserRole(request, user)
 
   const { fileId } = params
-  if (!fileId) throw redirectToSignin(request)
+  if (!fileId) {
+    throw errorResponses.badRequest(`GoogleファイルIDが設定されていません。`)
+  }
 
-  invariant(fileId, "fileId in params is required")
-
-  const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirectToSignin(request)
+  const drive = await getDrive(credential.accessToken)
+  if (!drive) {
+    throw errorResponses.google()
+  }
 
   const driveFile = await getFileById(drive, fileId)
 
@@ -85,11 +85,8 @@ const FormDataScheme = z.object({
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: student.$studentFolderId.$fileId ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
-
-  if (!user || !user.credential) throw redirectToSignin(request)
 
   const formData = await request.formData()
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
@@ -107,7 +104,6 @@ export async function action({ request }: ActionFunctionArgs) {
     /**
      * EXECUTE ACTION
      */
-
     case "property-execute": {
       logger.debug(`✅ action: property-execute`)
 

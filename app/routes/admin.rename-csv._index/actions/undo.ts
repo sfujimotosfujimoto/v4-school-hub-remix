@@ -1,8 +1,9 @@
 import { json, redirect } from "@remix-run/node"
 import toast from "react-hot-toast"
 import { z } from "zod"
+import { errorResponses } from "~/lib/error-responses"
 import { getDrive } from "~/lib/google/drive.server"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
 import { undoRenameDataExecute } from "~/routes/admin.rename._index/actions/undo"
@@ -15,16 +16,12 @@ const FormDataScheme = z.object({
 export async function undoAction(request: Request, formData: FormData) {
   logger.debug("🍎 rename-csv: undoAction()")
   // get user
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential)
-    throw redirect("/?authstate=unauthenticated", 302)
+  const { credential } = await getUserFromSessionOrRedirect(request)
 
-  // if no user or credential redirect
-  if (!user || !user.credential)
-    throw redirect(`/authstate=unauthorized-renameundo-019`)
-
-  const drive = await getDrive(user.credential.accessToken)
-  if (!drive) throw redirect("/?authstate=unauthorized-renameundo-020")
+  const drive = await getDrive(credential.accessToken)
+  if (!drive) {
+    throw errorResponses.google()
+  }
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 

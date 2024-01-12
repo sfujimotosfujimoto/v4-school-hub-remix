@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
-import { errors } from "~/lib/errors"
+import { errorResponses } from "~/lib/error-responses"
 import {
   execPermissions,
   getDrive,
@@ -15,8 +15,7 @@ import {
   getStudents,
 } from "~/lib/google/sheets.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
-import { redirectToSignin } from "~/lib/responses"
-import { getUserFromSession } from "~/lib/session.server"
+import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { getIdFromUrl, getStudentEmail } from "~/lib/utils"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile, Gakunen, Hr, Student } from "~/types"
@@ -48,11 +47,10 @@ const FormDataScheme = z.object({
 
 export async function searchRenameAction(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: searchAction()`)
-  const user = await getUserFromSession(request)
-  if (!user || !user.credential) throw redirectToSignin(request)
+  const { user, credential } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
-  const accessToken = user.credential.accessToken
+  const accessToken = credential.accessToken
 
   const result = FormDataScheme.safeParse(Object.fromEntries(formData))
 
@@ -79,13 +77,13 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   // get drive
   const drive = await getDrive(accessToken)
   if (!drive) {
-    throw errors.google()
+    throw errorResponses.google()
   }
 
   // get sheets
   const sheets = await getSheets(accessToken)
   if (!sheets) {
-    throw errors.google()
+    throw errorResponses.google()
   }
 
   // get id from if `sourceFolderId` is url
@@ -128,6 +126,9 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   if (driveFiles) await addPermissionToDriveFiles(drive, driveFiles)
 
   const students = await getStudents(sheets)
+  if (students.length === 0) {
+    throw errorResponses.google()
+  }
   // logger.debug(`🍎 6. action: students: ${students.length}`)
 
   // 1. add segemented name to meta
@@ -305,7 +306,7 @@ async function _findStudentDataFromSegments(
       }
       return df
     } else {
-      errors.server(
+      errorResponses.server(
         `メールアドレス ${df.meta.file?.studentEmail} の生徒が名簿から見つかりません。`,
       )
     }
