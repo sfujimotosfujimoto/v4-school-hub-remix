@@ -9,28 +9,28 @@ export function useToast(actionData?: ActionTypeGoogle) {
       toast.error(actionData?.error)
     }
     if (actionData?.ok) {
-      let executeText = ""
-      let errorText1 = ""
-      let errorText2 = ""
+      let executeText: string = ""
+      let errorText1: string = ""
+      let errorText2: string = ""
 
-      if (actionData?.data && "_action" in actionData.data) {
-        const action = actionData.data._action
-        switch (action) {
+      if (actionData?.data) {
+        const type_ = actionData.type
+        switch (type_) {
+          case "move": {
+            executeText = "のファイルを移動しました。"
+            errorText1 = "のファイル移動に失敗しました。"
+            break
+          }
           case "rename": {
             executeText = "のファイルの名前を変更しました。"
             errorText1 = "のファイルの名前を変更に失敗しました。"
             errorText2 = "名前を変更に失敗しました。"
             break
           }
-          case "rename-csv": {
-            executeText = "のファイルの名前を変更しました。"
-            errorText1 = "のファイルの名前を変更に失敗しました。"
-            errorText2 = "名前を変更に失敗しました。"
-            break
-          }
-          case "move": {
-            executeText = "のファイルを移動しました。"
-            errorText1 = "のファイル移動に失敗しました。"
+
+          case "property": {
+            executeText = "のファイルのプロパティを変更しました。"
+            errorText1 = "のファイルのプロパティ変更に失敗しました。"
             break
           }
         }
@@ -58,8 +58,10 @@ export function useToast(actionData?: ActionTypeGoogle) {
               const successLength = actionData.data.driveFiles.length
               toast.success(`${successLength}件${executeText}`)
             } else {
-              toast.error(`${errorText1}`)
+              toast.error(`${errorText1 || "ファイルの処理に失敗しました。"}`)
             }
+          } else {
+            toast.success(`ファイルを処理しました。`)
           }
           if (actionData?.data && "errorFiles" in actionData.data) {
             actionData.data.errorFiles?.forEach((f) => {
@@ -83,5 +85,5 @@ export function useToast(actionData?: ActionTypeGoogle) {
         }
       }
     }
-  }, [actionData?.error, actionData?.ok, actionData?._action, actionData?.data])
+  }, [actionData])
 }
