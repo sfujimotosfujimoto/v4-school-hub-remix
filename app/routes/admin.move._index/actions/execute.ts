@@ -104,7 +104,7 @@ export async function moveDriveFiles(
   const files = await Promise.all([...promises])
   const newFiles = files.filter((d): d is MoveDriveFiles => d !== null)
 
-  console.log("✅ moveDriveFiles: newFiles", newFiles)
+  // console.log("✅ moveDriveFiles: newFiles", newFiles)
 
   const successFiles = flatFiles(newFiles, "successFiles")
   const errorFiles = flatFiles(newFiles, "errorFiles")
@@ -192,10 +192,6 @@ async function _moveDriveFilesG(
       } catch (error) {
         // console.log("✅ moveDriveFiles: error", error, error instanceof Error)
         if (error instanceof GaxiosError) {
-          console.log(
-            "✅ moveDriveFiles: error.response?.data",
-            error.response?.data,
-          )
           if (error.response?.data.error.code === 403)
             errors.push(
               `${d.id}: ${d.name}: ファイルを移動する権限がありません。`,
