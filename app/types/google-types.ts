@@ -8,6 +8,7 @@ export type ActionTypeGoogle = {
     | {
         sourceFolder?: drive_v3.Schema$File
         driveFiles: { [key: string]: any }[]
+        errorFiles?: { [key: string]: any }[]
       }
     | { files: drive_v3.Schema$File[] }
 }

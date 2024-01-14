@@ -1,11 +1,12 @@
 import { json } from "@remix-run/node"
-import type { drive_v3 } from "googleapis"
+import { type drive_v3 } from "googleapis"
+import { GaxiosError } from "gaxios"
 import { z } from "zod"
 import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { errorResponses } from "~/lib/error-responses"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
-import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
+import { arrayIntoChunks, getIdFromUrl, parseAppProperties } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile } from "~/types"
@@ -59,13 +60,14 @@ export async function executeAction(request: Request, formData: FormData) {
       throw errorResponses.google()
     }
 
-    const files = await moveDriveFiles(drive, driveFiles)
+    const res = await moveDriveFiles(drive, driveFiles)
 
     return json<ActionTypeGoogle>({
       ok: true,
       type: "execute",
       data: {
-        driveFiles: mapFilesToDriveFiles(files),
+        driveFiles: mapFilesToDriveFiles(res.successFiles),
+        errorFiles: mapFilesToDriveFiles(res.errorFiles),
       },
     })
   } catch (error: unknown) {
@@ -81,10 +83,15 @@ export async function executeAction(request: Request, formData: FormData) {
   }
 }
 
+type MoveDriveFiles = {
+  successFiles: drive_v3.Schema$File[]
+  errorFiles: drive_v3.Schema$File[]
+}
+
 export async function moveDriveFiles(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
-) {
+): Promise<MoveDriveFiles> {
   logger.debug(`✅ moveDriveFiles: ${driveFiles.length} files total`)
   const driveFilesChunks = arrayIntoChunks<DriveFile>(driveFiles, CHUNK_SIZE)
 
@@ -95,29 +102,56 @@ export async function moveDriveFiles(
   // return promises.flat()
 
   const files = await Promise.all([...promises])
-  const newFiles = files.filter((d): d is drive_v3.Schema$File[] => d !== null)
-  const newFilesFlat = newFiles.flat()
-  logger.debug(`Finished moving: ${newFilesFlat.length} files`)
+  const newFiles = files.filter((d): d is MoveDriveFiles => d !== null)
 
-  return newFilesFlat
+  console.log("✅ moveDriveFiles: newFiles", newFiles)
+
+  const successFiles = flatFiles(newFiles, "successFiles")
+  const errorFiles = flatFiles(newFiles, "errorFiles")
+  logger.debug(`Finished moving: ${successFiles.length} files`)
+  logger.debug(`Errored moving: ${errorFiles.length} files`)
+
+  return { successFiles, errorFiles }
+}
+
+function flatFiles(
+  arrOfFiles: MoveDriveFiles[],
+  key: "successFiles" | "errorFiles",
+) {
+  return arrOfFiles.map((d) => d[key]).flat()
+}
+
+function parseDateToString(date: Date | null | undefined) {
+  if (!date) return null
+  return date.toISOString()
 }
 
 async function _moveDriveFilesG(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
   idx: number,
-) {
+): Promise<{
+  successFiles: drive_v3.Schema$File[]
+  errorFiles: drive_v3.Schema$File[]
+}> {
   const dfs = [...driveFiles]
-  const files: drive_v3.Schema$File[] = []
+  const successFiles: drive_v3.Schema$File[] = []
+  const errorFiles: drive_v3.Schema$File[] = []
   const errors: string[] = []
   const maxRetries = 5 // Maximum number of retries
   let retryCount = 0
 
   for (let i = 0; i < dfs.length; i++) {
-    const d = dfs[i]
+    const d = {
+      ...dfs[i],
+      appProperties: parseAppProperties(dfs[i].appProperties || "[]"),
+      createdTime: parseDateToString(dfs[i]?.createdTime),
+      modifiedTime: parseDateToString(dfs[i]?.modifiedTime),
+    }
 
     if (!d.meta?.studentFolder?.folderLink || !d.id) {
       errors.push(`error: ${d.id}: ${d.name}`)
+      errorFiles.push(d)
       continue
     }
 
@@ -125,61 +159,16 @@ async function _moveDriveFilesG(
 
     if (!folderId) {
       errors.push(`error: ${d.id}: ${d.name}`)
+      errorFiles.push(d)
       continue
     }
 
     while (true) {
       try {
-        // // if file is already in folder, skip
-        // logger.debug(`✅ moveDriveFiles: start ${d.name}`)
-        // if (d.parents?.at(0) === folderId) {
-        //   logger.debug(`✅ moveDriveFiles: ${d.name} already in folder`)
-        //   errors.push(`error: ${d.id}: ${d.name}`)
-        //   break
-        // } else if (d.parents?.at(0) && d.meta.file) {
-        //   logger.debug(`✅ moveDriveFiles: ${d.name} updating file`)
-        //   try {
-        //     const file = await drive.files.update({
-        //       fileId: d.id,
-        //       removeParents: d.parents?.at(0),
-        //       addParents: folderId,
-        //       requestBody: {
-        //         appProperties: {
-        //           nendo: d.meta.file.nendo ?? "",
-        //           tags: d.meta.file.tags ?? "",
-        //           time: String(Date.now()),
-        //         },
-        //       },
-        //       fields: QUERY_FILE_FIELDS,
-        //       // TODO: {responseType: "stream"} implement
-        //       // }, {responseType: "stream"})
-        //     })
-        //     files.push(file.data)
-        //     // console.log(`moveDriveFiles: ${d.name}, idx:${j} of chunk: ${idx}`)
-        //   } catch (error) {
-        //     errors.push(`error: ${d.id}: ${d.name} message: ${error}`)
-
-        //     if (error instanceof Error) {
-        //       errors.push(`error: ${d.id}: ${d.name} message: ${error.message}`)
-        //     }
-        //     break
-        //   }
-        // } else {
-        //   // create promise using `update`
-        //   const file = await drive.files.update({
-        //     fileId: d.id,
-        //     addParents: folderId,
-        //   })
-        //   files.push(file.data)
-        //   logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
-        //   break
-        // }
-
-        // //---------------------------------------------------------
-
         // if file is already in folder, skip
         if (d.parents?.at(0) === folderId) {
           errors.push(`error: ${d.id}: ${d.name}`)
+          errorFiles.push(d)
           continue
         } else if (d.parents?.at(0) && d.meta.file) {
           const file = await drive.files.update({
@@ -196,17 +185,32 @@ async function _moveDriveFilesG(
             },
           })
 
-          files.push(file.data)
+          successFiles.push(file.data)
           // logger.debug(`moveDriveFiles: ${d.name}, idx:${i} of chunk: ${idx}`)
           break // Operation succeeded, exit retry loop
         }
       } catch (error) {
-        errors.push(`error: ${d.id}: ${d.name}`)
+        // console.log("✅ moveDriveFiles: error", error, error instanceof Error)
+        if (error instanceof GaxiosError) {
+          console.log(
+            "✅ moveDriveFiles: error.response?.data",
+            error.response?.data,
+          )
+          if (error.response?.data.error.code === 403)
+            errors.push(
+              `${d.id}: ${d.name}: ファイルを移動する権限がありません。`,
+            )
+          errorFiles.push(d)
+          break
+        } else if (error instanceof Error) {
+          errors.push(`${d.id}: ${d.name}: ${error.message}`)
+        }
 
         if (retryCount >= maxRetries) {
           logger.error(
             `Exceeded max retries (${maxRetries}). Giving up on file ${d.id}: ${d.name}`,
           )
+          errorFiles.push(d)
           break // Max retries reached, exit retry loop
         }
 
@@ -222,7 +226,7 @@ async function _moveDriveFilesG(
   }
 
   logger.info(
-    `moveDriveFiles -- finished: ${files.length} files moved of chunk: ${idx}`,
+    `moveDriveFiles -- finished: ${successFiles.length} files moved of chunk: ${idx}`,
   )
 
   if (errors.length > 0) {
@@ -230,8 +234,10 @@ async function _moveDriveFilesG(
   } else {
     logger.info(`moveDriveFiles -- chunk ${idx} 🍭 NO ERRORS`)
   }
-
-  return files
+  return {
+    successFiles,
+    errorFiles,
+  }
 }
 
 // async function _moveDriveFiles(
