@@ -47,25 +47,12 @@ export async function signin({
     result.data
 
   // TODO: !!DEBUG!!: setting expiryDateDummy to 10 seconds
-  const expiryDummy = new Date().getTime() + 1000 * 15
-  expiry_date = expiryDummy
+  // const expiryDummy = new Date().getTime() + 1000 * 15
+  // expiry_date = expiryDummy
 
   // let refreshTokenExpiryDummy = Date.now() + 1000 * 30 // 30 seconds
   // let refreshTokenExpiry = refreshTokenExpiryDummy
   let refreshTokenExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24) // 1 day
-
-  logger.info(
-    `🍓 signin: new expiry_date ${new Date(expiry_date || 0).toLocaleString(
-      "ja-JP",
-      { timeZone: "Asia/Tokyo" },
-    )}`,
-  )
-
-  logger.info(
-    `🍓 signin: new refreshTokenExpiry ${new Date(
-      refreshTokenExpiry || 0,
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
-  )
 
   if (!access_token) {
     throw redirectToSignin(request, { authstate: "no-access-token" })
@@ -76,6 +63,18 @@ export async function signin({
   if (!person) {
     throw redirectToSignin(request, { authstate: "unauthorized" })
   }
+
+  logger.info(
+    `🍓 signin: new expiry_date ${person.last} ${person.first} - ${new Date(
+      expiry_date || 0,
+    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+  )
+
+  logger.info(
+    `🍓 signin: new refreshTokenExpiry ${person.last} ${person.first} - ${new Date(
+      refreshTokenExpiry || 0,
+    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+  )
 
   if (!checkValidSeigEmail(person.email)) {
     throw redirectToSignin(request, { authstate: `not-seig-account` })

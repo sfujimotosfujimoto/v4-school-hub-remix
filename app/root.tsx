@@ -18,6 +18,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  isRouteErrorResponse,
   useRouteError,
 } from "@remix-run/react"
 import Footer from "./components/ui/footer"
@@ -219,13 +220,20 @@ export function ErrorBoundary() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="text-sfblue-300">
         <ErrorDocument>
-          <h1 className="text-xl">
+          <h1 className="text-2xl text-sfblue-300">
             Something went wrong. Please try again later.
           </h1>
+          <h2 className="text-xl text-sfblue-300">
+            {isRouteErrorResponse(error)
+              ? `${error.status} ${error.statusText}`
+              : error instanceof Error
+                ? error.message
+                : "Unknown Error"}
+          </h2>
 
-          <p className="text-lg">
+          <p className="text-md mt-4">
             Contact:
             <a
               href="mailto:sfujimotosfujimoto@gmail.com"

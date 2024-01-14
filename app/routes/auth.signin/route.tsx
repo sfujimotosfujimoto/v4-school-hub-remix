@@ -130,7 +130,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function AuthSigninPage() {
-  console.log("✅ auth.signin/route.tsx ~ 	😀 ")
+  // console.log("✅ auth.signin/route.tsx ~ 	😀 ")
   const navigation = useNavigation()
   const isNavigating = navigation.state !== "idle"
   return (
