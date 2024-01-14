@@ -6,7 +6,7 @@ import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useTasksContext } from "~/context/tasks-context"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { useRenamePageContext } from "~/routes/admin.rename/context/rename-page-context"
-import { ActionTypeGoogle } from "~/types"
+import type { ActionTypeGoogle } from "~/types"
 // import type { ActionTypeGoogle } from "~/types"
 
 export default function RenameConfirmForm() {
@@ -27,7 +27,7 @@ export default function RenameConfirmForm() {
     if (
       !isExecuting &&
       actionData &&
-      ["execute"].includes(actionData.type) &&
+      ["execute"].includes(actionData._action) &&
       actionData.ok &&
       actionData.data &&
       "driveFiles" in actionData.data
@@ -54,7 +54,6 @@ export default function RenameConfirmForm() {
 
   return (
     <div className="mt-4 grid grid-cols-1 place-content-center">
-      <pre>{JSON.stringify(driveFiles.at(0), null, 2)}</pre>
       <h2 data-name="Form H1" className="mb-4 text-lg">
         🐣 名前を変更しますか？
       </h2>

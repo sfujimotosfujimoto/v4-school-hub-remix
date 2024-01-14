@@ -32,7 +32,8 @@ export async function deleteExecuteAction(
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "delete-execute",
+        _action: "execute",
+        type: "delete",
         error: `データ処理に問題が発生しました。ERROR#:DELETEEXECUTE-001`,
       },
       { status: 400 },
@@ -51,10 +52,25 @@ export async function deleteExecuteAction(
 
   logger.debug(`✅ action: promises: ${promises.length} `)
 
-  const resArr = await Promise.all([...promises])
-  const res = resArr.filter((d) => d).flat()
+  try {
+    await Promise.all([...promises])
+    // const resArr = await Promise.all([...promises])
+    // const res = resArr.filter((d) => d).flat()
 
-  return json({ ok: true, data: { res } })
+    return json<ActionTypeGoogle>({
+      ok: true,
+      _action: "execute",
+      type: "delete",
+    })
+  } catch (error) {
+    console.error(error)
+    return json<ActionTypeGoogle>({
+      ok: false,
+      _action: "execute",
+      type: "delete",
+      error: `データ処理に問題が発生しました。ERROR#:DELETEEXECUTE-002`,
+    })
+  }
 }
 
 async function _deleteFiles(

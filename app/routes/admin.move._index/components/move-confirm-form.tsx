@@ -31,7 +31,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
     if (
       !isExecuting &&
       actionData &&
-      ["execute"].includes(actionData.type) &&
+      ["execute"].includes(actionData._action) &&
       actionData.ok &&
       actionData.data &&
       "driveFiles" in actionData.data
@@ -95,7 +95,6 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
 
   return (
     <div className="mt-4 grid grid-cols-1 place-content-center">
-      <pre>{JSON.stringify(driveFiles.at(0), null, 2)}</pre>
       <h2 data-name="Form H1" className="mb-4 text-lg">
         🚙 ファイルを移動しますか？
       </h2>

@@ -60,8 +60,8 @@ export async function action({ request }: ActionFunctionArgs) {
     return json<ActionTypeGoogle>(
       {
         _action: "execute",
-        ok: false,
         type: "move",
+        ok: false,
         error: result.error.message,
       },
       { status: 400 },

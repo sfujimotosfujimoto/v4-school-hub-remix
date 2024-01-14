@@ -104,19 +104,19 @@ export async function action({ request }: ActionFunctionArgs) {
     /**
      * EXECUTE ACTION
      */
-    case "property-execute": {
-      logger.debug(`✅ action: property-execute`)
+    case "property": {
+      logger.debug(`✅ action: property`)
 
       return await propertyExecuteAction(request, formData)
     }
-    case "rename-execute": {
-      logger.debug(`✅ action: rename-execute`)
+    case "rename": {
+      logger.debug(`✅ action: rename`)
 
       return await renameExecuteAction(request, formData)
     }
 
-    case "delete-execute": {
-      logger.debug(`✅ action: delete-execute`)
+    case "delete": {
+      logger.debug(`✅ action: delete`)
       return await deleteExecuteAction(request, formData)
       // logger.debug(`✅ action: "delete": ${fileIdsString}`)
       // return json({ ok: true })

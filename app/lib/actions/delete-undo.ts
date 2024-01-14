@@ -31,7 +31,8 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "undo",
+        _action: "undo",
+        type: "delete",
         error: `データ処理に問題が発生しました。ERROR#:DELETEUNDO001`,
       },
       { status: 400 },
@@ -47,7 +48,8 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
     logger.debug(`✅ result.error ${result2.error.errors.map((e) => e.path)}`)
     return json<ActionTypeGoogle>({
       ok: false,
-      type: "undo",
+      _action: "execute",
+      type: "delete",
       error: `データ処理に問題が発生しました。ERROR#:DELETEUNDO002`,
     })
   }
@@ -57,7 +59,8 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
   if (!driveFiles || driveFiles.length === 0)
     return json<ActionTypeGoogle>({
       ok: false,
-      type: "undo",
+      _action: "undo",
+      type: "delete",
       error: "ファイルがありません",
     })
 
@@ -70,12 +73,18 @@ export async function deleteUndoAction(request: Request, formData: FormData) {
   const dfs = mapFilesToDriveFiles(res.data?.files || [])
 
   if (res.error) {
-    return json<ActionTypeGoogle>({ ok: false, type: "undo", error: res.error })
+    return json<ActionTypeGoogle>({
+      ok: false,
+      _action: "undo",
+      type: "delete",
+      error: res.error,
+    })
   }
 
   return json<ActionTypeGoogle>({
     ok: true,
-    type: "undo",
+    _action: "undo",
+    type: "delete",
     data: {
       driveFiles: dfs,
     },

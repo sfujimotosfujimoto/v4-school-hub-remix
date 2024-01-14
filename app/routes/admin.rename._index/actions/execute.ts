@@ -58,7 +58,7 @@ export async function executeAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>({
       ok: false,
       _action: "execute",
-      type: "move",
+      type: "rename",
       error: "ファイルがありません",
     })
 
@@ -91,7 +91,7 @@ export async function executeAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>({
       ok: true,
       _action: "execute",
-      type: "move",
+      type: "rename",
       data: {
         driveFiles: successFiles,
         errorFiles: mapFilesToDriveFiles(res.errorFiles),
@@ -103,7 +103,7 @@ export async function executeAction(request: Request, formData: FormData) {
       return json<ActionTypeGoogle>({
         ok: false,
         _action: "execute",
-        type: "move",
+        type: "rename",
         error: "エラーが発生しました。",
       })
   }

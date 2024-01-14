@@ -36,7 +36,8 @@ export async function propertyExecuteAction(
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "property-execute",
+        _action: "execute",
+        type: "property",
         error: `データ処理に問題が発生しました。ERROR#:PROPERTYEXECUTE-001`,
       },
       { status: 400 },
@@ -58,10 +59,15 @@ export async function propertyExecuteAction(
 
   logger.debug(`✅ action: promises: ${promises.length} `)
 
-  const resArr = await Promise.all([...promises])
-  const res = resArr.filter((d) => d).flat()
+  await Promise.all([...promises])
+  // const resArr = await Promise.all([...promises])
+  // const res = resArr.filter((d) => d).flat()
 
-  return json({ ok: true, data: { res } })
+  return json<ActionTypeGoogle>({
+    ok: true,
+    _action: "execute",
+    type: "property",
+  })
 }
 
 async function _updateAppProperties(

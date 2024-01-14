@@ -38,8 +38,8 @@ export async function renameExecuteAction(
     logger.debug(`🍎 result.error ${result.error.errors.join(",")}`)
     throw json<ActionTypeGoogle>(
       {
-        _action: "execute",
         ok: false,
+        _action: "execute",
         type: "rename",
         error: `データ処理に問題が発生しました。ERROR#:RENAMEEXECUTE-001`,
       },
@@ -61,10 +61,15 @@ export async function renameExecuteAction(
 
   logger.debug(`✅ action: promises: ${promises.length} `)
 
-  const resArr = await Promise.all([...promises])
-  const res = resArr.filter((d) => d).flat()
+  await Promise.all([...promises])
+  // const resArr = await Promise.all([...promises])
+  // const res = resArr.filter((d) => d).flat()
 
-  return json({ ok: true, data: { res } })
+  return json<ActionTypeGoogle>({
+    ok: true,
+    _action: "execute",
+    type: "rename",
+  })
 }
 
 async function _renameDriveFiles(

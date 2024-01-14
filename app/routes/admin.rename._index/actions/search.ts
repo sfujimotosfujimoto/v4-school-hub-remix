@@ -58,7 +58,8 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "error",
+        _action: "search",
+        type: "rename",
         error: `データ処理に問題が発生しました。ERROR#:RENAME001`,
       },
       { status: 400 },
@@ -90,7 +91,12 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   const sourceId = getIdFromUrl(sourceFolderId || "")
   if (!sourceId)
     return json<ActionTypeGoogle>(
-      { ok: false, type: "error", error: "フォルダIDが取得できません" },
+      {
+        ok: false,
+        _action: "search",
+        type: "rename",
+        error: "フォルダIDが取得できません",
+      },
       { status: 400 },
     )
 
@@ -99,7 +105,8 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "error",
+        _action: "search",
+        type: "rename",
         error: "クエリが取得できません。",
       },
       { status: 400 },
@@ -115,7 +122,8 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "error",
+        _action: "search",
+        type: "rename",
         error: "Google Driveにファイルがありません。",
       },
       { status: 400 },
@@ -157,7 +165,8 @@ export async function searchRenameAction(request: Request, formData: FormData) {
 
   return json<ActionTypeGoogle>({
     ok: true,
-    type: "search",
+    _action: "search",
+    type: "rename",
     data,
   })
 }
