@@ -19,7 +19,21 @@ export function useToast(
           break
         }
         case "execute": {
-          toast.success(executeText)
+          // toast.success(executeText)
+
+          if (actionData?.data && "driveFiles" in actionData.data) {
+            if (actionData.data.driveFiles.length > 0) {
+              const successLength = actionData.data.driveFiles.length
+              toast.success(`${successLength}件のファイルを移動しました。`)
+            } else {
+              toast.error(`ファイルの移動に失敗しました。`)
+            }
+          }
+          if (actionData?.data && "errorFiles" in actionData.data) {
+            actionData.data.errorFiles?.forEach((f) => {
+              toast.error(`${f.name}の移動に失敗しました。`)
+            })
+          }
           break
         }
         case "undo": {
@@ -32,6 +46,7 @@ export function useToast(
     actionData?.error,
     actionData?.ok,
     actionData?.type,
+    actionData?.data,
     executeText,
     undoText,
   ])
