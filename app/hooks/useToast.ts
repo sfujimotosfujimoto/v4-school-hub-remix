@@ -37,7 +37,15 @@ export function useToast(
           break
         }
         case "undo": {
-          toast.success(undoText)
+          if (actionData?.data && "driveFiles" in actionData.data) {
+            if (actionData.data.driveFiles.length > 0) {
+              const successLength = actionData.data.driveFiles.length
+              toast.success(`${successLength}件のファイルを元に戻しました。`)
+            } else {
+              toast.error(`ファイルの移動に失敗しました。`)
+            }
+          }
+          // toast.success(undoText)
           break
         }
       }
