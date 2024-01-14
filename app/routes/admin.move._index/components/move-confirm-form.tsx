@@ -34,7 +34,17 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
       actionData.data &&
       "driveFiles" in actionData.data
     ) {
-      const dfz = convertDriveFiles(actionData.data.driveFiles)
+      let dfz = convertDriveFiles(actionData.data.driveFiles)
+      dfz = dfz.map((df) => {
+        df.meta = {
+          ...df.meta,
+          selected: true,
+          last: {
+            folderId: sourceFolder?.id || undefined,
+          },
+        }
+        return df
+      })
 
       // console.log("✅ dfz", dfz, actionData)
       tasksDispatch({
@@ -45,7 +55,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
         },
       })
     }
-  }, [actionData, tasksDispatch, isExecuting])
+  }, [actionData, tasksDispatch, isExecuting, sourceFolder?.id])
 
   useLoadingModal(isExecuting)
 
