@@ -20,6 +20,9 @@ dependencies:
   framer-motion:
     specifier: ^10.18.0
     version: 10.18.0(react-dom@18.2.0)(react@18.2.0)
+  gaxios:
+    specifier: ^6.1.1
+    version: 6.1.1
   googleapis:
     specifier: ^129.0.0
     version: 129.0.0
