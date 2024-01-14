@@ -39,7 +39,8 @@ export async function renameExecuteAction(
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "rename-execute",
+        _action: "execute",
+        type: "rename",
         error: `データ処理に問題が発生しました。ERROR#:RENAMEEXECUTE-001`,
       },
       { status: 400 },
@@ -60,10 +61,15 @@ export async function renameExecuteAction(
 
   logger.debug(`✅ action: promises: ${promises.length} `)
 
-  const resArr = await Promise.all([...promises])
-  const res = resArr.filter((d) => d).flat()
+  await Promise.all([...promises])
+  // const resArr = await Promise.all([...promises])
+  // const res = resArr.filter((d) => d).flat()
 
-  return json({ ok: true, data: { res } })
+  return json<ActionTypeGoogle>({
+    ok: true,
+    _action: "execute",
+    type: "rename",
+  })
 }
 
 async function _renameDriveFiles(
@@ -99,12 +105,12 @@ async function _renameDriveFiles(
     logger.debug(`renameDriveFiles -- update idx:${i} of chunk: ${idx}`)
   }
 
-  const files = await renameDriveFiles(drive, driveFiles)
+  const res = await renameDriveFiles(drive, driveFiles)
 
   logger.debug(
-    `renameDriveFiles -- finished ${files.length} files of chunk: ${idx}`,
+    `renameDriveFiles -- finished ${res.successFiles.length} files of chunk: ${idx}`,
   )
-  return files
+  return res
 }
 
 async function updateDriveFileMetaName(

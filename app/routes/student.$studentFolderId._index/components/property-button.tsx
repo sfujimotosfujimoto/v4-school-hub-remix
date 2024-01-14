@@ -21,7 +21,7 @@ export default function PropertyButton({
   let currentNendo = getSchoolYear(Date.now())
 
   const isExecuting =
-    state === "submitting" && formData?.get("_action") === "property-execute"
+    state === "submitting" && formData?.get("_action") === "property"
 
   // TODO: Add loading modal
 
@@ -119,7 +119,7 @@ export default function PropertyButton({
           <button
             type="submit"
             name="_action"
-            value="property-execute"
+            value="property"
             className={`btn btn-sm mt-4 w-32 hover:bg-sfyellow-200 ${
               isExecuting
                 ? "btn-disabled animate-bounce !bg-slate-300"

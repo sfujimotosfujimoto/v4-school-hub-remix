@@ -1,10 +1,13 @@
-import { Form, useNavigation } from "@remix-run/react"
+import { Form, useActionData, useNavigation } from "@remix-run/react"
 import React from "react"
 import { LoadingIcon } from "~/components/icons"
 import { useLoadingModal } from "~/components/ui/loading-modal"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useTasksContext } from "~/context/tasks-context"
+import { convertDriveFiles } from "~/lib/utils-loader"
 import { useRenamePageContext } from "~/routes/admin.rename/context/rename-page-context"
+import type { ActionTypeGoogle } from "~/types"
+// import type { ActionTypeGoogle } from "~/types"
 
 export default function RenameConfirmForm() {
   const dialogEl = React.useRef<HTMLDialogElement>(null)
@@ -18,20 +21,34 @@ export default function RenameConfirmForm() {
 
   const isExecuting =
     state === "submitting" && formData?.get("_action") === "execute"
+  const actionData = useActionData<ActionTypeGoogle>()
+
+  React.useEffect(() => {
+    if (
+      !isExecuting &&
+      actionData &&
+      ["execute"].includes(actionData._action) &&
+      actionData.ok &&
+      actionData.data &&
+      "driveFiles" in actionData.data
+    ) {
+      let dfz = convertDriveFiles(actionData.data.driveFiles)
+
+      tasksDispatch({
+        type: "SET",
+        payload: {
+          driveFiles: dfz,
+          taskType: "rename",
+        },
+      })
+    }
+  }, [actionData, tasksDispatch, isExecuting])
 
   useLoadingModal(isExecuting)
 
   if (!sourceFolder) return null
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    // filter only selected files
-    const dfs = driveFiles.filter((df) => df.meta?.selected === true)
-    tasksDispatch({
-      type: "SET",
-      payload: {
-        driveFiles: dfs,
-        taskType: "rename",
-      },
-    })
     if (dialogEl.current !== null) dialogEl.current.close()
   }
 

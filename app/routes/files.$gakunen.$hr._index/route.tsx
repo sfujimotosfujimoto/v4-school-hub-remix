@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
-import { useLoaderData } from "@remix-run/react"
+import { useActionData, useLoaderData, useNavigation } from "@remix-run/react"
 import React from "react"
 import { z } from "zod"
 import { CheckIcon } from "~/components/icons"
@@ -23,7 +23,7 @@ import { parseAppProperties, parseTags } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
-import type { DriveFile } from "~/types"
+import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { deleteExecuteAction } from "../../lib/actions/delete-execute"
 import { deleteUndoAction } from "../../lib/actions/delete-undo"
 import { propertyExecuteAction } from "../../lib/actions/property-execute"
@@ -35,6 +35,8 @@ import PropertyButton from "../student.$studentFolderId._index/components/proper
 import TagPills from "../student.$studentFolderId._index/components/tag-pills"
 import DeleteButton from "./components/delete-button"
 import { errorResponses } from "~/lib/error-responses"
+import { useToast } from "~/hooks/useToast"
+import { useLoadingModal } from "~/components/ui/loading-modal"
 
 /**
  * loader function
@@ -156,19 +158,19 @@ export async function action({ request }: ActionFunctionArgs) {
      * EXECUTE ACTION
      */
 
-    case "property-execute": {
-      logger.debug(`✅ action: property-execute`)
+    case "property": {
+      logger.debug(`✅ action: property`)
 
       return await propertyExecuteAction(request, formData)
     }
-    case "rename-execute": {
-      logger.debug(`✅ action: rename-execute`)
+    case "rename": {
+      logger.debug(`✅ action: rename`)
 
       return await renameExecuteAction(request, formData)
     }
 
-    case "delete-execute": {
-      logger.debug(`✅ action: delete-execute`)
+    case "delete": {
+      logger.debug(`✅ action: delete`)
       return await deleteExecuteAction(request, formData)
     }
 
@@ -206,6 +208,16 @@ export default function FilesGakunenHrQueryPage() {
 
   // get driveFiles from context
   const { driveFilesDispatch, driveFiles } = useDriveFilesContext()
+
+  const actionData = useActionData<ActionTypeGoogle>()
+  console.log("✅ actionData", actionData)
+  useToast(actionData)
+
+  const { state } = useNavigation()
+
+  const isSubmitting = state === "submitting"
+
+  useLoadingModal(isSubmitting)
 
   const dfz: DriveFile[] = React.useMemo(() => {
     if (!_driveFiles) return []

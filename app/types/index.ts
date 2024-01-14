@@ -1,4 +1,6 @@
+import { Schema } from "zod"
 import type { DriveFile, Student, DriveFileMeta } from "."
+import { drive_v3 } from "googleapis"
 
 export type * from "./prisma-types"
 export type * from "./google-types"
@@ -42,6 +44,10 @@ export type DriveFileTask = Pick<DriveFile, "id" | "parents"> & {
   meta: DriveFileMeta
 }
 
+export type ActionResponse = {
+  successFiles: drive_v3.Schema$File[]
+  errorFiles: drive_v3.Schema$File[]
+}
 // export type DriveFileData = Omit<
 //   PrismaDriveFileData,
 //   "createdTime" | "modifiedTime" | "firstSeen" | "lastSeen" | "appProperties"

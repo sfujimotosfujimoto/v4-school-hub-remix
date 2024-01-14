@@ -9,7 +9,8 @@ import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { arrayIntoChunks, getIdFromUrl, parseAppProperties } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
-import type { ActionTypeGoogle, DriveFile } from "~/types"
+import type { ActionResponse, ActionTypeGoogle, DriveFile } from "~/types"
+import { flatFiles, parseDateToString } from "~/lib/utils.server"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -34,7 +35,8 @@ export async function executeAction(request: Request, formData: FormData) {
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "execute",
+        _action: "execute",
+        type: "move",
         error: `データ処理に問題が発生しました。ERROR#:MOVEEXECUTE-001`,
       },
       { status: 400 },
@@ -49,8 +51,9 @@ export async function executeAction(request: Request, formData: FormData) {
   // const driveFiles = DriveFilesSchema.parse(raw) as DriveFile[]
   if (!driveFiles || driveFiles.length === 0)
     return json<ActionTypeGoogle>({
+      _action: "execute",
       ok: false,
-      type: "execute",
+      type: "move",
       error: "ファイルがありません",
     })
 
@@ -60,13 +63,32 @@ export async function executeAction(request: Request, formData: FormData) {
       throw errorResponses.google()
     }
 
-    const res = await moveDriveFiles(drive, driveFiles)
+    // make a copy of the array because renameDriveFiles mutates the array
+    const dfz = [...driveFiles]
+    const res = await moveDriveFiles(drive, dfz)
+
+    // from the successFiles, get the files that were actually moved
+    // from the original array of files
+    // because the original data has "meta" data in them
+    // and we need the data for undo task data
+    let successFiles: DriveFile[] = []
+    res.successFiles.forEach((sf) => {
+      const found = driveFiles.find((df) => {
+        return df.id === sf.id
+      })
+      if (found) {
+        successFiles.push(found)
+      }
+    })
+
+    console.log("✅ move successFiles", successFiles.length)
 
     return json<ActionTypeGoogle>({
       ok: true,
-      type: "execute",
+      _action: "execute",
+      type: "move",
       data: {
-        driveFiles: mapFilesToDriveFiles(res.successFiles),
+        driveFiles: successFiles,
         errorFiles: mapFilesToDriveFiles(res.errorFiles),
       },
     })
@@ -77,21 +99,17 @@ export async function executeAction(request: Request, formData: FormData) {
     }
     return json<ActionTypeGoogle>({
       ok: false,
-      type: "execute",
+      _action: "execute",
+      type: "move",
       error: "問題が発生しました。",
     })
   }
 }
 
-type MoveDriveFiles = {
-  successFiles: drive_v3.Schema$File[]
-  errorFiles: drive_v3.Schema$File[]
-}
-
 export async function moveDriveFiles(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
-): Promise<MoveDriveFiles> {
+): Promise<ActionResponse> {
   logger.debug(`✅ moveDriveFiles: ${driveFiles.length} files total`)
   const driveFilesChunks = arrayIntoChunks<DriveFile>(driveFiles, CHUNK_SIZE)
 
@@ -102,9 +120,7 @@ export async function moveDriveFiles(
   // return promises.flat()
 
   const files = await Promise.all([...promises])
-  const newFiles = files.filter((d): d is MoveDriveFiles => d !== null)
-
-  // console.log("✅ moveDriveFiles: newFiles", newFiles)
+  const newFiles = files.filter((d): d is ActionResponse => d !== null)
 
   const successFiles = flatFiles(newFiles, "successFiles")
   const errorFiles = flatFiles(newFiles, "errorFiles")
@@ -114,26 +130,11 @@ export async function moveDriveFiles(
   return { successFiles, errorFiles }
 }
 
-function flatFiles(
-  arrOfFiles: MoveDriveFiles[],
-  key: "successFiles" | "errorFiles",
-) {
-  return arrOfFiles.map((d) => d[key]).flat()
-}
-
-function parseDateToString(date: Date | null | undefined) {
-  if (!date) return null
-  return date.toISOString()
-}
-
 async function _moveDriveFilesG(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
   idx: number,
-): Promise<{
-  successFiles: drive_v3.Schema$File[]
-  errorFiles: drive_v3.Schema$File[]
-}> {
+): Promise<ActionResponse> {
   const dfs = [...driveFiles]
   const successFiles: drive_v3.Schema$File[] = []
   const errorFiles: drive_v3.Schema$File[] = []
@@ -192,12 +193,19 @@ async function _moveDriveFilesG(
       } catch (error) {
         // console.log("✅ moveDriveFiles: error", error, error instanceof Error)
         if (error instanceof GaxiosError) {
-          if (error.response?.data.error.code === 403)
+          if (error.response?.data.error.code === 403) {
             errors.push(
-              `${d.id}: ${d.name}: ファイルを移動する権限がありません。`,
+              `${d.id}: ${d.name}: ファイルの移動する権限がありません。`,
             )
-          errorFiles.push(d)
-          break
+            errorFiles.push(d)
+            break
+          } else {
+            errors.push(
+              `${d.id}: ${d.name}: Google Drive APIエラーが発生しました。`,
+            )
+            errorFiles.push(d)
+            break
+          }
         } else if (error instanceof Error) {
           errors.push(`${d.id}: ${d.name}: ${error.message}`)
         }

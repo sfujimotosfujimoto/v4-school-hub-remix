@@ -39,7 +39,8 @@ export async function undoAction(request: Request, formData: FormData) {
   if (!driveFiles)
     return json<ActionTypeGoogle>({
       ok: false,
-      type: "undo",
+      _action: "undo-csv",
+      type: "rename",
       error: "ファイルがありません",
     })
 
@@ -48,7 +49,12 @@ export async function undoAction(request: Request, formData: FormData) {
 
   if (res.error) {
     toast.error(res.error)
-    return json<ActionTypeGoogle>({ ok: false, type: "undo", error: res.error })
+    return json<ActionTypeGoogle>({
+      ok: false,
+      _action: "undo-csv",
+      type: "rename",
+      error: res.error,
+    })
   }
 
   toast.success("元に戻しました")
