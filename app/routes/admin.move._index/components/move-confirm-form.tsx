@@ -1,5 +1,5 @@
 import type { Role } from "@prisma/client"
-import { Form, useNavigation } from "@remix-run/react"
+import { Form, useActionData, useNavigation } from "@remix-run/react"
 import React from "react"
 import toast from "react-hot-toast"
 import { LoadingIcon } from "~/components/icons"
@@ -7,7 +7,9 @@ import { useLoadingModal } from "~/components/ui/loading-modal"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useTasksContext } from "~/context/tasks-context"
 import { arrayIntoChunks } from "~/lib/utils"
+import { convertDriveFiles } from "~/lib/utils-loader"
 import { useMovePageContext } from "~/routes/admin.move._index/context/move-page-context"
+import type { ActionTypeGoogle } from "~/types"
 
 export default function MoveConfirmForm({ role }: { role: Role }) {
   const dialogEl = React.useRef<HTMLDialogElement>(null)
@@ -21,6 +23,29 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
 
   const isExecuting =
     state === "submitting" && formData?.get("_action") === "execute"
+  const actionData = useActionData<ActionTypeGoogle>()
+
+  React.useEffect(() => {
+    if (
+      !isExecuting &&
+      actionData &&
+      actionData.type === "execute" &&
+      actionData.ok &&
+      actionData.data &&
+      "driveFiles" in actionData.data
+    ) {
+      const dfz = convertDriveFiles(actionData.data.driveFiles)
+
+      // console.log("✅ dfz", dfz, actionData)
+      tasksDispatch({
+        type: "SET",
+        payload: {
+          driveFiles: dfz,
+          taskType: "move",
+        },
+      })
+    }
+  }, [actionData, tasksDispatch, isExecuting])
 
   useLoadingModal(isExecuting)
 
@@ -29,15 +54,15 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     // filter only selected files
 
-    const dfs = driveFiles.filter((df) => df.meta?.selected === true)
+    // const dfs = driveFiles.filter((df) => df.meta?.selected === true)
 
-    tasksDispatch({
-      type: "SET",
-      payload: {
-        driveFiles: dfs,
-        taskType: "move",
-      },
-    })
+    // tasksDispatch({
+    //   type: "SET",
+    //   payload: {
+    //     driveFiles: dfs,
+    //     taskType: "move",
+    //   },
+    // })
     // logger.debug("✅ dialogEl.current", dialogEl.current)
     if (dialogEl.current !== null) dialogEl.current.close()
   }
