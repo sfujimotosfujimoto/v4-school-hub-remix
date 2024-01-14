@@ -2,7 +2,8 @@ import type { drive_v3 } from "googleapis"
 
 export type ActionTypeGoogle = {
   ok: boolean
-  type: string
+  _action: "search" | "execute" | "undo" | "undo-csv"
+  type: "move" | "rename" | "rename-csv"
   error?: string
   data?:
     | {

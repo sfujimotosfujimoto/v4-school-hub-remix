@@ -25,6 +25,8 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
     state === "submitting" && formData?.get("_action") === "execute"
   const actionData = useActionData<ActionTypeGoogle>()
 
+  // call useEffect when actionData is updated
+  // and when there is driveFiles in actionData
   React.useEffect(() => {
     if (
       !isExecuting &&
@@ -36,20 +38,6 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
     ) {
       let dfz = convertDriveFiles(actionData.data.driveFiles)
 
-      dfz = dfz.map((df) => {
-        return {
-          ...df,
-          meta: {
-            ...df.meta,
-            selected: true,
-            last: {
-              folderId: sourceFolder?.id || undefined,
-            },
-          },
-        }
-      })
-
-      console.log("✅ dfz", dfz, actionData)
       tasksDispatch({
         type: "SET",
         payload: {
@@ -58,25 +46,13 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
         },
       })
     }
-  }, [actionData, tasksDispatch, isExecuting, sourceFolder])
+  }, [actionData, tasksDispatch, isExecuting])
 
   useLoadingModal(isExecuting)
 
   if (!sourceFolder) return null
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    // filter only selected files
-
-    // const dfs = driveFiles.filter((df) => df.meta?.selected === true)
-
-    // tasksDispatch({
-    //   type: "SET",
-    //   payload: {
-    //     driveFiles: dfs,
-    //     taskType: "move",
-    //   },
-    // })
-    // logger.debug("✅ dialogEl.current", dialogEl.current)
     if (dialogEl.current !== null) dialogEl.current.close()
   }
 
@@ -119,6 +95,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
 
   return (
     <div className="mt-4 grid grid-cols-1 place-content-center">
+      <pre>{JSON.stringify(driveFiles.at(0), null, 2)}</pre>
       <h2 data-name="Form H1" className="mb-4 text-lg">
         🚙 ファイルを移動しますか？
       </h2>

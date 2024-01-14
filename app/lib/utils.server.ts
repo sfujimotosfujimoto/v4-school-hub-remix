@@ -1,5 +1,5 @@
 import { logger } from "~/logger"
-import type { DriveFile } from "~/types"
+import type { ActionResponse, DriveFile } from "~/types"
 
 export function setSelected(driveFiles: DriveFile[], selected: boolean) {
   return driveFiles.map((df) => {
@@ -37,4 +37,16 @@ export function isExpired(expire: number): boolean {
   } else {
     return false
   }
+}
+
+export function flatFiles(
+  arrOfFiles: ActionResponse[],
+  key: "successFiles" | "errorFiles",
+) {
+  return arrOfFiles.map((d) => d[key]).flat()
+}
+
+export function parseDateToString(date: Date | null | undefined) {
+  if (!date) return null
+  return date.toISOString()
 }

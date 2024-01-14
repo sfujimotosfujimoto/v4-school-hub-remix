@@ -37,8 +37,9 @@ export async function undoCsvAction(
     logger.debug(`✅ result.error ${result.error.errors.join(",")}`)
     throw json<ActionTypeGoogle>(
       {
+        _action: "undo-csv",
         ok: false,
-        type: "undo-csv",
+        type: "move",
         error: `データ処理に問題が発生しました。ERROR#:MOVEUNDOCSV-001`,
       },
       { status: 400 },
@@ -56,7 +57,8 @@ export async function undoCsvAction(
     )
     return json<ActionTypeGoogle>({
       ok: false,
-      type: "undo",
+      _action: "undo-csv",
+      type: "move",
       error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO002`,
     })
   }
@@ -71,7 +73,8 @@ export async function undoCsvAction(
     toast.error(res.error)
     return json<ActionTypeGoogle>({
       ok: false,
-      type: "undo-csv",
+      _action: "undo-csv",
+      type: "move",
       error: res.error,
     })
   }
@@ -81,7 +84,8 @@ export async function undoCsvAction(
 
   return json<ActionTypeGoogle>({
     ok: true,
-    type: "undo-csv",
+    _action: "undo-csv",
+    type: "move",
     data: {
       driveFiles: dfs,
     },

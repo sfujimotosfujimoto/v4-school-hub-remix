@@ -29,8 +29,9 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!result.success) {
     return json<ActionTypeGoogle>(
       {
+        _action: "search",
         ok: false,
-        type: "error",
+        type: "move",
         error: `データ処理に問題が発生しました。ERROR#:MOVE-001`,
       },
       { status: 400 },
@@ -43,7 +44,12 @@ export async function searchAction(request: Request, formData: FormData) {
   const sourceId = getIdFromUrl(sourceFolderId || "")
   if (!sourceId)
     return json<ActionTypeGoogle>(
-      { ok: false, type: "move", error: "フォルダIDが取得できません" },
+      {
+        _action: "search",
+        ok: false,
+        type: "move",
+        error: "フォルダIDが取得できません",
+      },
       { status: 400 },
     )
 
@@ -51,7 +57,12 @@ export async function searchAction(request: Request, formData: FormData) {
   const query = queryFolderId(sourceId)
   if (!query)
     return json<ActionTypeGoogle>(
-      { ok: false, type: "move", error: "クエリが取得できません" },
+      {
+        _action: "search",
+        ok: false,
+        type: "move",
+        error: "クエリが取得できません",
+      },
       { status: 400 },
     )
 
@@ -66,8 +77,9 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!sheets)
     return json<ActionTypeGoogle>(
       {
+        _action: "search",
         ok: false,
-        type: "search",
+        type: "move",
         error: "名簿シートにアクセスできません。",
       },
       { status: 400 },
@@ -80,7 +92,8 @@ export async function searchAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        type: "search",
+        _action: "search",
+        type: "move",
         error: "Google Driveにファイルがありません。",
       },
       { status: 400 },
@@ -101,16 +114,18 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!driveFiles)
     return json<ActionTypeGoogle>(
       {
+        _action: "search",
         ok: false,
-        type: "search",
+        type: "move",
         error: "Google Driveにファイルがありません。",
       },
       { status: 400 },
     )
 
   return json<ActionTypeGoogle>({
+    _action: "search",
     ok: true,
-    type: "search",
+    type: "move",
     data: {
       sourceFolder,
       driveFiles,

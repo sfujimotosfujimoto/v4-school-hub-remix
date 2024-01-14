@@ -34,8 +34,9 @@ export async function undoAction(request: Request, formData: FormData) {
     logger.debug(`✅ result.error ${result.error.errors.join(",")}`)
     throw json<ActionTypeGoogle>(
       {
+        _action: "undo",
         ok: false,
-        type: "undo",
+        type: "move",
         error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO001`,
       },
       { status: 400 },
@@ -61,8 +62,9 @@ export async function undoAction(request: Request, formData: FormData) {
 
   if (!driveFiles || driveFiles.length === 0)
     return json<ActionTypeGoogle>({
+      _action: "undo",
       ok: false,
-      type: "undo",
+      type: "move",
       error: "ファイルがありません",
     })
 
@@ -75,12 +77,18 @@ export async function undoAction(request: Request, formData: FormData) {
   const dfs = mapFilesToDriveFiles(res.data?.files || [])
 
   if (res.error) {
-    return json<ActionTypeGoogle>({ ok: false, type: "undo", error: res.error })
+    return json<ActionTypeGoogle>({
+      _action: "undo",
+      ok: false,
+      type: "move",
+      error: res.error,
+    })
   }
 
   return json<ActionTypeGoogle>({
+    _action: "undo",
     ok: true,
-    type: "undo",
+    type: "move",
     data: {
       driveFiles: dfs,
     },

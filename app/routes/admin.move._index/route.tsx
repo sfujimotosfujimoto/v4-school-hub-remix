@@ -58,7 +58,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!result.success) {
     return json<ActionTypeGoogle>(
-      { ok: false, type: "move", error: result.error.message },
+      {
+        _action: "execute",
+        ok: false,
+        type: "move",
+        error: result.error.message,
+      },
       { status: 400 },
     )
   }
@@ -117,8 +122,7 @@ export default function MovePage() {
   // validate raw driveFiles and set to driveFilesContext
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
 
-  // TODO: have a default value in useToast function so message arguments are ignored. Need to change function signature.
-  useToast(`ファイルを移動しました。`, `ファイルを元に戻しました。`, actionData)
+  useToast(actionData)
 
   return (
     <>

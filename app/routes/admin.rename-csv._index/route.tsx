@@ -106,11 +106,7 @@ export default function RenameCsvPage() {
     })
   }, [actionData?.data, renameCsvPageDispatch])
 
-  useToast(
-    `ファイル名を変更しました。`,
-    `ファイル名を元に戻しました。`,
-    actionData,
-  )
+  useToast(actionData)
 
   return (
     <>

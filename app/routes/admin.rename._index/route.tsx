@@ -46,7 +46,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!result.success) {
     return json<ActionTypeGoogle>(
-      { ok: false, type: "rename", error: result.error.message },
+      {
+        _action: "execute",
+        ok: false,
+        type: "rename",
+        error: result.error.message,
+      },
       { status: 400 },
     )
   }
@@ -91,11 +96,7 @@ export default function RenamePage() {
 
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
 
-  useToast(
-    `ファイル名を変更しました。`,
-    `ファイル名を元に戻しました。`,
-    actionData,
-  )
+  useToast(actionData)
 
   return (
     <>
