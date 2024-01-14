@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import { json } from "@remix-run/node"
-import { useActionData } from "@remix-run/react"
+import { useActionData, useNavigation } from "@remix-run/react"
 import React from "react"
 import { z } from "zod"
 import TaskCards from "~/components/ui/tasks/task-cards"
@@ -18,6 +18,7 @@ import RenameCards from "../admin.rename._index/components/rename-cards"
 import RenameCsvForm from "./components/rename-csv-form"
 import SourceFolderHeader from "./components/source-folder-header"
 import { useRenameCsvPageContext } from "./context/rename-csv-page-context"
+import { useLoadingModal } from "~/components/ui/loading-modal"
 
 export const config = {
   maxDuration: 60,
@@ -90,8 +91,12 @@ export default function RenameCsvPage() {
   const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
   const actionData = useActionData<ActionTypeGoogle>()
   const { renameCsvPageDispatch } = useRenameCsvPageContext()
-
+  const { state, formData } = useNavigation()
+  const isExecuting =
+    state === "submitting" &&
+    ["execute", "search", "undo"].includes(String(formData?.get("_action")))
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
+  // validate raw driveFiles and set to driveFilesContext
 
   React.useEffect(() => {
     if (!actionData?.data || !("driveFiles" in actionData.data)) return
@@ -107,6 +112,8 @@ export default function RenameCsvPage() {
   }, [actionData?.data, renameCsvPageDispatch])
 
   useToast(actionData)
+
+  useLoadingModal(isExecuting)
 
   return (
     <>

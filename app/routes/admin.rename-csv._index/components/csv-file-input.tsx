@@ -61,6 +61,10 @@ export default function CsvFileInput({
     }
   })
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (dialogEl1.current !== null) dialogEl1.current.close()
+  }
+
   return (
     <div className={`rounded-lg  p-4 ${bgColor}`}>
       <form
@@ -105,7 +109,7 @@ export default function CsvFileInput({
         </div>
       </form>
       <dialog id="my_modal" className="modal" ref={dialogEl1}>
-        <Form className="modal-box" method="POST">
+        <Form className="modal-box" method="POST" onSubmit={handleSubmit}>
           <p className="py-4">{dialogText}</p>
 
           <input

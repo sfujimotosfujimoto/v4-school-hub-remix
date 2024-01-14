@@ -118,10 +118,8 @@ export default function MovePage() {
   const { role } = useLoaderData<{ role: Role }>()
 
   const actionData = useActionData<ActionTypeGoogle>()
-
   // validate raw driveFiles and set to driveFilesContext
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
-
   useToast(actionData)
 
   return (
