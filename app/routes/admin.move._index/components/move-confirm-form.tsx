@@ -7,6 +7,7 @@ import { useLoadingModal } from "~/components/ui/loading-modal"
 import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useTasksContext } from "~/context/tasks-context"
 import { arrayIntoChunks } from "~/lib/utils"
+import { convertDriveFiles } from "~/lib/utils-loader"
 import { useMovePageContext } from "~/routes/admin.move._index/context/move-page-context"
 import type { ActionTypeGoogle } from "~/types"
 
@@ -33,24 +34,24 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
       actionData.data &&
       "driveFiles" in actionData.data
     ) {
-      let dfz = driveFiles.filter((df) => df.meta?.selected === true)
-      // let dfz = convertDriveFiles(actionData.data.driveFiles)
-      // dfz = dfz.map((df) => {
-      //   df.meta = {
-      //     ...df.meta,
-      //     selected: true,
-      //     // d.meta.destination?.folderId
-      //     // destination: {
-      //     //   folderId:  || undefined,
-      //     // },
-      //     last: {
-      //       folderId: sourceFolder?.id || undefined,
-      //     },
-      //   }
-      //   return df
-      // })
+      // let dfz = driveFiles.filter((df) => df.meta?.selected === true)
+      let dfz = convertDriveFiles(actionData.data.driveFiles)
+      dfz = dfz.map((df) => {
+        df.meta = {
+          ...df.meta,
+          selected: true,
+          // d.meta.destination?.folderId
+          // destination: {
+          //   folderId:  || undefined,
+          // },
+          last: {
+            folderId: sourceFolder?.id || undefined,
+          },
+        }
+        return df
+      })
 
-      // console.log("✅ dfz", dfz, actionData)
+      console.log("✅ dfz", dfz, actionData)
       tasksDispatch({
         type: "SET",
         payload: {
@@ -59,7 +60,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
         },
       })
     }
-  }, [actionData, tasksDispatch, isExecuting, driveFiles])
+  }, [actionData, tasksDispatch, isExecuting, sourceFolder])
 
   useLoadingModal(isExecuting)
 
