@@ -117,6 +117,7 @@ export default function MovePage() {
   // validate raw driveFiles and set to driveFilesContext
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
 
+  // TODO: have a default value in useToast function so message arguments are ignored. Need to change function signature.
   useToast(`ファイルを移動しました。`, `ファイルを元に戻しました。`, actionData)
 
   return (
