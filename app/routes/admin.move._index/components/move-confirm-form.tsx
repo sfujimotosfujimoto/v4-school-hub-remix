@@ -29,26 +29,24 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
     if (
       !isExecuting &&
       actionData &&
-      actionData.type === "execute" &&
+      ["execute"].includes(actionData.type) &&
       actionData.ok &&
       actionData.data &&
       "driveFiles" in actionData.data
     ) {
-      // let dfz = driveFiles.filter((df) => df.meta?.selected === true)
       let dfz = convertDriveFiles(actionData.data.driveFiles)
+
       dfz = dfz.map((df) => {
-        df.meta = {
-          ...df.meta,
-          selected: true,
-          // d.meta.destination?.folderId
-          // destination: {
-          //   folderId:  || undefined,
-          // },
-          last: {
-            folderId: sourceFolder?.id || undefined,
+        return {
+          ...df,
+          meta: {
+            ...df.meta,
+            selected: true,
+            last: {
+              folderId: sourceFolder?.id || undefined,
+            },
           },
         }
-        return df
       })
 
       console.log("✅ dfz", dfz, actionData)
