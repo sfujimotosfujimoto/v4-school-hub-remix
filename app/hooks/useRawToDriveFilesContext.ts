@@ -19,16 +19,6 @@ export function useRawToDriveFilesContext(
 
     // set to rawDriveFiles
     const rawDriveFiles = actionData?.data?.driveFiles ?? []
-
-    // validate rawDriveFiles using zod
-    // const result = DriveFilesSchema.safeParse(rawDriveFiles)
-    // if (!result.success) {
-    //   toast.error(`データの読み込みに失敗しました。`)
-    //   return
-    // }
-    // // set to _driveFiles
-    // const _driveFiles = result.data as unknown as DriveFile[]
-
     const dfd = convertDriveFiles(rawDriveFiles)
 
     if (!dfd) {
