@@ -1,7 +1,7 @@
 import { Toaster } from "react-hot-toast"
 import sharedStyles from "~/styles/shared.css"
 import tailwindStyles from "~/styles/tailwind.css"
-
+import { Analytics } from "@vercel/analytics/react"
 import { logger } from "./logger"
 
 import type {
@@ -196,6 +196,7 @@ function Document({ children }: { children: React.ReactNode }) {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Analytics />
       </body>
     </html>
   )
@@ -247,6 +248,7 @@ export function ErrorBoundary() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Analytics />
       </body>
     </html>
   )

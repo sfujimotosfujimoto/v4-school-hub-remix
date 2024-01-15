@@ -13,6 +13,7 @@
     "@remix-run/node": "^2.5.0",
     "@remix-run/react": "^2.5.0",
     "@remix-run/serve": "^2.5.0",
+    "@vercel/analytics": "^1.1.1",
     "framer-motion": "^10.18.0",
     "gaxios": "^6.1.1",
     "googleapis": "^129.0.0",
