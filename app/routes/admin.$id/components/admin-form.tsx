@@ -119,13 +119,13 @@ export default function AdminForm({ user }: { user: User }) {
         <div className="flex flex-col gap-4 sm:gap-8">
           <Button
             isValidSubmit={isValidSubmit}
-            name={"_action"}
+            name={"intent"}
             value={"update"}
             text={"アップデート"}
           />
           <Button
             isValidSubmit={isValidSubmit}
-            name={"_action"}
+            name={"intent"}
             value={"delete"}
             text={"削除"}
           />

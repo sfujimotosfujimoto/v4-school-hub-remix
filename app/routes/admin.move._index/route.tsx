@@ -41,7 +41,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  _action: z.string(),
+  intent: z.string(),
 })
 
 /**
@@ -59,7 +59,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!result.success) {
     return json<ActionTypeGoogle>(
       {
-        _action: "execute",
+        intent: "execute",
         type: "move",
         ok: false,
         error: result.error.message,
@@ -68,9 +68,9 @@ export async function action({ request }: ActionFunctionArgs) {
     )
   }
 
-  let { _action } = result.data
+  let { intent } = result.data
 
-  switch (_action) {
+  switch (intent) {
     /*
        SEARCH ACTION
      */

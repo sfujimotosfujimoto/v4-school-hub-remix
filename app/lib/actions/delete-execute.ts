@@ -32,7 +32,7 @@ export async function deleteExecuteAction(
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "execute",
+        intent: "execute",
         type: "delete",
         error: `データ処理に問題が発生しました。ERROR#:DELETEEXECUTE-001`,
       },
@@ -59,14 +59,14 @@ export async function deleteExecuteAction(
 
     return json<ActionTypeGoogle>({
       ok: true,
-      _action: "execute",
+      intent: "execute",
       type: "delete",
     })
   } catch (error) {
     console.error(error)
     return json<ActionTypeGoogle>({
       ok: false,
-      _action: "execute",
+      intent: "execute",
       type: "delete",
       error: `データ処理に問題が発生しました。ERROR#:DELETEEXECUTE-002`,
     })

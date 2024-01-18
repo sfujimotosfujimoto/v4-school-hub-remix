@@ -34,7 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  _action: z.string(),
+  intent: z.string(),
 })
 
 /**
@@ -52,9 +52,9 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ ok: false, error: result.error.message }, { status: 400 })
   }
 
-  let { _action } = result.data
+  let { intent } = result.data
 
-  switch (_action) {
+  switch (intent) {
     /*
        SEARCH ACTION
      */
@@ -94,7 +94,7 @@ export default function RenameCsvPage() {
   const { state, formData } = useNavigation()
   const isExecuting =
     state === "submitting" &&
-    ["execute", "search", "undo"].includes(String(formData?.get("_action")))
+    ["execute", "search", "undo"].includes(String(formData?.get("intent")))
   useRawToDriveFilesContext(driveFilesDispatch, actionData)
   // validate raw driveFiles and set to driveFilesContext
 

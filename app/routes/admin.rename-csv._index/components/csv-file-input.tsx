@@ -27,7 +27,7 @@ export default function CsvFileInput({
 }) {
   const { state, formData } = useNavigation()
   const isExecuting =
-    state === "submitting" && formData?.get("_action") === "execute"
+    state === "submitting" && formData?.get("intent") === "execute"
   const { driveFiles, driveFilesDispatch } = useDriveFilesContext()
 
   const [file, setFile] = React.useState<File | null>(null)
@@ -120,7 +120,7 @@ export default function CsvFileInput({
 
           <button
             type="submit"
-            name="_action"
+            name="intent"
             value={actionValue}
             className={`btn btn-sm w-32 ${
               isExecuting

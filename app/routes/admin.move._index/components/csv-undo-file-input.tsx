@@ -11,7 +11,7 @@ export default function CsvUndoFileInput() {
   const [driveFilesString, setDriveFilesString] = React.useState("")
 
   const isUndo =
-    state === "submitting" && formData?.get("_action") === "undo-csv"
+    state === "submitting" && formData?.get("intent") === "undo-csv"
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     // setFile(e.target.files?.[0] || null)
@@ -73,7 +73,7 @@ export default function CsvUndoFileInput() {
 
             <button
               type="submit"
-              name="_action"
+              name="intent"
               value="undo-csv"
               className={`btn btn-warning btn-sm w-24 ${
                 isUndo ? "btn-disabled !bg-slate-300" : "btn-primary"

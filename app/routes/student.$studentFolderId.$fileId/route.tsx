@@ -76,7 +76,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  _action: z.string(),
+  intent: z.string(),
 })
 
 /**
@@ -98,9 +98,9 @@ export async function action({ request }: ActionFunctionArgs) {
     )
   }
 
-  let { _action } = result.data
+  let { intent } = result.data
 
-  switch (_action) {
+  switch (intent) {
     /**
      * EXECUTE ACTION
      */

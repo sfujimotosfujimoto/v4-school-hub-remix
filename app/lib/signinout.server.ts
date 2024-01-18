@@ -52,7 +52,7 @@ export async function signin({
 
   // let refreshTokenExpiryDummy = Date.now() + 1000 * 30 // 30 seconds
   // let refreshTokenExpiry = refreshTokenExpiryDummy
-  let refreshTokenExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24) // 1 day
+  let refreshTokenExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14) // 14 days
 
   if (!access_token) {
     throw redirectToSignin(request, { authstate: "no-access-token" })

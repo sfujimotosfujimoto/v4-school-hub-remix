@@ -11,7 +11,7 @@ import { updateAppProperties } from "~/lib/app-properties"
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  _action: z.string(),
+  intent: z.string(),
   nendoString: z.string(),
   tagsString: z.string().optional(),
   fileIdsString: z.string().optional(),
@@ -36,7 +36,7 @@ export async function propertyExecuteAction(
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "execute",
+        intent: "execute",
         type: "property",
         error: `データ処理に問題が発生しました。ERROR#:PROPERTYEXECUTE-001`,
       },
@@ -65,7 +65,7 @@ export async function propertyExecuteAction(
 
   return json<ActionTypeGoogle>({
     ok: true,
-    _action: "execute",
+    intent: "execute",
     type: "property",
   })
 }

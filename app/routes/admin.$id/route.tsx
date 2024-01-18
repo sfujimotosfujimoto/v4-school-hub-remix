@@ -54,9 +54,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { id } = params
 
-  let { _action, activated, role } = Object.fromEntries(formData)
+  let { intent, activated, role } = Object.fromEntries(formData)
 
-  switch (_action) {
+  switch (intent) {
     /**
      * UPDATE ACTION
      */

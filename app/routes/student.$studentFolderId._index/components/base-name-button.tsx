@@ -19,7 +19,7 @@ export default function BaseNameButton({
   const [baseNameString, setBaseNameString] = React.useState("")
 
   const isExecuting =
-    state === "submitting" && formData?.get("_action") === "rename"
+    state === "submitting" && formData?.get("intent") === "rename"
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (dialogEl.current !== null) dialogEl.current.close()
@@ -92,7 +92,7 @@ export default function BaseNameButton({
 
           <button
             type="submit"
-            name="_action"
+            name="intent"
             value="rename"
             className={`btn btn-sm mt-4 w-32 hover:bg-sfyellow-200 ${
               isExecuting

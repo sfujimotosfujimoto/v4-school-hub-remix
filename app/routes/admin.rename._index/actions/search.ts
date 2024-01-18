@@ -22,7 +22,7 @@ import type { ActionTypeGoogle, DriveFile, Gakunen, Hr, Student } from "~/types"
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  _action: z.string(),
+  intent: z.string(),
   sourceFolderId: z.string(),
   gakunen: z.string(),
   segment: z.string(),
@@ -58,7 +58,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "search",
+        intent: "search",
         type: "rename",
         error: `データ処理に問題が発生しました。ERROR#:RENAME001`,
       },
@@ -93,7 +93,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "search",
+        intent: "search",
         type: "rename",
         error: "フォルダIDが取得できません",
       },
@@ -105,7 +105,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "search",
+        intent: "search",
         type: "rename",
         error: "クエリが取得できません。",
       },
@@ -122,7 +122,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "search",
+        intent: "search",
         type: "rename",
         error: "Google Driveにファイルがありません。",
       },
@@ -165,7 +165,7 @@ export async function searchRenameAction(request: Request, formData: FormData) {
 
   return json<ActionTypeGoogle>({
     ok: true,
-    _action: "search",
+    intent: "search",
     type: "rename",
     data,
   })

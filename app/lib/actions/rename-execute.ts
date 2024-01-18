@@ -15,7 +15,7 @@ import { renameDriveFiles } from "~/routes/admin.rename._index/actions/execute"
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  _action: z.string(),
+  intent: z.string(),
   baseNameString: z.string().optional(),
   fileIdsString: z.string().optional(),
 })
@@ -39,7 +39,7 @@ export async function renameExecuteAction(
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "execute",
+        intent: "execute",
         type: "rename",
         error: `データ処理に問題が発生しました。ERROR#:RENAMEEXECUTE-001`,
       },
@@ -67,7 +67,7 @@ export async function renameExecuteAction(
 
   return json<ActionTypeGoogle>({
     ok: true,
-    _action: "execute",
+    intent: "execute",
     type: "rename",
   })
 }

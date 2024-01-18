@@ -36,7 +36,7 @@ export function useToast(actionData?: ActionTypeGoogle) {
         }
       }
 
-      switch (actionData?._action) {
+      switch (actionData?.intent) {
         case "search": {
           if (actionData?.data && "driveFiles" in actionData.data) {
             if (actionData.data.driveFiles.length > 0) {

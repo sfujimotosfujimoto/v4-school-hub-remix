@@ -14,7 +14,7 @@ export default function RenameCsvForm() {
   const { driveFiles } = useDriveFilesContext()
 
   const isSearching =
-    state === "submitting" && formData?.get("_action") === "search"
+    state === "submitting" && formData?.get("intent") === "search"
 
   const [csv, setCsv] = React.useState("")
   const [blob, setBlob] = React.useState<Blob | null>(null)

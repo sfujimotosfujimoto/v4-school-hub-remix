@@ -18,7 +18,7 @@ export default function MoveConfirmForm() {
   const { sourceFolder } = movePage
 
   const isExecuting =
-    state === "submitting" && formData?.get("_action") === "execute"
+    state === "submitting" && formData?.get("intent") === "execute"
 
   useLoadingModal(isExecuting)
 
@@ -70,7 +70,7 @@ export default function MoveConfirmForm() {
 
           <button
             type="submit"
-            name="_action"
+            name="intent"
             value="execute"
             className={`btn btn-sm w-32 ${
               isExecuting

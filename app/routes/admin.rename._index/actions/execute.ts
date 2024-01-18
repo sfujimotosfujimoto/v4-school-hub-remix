@@ -15,7 +15,7 @@ import type { ActionResponse, ActionTypeGoogle, DriveFile } from "~/types"
 
 // Zod Data Type
 const FormDataScheme = z.object({
-  _action: z.string(),
+  intent: z.string(),
   driveFilesString: z.string().optional(),
 })
 
@@ -40,7 +40,7 @@ export async function executeAction(request: Request, formData: FormData) {
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "execute",
+        intent: "execute",
         type: "rename",
         error: `データ処理に問題が発生しました。ERROR#:RENAMEEXECUTE001`,
       },
@@ -57,7 +57,7 @@ export async function executeAction(request: Request, formData: FormData) {
   if (!driveFiles || driveFiles.length === 0)
     return json<ActionTypeGoogle>({
       ok: false,
-      _action: "execute",
+      intent: "execute",
       type: "rename",
       error: "ファイルがありません",
     })
@@ -90,7 +90,7 @@ export async function executeAction(request: Request, formData: FormData) {
 
     return json<ActionTypeGoogle>({
       ok: true,
-      _action: "execute",
+      intent: "execute",
       type: "rename",
       data: {
         driveFiles: successFiles,
@@ -102,7 +102,7 @@ export async function executeAction(request: Request, formData: FormData) {
     else
       return json<ActionTypeGoogle>({
         ok: false,
-        _action: "execute",
+        intent: "execute",
         type: "rename",
         error: "エラーが発生しました。",
       })

@@ -17,7 +17,7 @@ export default function MoveForm() {
   const { tasksDispatch } = useTasksContext()
 
   const isSearching =
-    state === "submitting" && formData?.get("_action") === "search"
+    state === "submitting" && formData?.get("intent") === "search"
 
   useLoadingModal(isSearching)
 

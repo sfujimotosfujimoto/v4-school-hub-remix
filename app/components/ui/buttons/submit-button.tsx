@@ -11,7 +11,7 @@ export default function SubmitButton({
 }) {
   return (
     <button
-      name="_action"
+      name="intent"
       value={actionValue}
       className={`btn btn-block flex shadow-md ${
         loading ? "btn-disabled animate-pulse !bg-slate-300" : "btn-primary"

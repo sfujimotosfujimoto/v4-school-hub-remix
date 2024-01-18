@@ -33,7 +33,7 @@ export async function undoAction(request: Request, formData: FormData) {
     throw json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "undo",
+        intent: "undo",
         type: "rename",
         error: `データ処理に問題が発生しました。ERROR#:RENAMEUNDO001`,
       },
@@ -68,7 +68,7 @@ export async function undoAction(request: Request, formData: FormData) {
   if (!driveFiles)
     return json<ActionTypeGoogle>({
       ok: false,
-      _action: "undo",
+      intent: "undo",
       type: "rename",
       error: "ファイルがありません",
     })
@@ -84,7 +84,7 @@ export async function undoAction(request: Request, formData: FormData) {
   if (res.error) {
     return json<ActionTypeGoogle>({
       ok: false,
-      _action: "undo",
+      intent: "undo",
       type: "rename",
       error: res.error,
     })
@@ -92,7 +92,7 @@ export async function undoAction(request: Request, formData: FormData) {
 
   return json<ActionTypeGoogle>({
     ok: true,
-    _action: "undo",
+    intent: "undo",
     type: "rename",
     data: {
       driveFiles: dfs,

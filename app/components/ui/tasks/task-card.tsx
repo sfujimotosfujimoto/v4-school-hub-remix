@@ -104,7 +104,7 @@ export default function TaskCard({ task }: { task: Task }) {
           </p>
 
           <button
-            name="_action"
+            name="intent"
             value="undo"
             className="btn btn-warning btn-sm w-32"
             onClick={() => {

@@ -29,7 +29,7 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!result.success) {
     return json<ActionTypeGoogle>(
       {
-        _action: "search",
+        intent: "search",
         ok: false,
         type: "move",
         error: `データ処理に問題が発生しました。ERROR#:MOVE-001`,
@@ -45,7 +45,7 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!sourceId)
     return json<ActionTypeGoogle>(
       {
-        _action: "search",
+        intent: "search",
         ok: false,
         type: "move",
         error: "フォルダIDが取得できません",
@@ -58,7 +58,7 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!query)
     return json<ActionTypeGoogle>(
       {
-        _action: "search",
+        intent: "search",
         ok: false,
         type: "move",
         error: "クエリが取得できません",
@@ -77,7 +77,7 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!sheets)
     return json<ActionTypeGoogle>(
       {
-        _action: "search",
+        intent: "search",
         ok: false,
         type: "move",
         error: "名簿シートにアクセスできません。",
@@ -92,7 +92,7 @@ export async function searchAction(request: Request, formData: FormData) {
     return json<ActionTypeGoogle>(
       {
         ok: false,
-        _action: "search",
+        intent: "search",
         type: "move",
         error: "Google Driveにファイルがありません。",
       },
@@ -114,7 +114,7 @@ export async function searchAction(request: Request, formData: FormData) {
   if (!driveFiles)
     return json<ActionTypeGoogle>(
       {
-        _action: "search",
+        intent: "search",
         ok: false,
         type: "move",
         error: "Google Driveにファイルがありません。",
@@ -123,7 +123,7 @@ export async function searchAction(request: Request, formData: FormData) {
     )
 
   return json<ActionTypeGoogle>({
-    _action: "search",
+    intent: "search",
     ok: true,
     type: "move",
     data: {

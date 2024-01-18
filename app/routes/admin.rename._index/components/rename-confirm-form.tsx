@@ -20,14 +20,14 @@ export default function RenameConfirmForm() {
   const { sourceFolder } = renamePage
 
   const isExecuting =
-    state === "submitting" && formData?.get("_action") === "execute"
+    state === "submitting" && formData?.get("intent") === "execute"
   const actionData = useActionData<ActionTypeGoogle>()
 
   React.useEffect(() => {
     if (
       !isExecuting &&
       actionData &&
-      ["execute"].includes(actionData._action) &&
+      ["execute"].includes(actionData.intent) &&
       actionData.ok &&
       actionData.data &&
       "driveFiles" in actionData.data
@@ -80,7 +80,7 @@ export default function RenameConfirmForm() {
 
           <button
             type="submit"
-            name="_action"
+            name="intent"
             value="execute"
             className={`btn btn-sm w-32 ${
               isExecuting

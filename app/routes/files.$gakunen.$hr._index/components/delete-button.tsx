@@ -16,7 +16,7 @@ export default function DeleteButton({
   const { driveFiles: _driveFiles } = useDriveFilesContext()
 
   const isExecuting =
-    state === "submitting" && formData?.get("_action") === "delete"
+    state === "submitting" && formData?.get("intent") === "delete"
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     tasksDispatch({
@@ -60,7 +60,7 @@ export default function DeleteButton({
 
           <button
             type="submit"
-            name="_action"
+            name="intent"
             value="delete"
             className={`btn btn-sm mt-4 w-32 hover:bg-sfyellow-200 ${
               isExecuting

@@ -22,7 +22,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
   const { sourceFolder } = movePage
 
   const isExecuting =
-    state === "submitting" && formData?.get("_action") === "execute"
+    state === "submitting" && formData?.get("intent") === "execute"
   const actionData = useActionData<ActionTypeGoogle>()
 
   // call useEffect when actionData is updated
@@ -31,7 +31,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
     if (
       !isExecuting &&
       actionData &&
-      ["execute"].includes(actionData._action) &&
+      ["execute"].includes(actionData.intent) &&
       actionData.ok &&
       actionData.data &&
       "driveFiles" in actionData.data
@@ -126,7 +126,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
 
           <button
             type="submit"
-            name="_action"
+            name="intent"
             value="execute"
             className={`btn btn-sm w-32 ${
               isExecuting
