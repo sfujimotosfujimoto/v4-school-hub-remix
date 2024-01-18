@@ -1,4 +1,6 @@
-export default function RoleTag({ role }: { role: string }) {
+import type { RoleGoogle } from "~/types"
+
+export default function RoleTag({ role }: { role: RoleGoogle }) {
   let color = ""
 
   switch (role) {
@@ -29,7 +31,7 @@ export default function RoleTag({ role }: { role: string }) {
   )
 }
 
-function roleToText(role: string) {
+function roleToText(role: RoleGoogle) {
   switch (role) {
     case "writer": {
       return "編集者"
