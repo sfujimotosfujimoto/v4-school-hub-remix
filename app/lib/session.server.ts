@@ -8,6 +8,7 @@ import type { TypedResponse } from "@remix-run/node"
 import type { Credential, User } from "~/types"
 import { getRefreshUserById, getUserById } from "./user.server"
 import { redirectToSignin } from "./responses"
+import { toLocaleString } from "./utils"
 const SESSION_SECRET = process.env.SESSION_SECRET
 if (!SESSION_SECRET) throw Error("session secret is not set")
 
@@ -69,11 +70,9 @@ export async function getUserFromSession(
   }
 
   logger.debug(
-    `👑 getUserFromSession: exp ${new Date(
-      user.credential?.expiry || 0,
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })} -- request.url ${
-      request.url
-    }`,
+    `👑 getUserFromSession: exp ${toLocaleString(
+      user.credential?.expiry || "",
+    )} -- request.url ${request.url}`,
   )
 
   return user
@@ -96,11 +95,9 @@ export async function getUserFromSessionOrRedirect(request: Request): Promise<{
   if (!user || !user.credential) throw redirectToSignin(request)
 
   logger.debug(
-    `👑 getUserFromSession: exp ${new Date(
+    `👑 getUserFromSession: exp ${toLocaleString(
       user.credential?.expiry || 0,
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })} -- request.url ${
-      request.url
-    }`,
+    )} -- request.url ${request.url}`,
   )
   return { user, credential: user.credential }
 }
@@ -126,11 +123,9 @@ export async function getRefreshUserFromSession(
   }
 
   logger.debug(
-    `👑 getRefreshUserFromSession: rexp ${new Date(
-      Number(user?.credential?.refreshTokenExpiry) || "",
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })} -- requrest.url ${
-      request.url
-    }`,
+    `👑 getRefreshUserFromSession: rexp ${toLocaleString(
+      user?.credential?.refreshTokenExpiry || 0,
+    )} -- requrest.url ${request.url}`,
   )
 
   return user

@@ -102,7 +102,7 @@ export default function RenamePage() {
     <>
       <article
         data-name="admin.rename._index"
-        className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-500 bg-slate-50 p-8 shadow-lg"
+        className="w-full h-full max-w-lg gap-4 p-8 mx-auto border-4 rounded-md shadow-lg border-sfgreen-500 bg-slate-50"
       >
         {/* FORM */}
         <RenameForm />
@@ -115,7 +115,7 @@ export default function RenamePage() {
       <RenameCards driveFiles={driveFiles} size={"small"} />
 
       {/* <!-- TASK CARD BLOCK --> */}
-      <article className="mx-auto w-full max-w-5xl p-12">
+      <article className="w-full max-w-5xl p-12 mx-auto">
         <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
           💽 履歴データ
         </h2>

@@ -13,6 +13,7 @@ import {
   getUserFromSession,
   updateSession,
 } from "~/lib/session.server"
+import { toLocaleString } from "~/lib/utils"
 import { logger } from "~/logger"
 import type { User } from "~/types"
 
@@ -37,9 +38,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const jsn = await fetchRefresh(refreshUser)
 
     logger.info(
-      `👑 auth.signin: expiry: ${new Date(
+      `👑 auth.signin: expiry: ${toLocaleString(
         jsn.data.user.credential.expiry,
-      ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+      )}`,
     )
     if (!jsn.ok) {
       throw redirectToSignin(request, {
@@ -142,11 +143,11 @@ export default function AuthSigninPage() {
         )}
       >
         <div className="flex items-center">
-          <LogoIcon className=" w-16 sm:w-24" />
-          <DriveLogoIcon className="h-24 w-24" />
+          <LogoIcon className="w-16  sm:w-24" />
+          <DriveLogoIcon className="w-24 h-24" />
         </div>
 
-        <div className="max-w-xl rounded-lg bg-base-100 p-4 shadow-lg">
+        <div className="max-w-xl p-4 rounded-lg shadow-lg bg-base-100">
           <span
             className={clsx(
               `font-bold underline decoration-sfred-200 decoration-4 underline-offset-4`,
@@ -166,7 +167,7 @@ export default function AuthSigninPage() {
 function GoogleSigninButton({ disabled }: { disabled: boolean }) {
   return (
     <>
-      <div className="relative flex w-full items-center justify-center gap-8 ">
+      <div className="relative flex items-center justify-center w-full gap-8 ">
         <Form method="post" action="/auth/signin">
           <Button type="submit" variant="info" size="md" disabled={disabled}>
             <DriveLogoIcon className="h-7" />

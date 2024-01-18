@@ -5,5 +5,5 @@ export const PermissionSchema = z.object({
   displayName: z.string(),
   type: z.enum(["user", "group", "unknown"]),
   emailAddress: z.string(),
-  role: z.enum(["owner", "writer", "reader", "unknown"]),
+  role: z.enum(["owner", "writer", "reader", "commenter", "unknown"]),
 })

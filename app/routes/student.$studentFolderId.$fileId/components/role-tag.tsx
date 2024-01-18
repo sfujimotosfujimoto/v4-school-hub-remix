@@ -14,6 +14,10 @@ export default function RoleTag({ role }: { role: string }) {
       color = "bg-sfyellow-400"
       break
     }
+    case "commenter": {
+      color = "bg-sfyellow-300"
+      break
+    }
   }
 
   return (
@@ -37,6 +41,9 @@ function roleToText(role: string) {
 
     case "owner": {
       return "オーナー"
+    }
+    case "commenter": {
+      return "コメントのみ"
     }
   }
 }

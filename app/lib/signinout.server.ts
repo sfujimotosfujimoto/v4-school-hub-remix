@@ -6,7 +6,7 @@ import { redirect } from "@remix-run/node"
 
 import { prisma } from "./db.server"
 import { getClientFromCode, getUserInfo } from "./google/google.server"
-import { checkValidSeigEmail } from "./utils"
+import { checkValidSeigEmail, toLocaleString } from "./utils"
 
 import { redirectToSignin } from "./responses"
 import { updateUser } from "./user.server"
@@ -65,15 +65,11 @@ export async function signin({
   }
 
   logger.info(
-    `🍓 signin: new expiry_date ${person.last} ${person.first} - ${new Date(
-      expiry_date || 0,
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+    `🍓 signin: new expiry_date ${person.last} ${person.first} - ${toLocaleString(expiry_date)}`,
   )
 
   logger.info(
-    `🍓 signin: new refreshTokenExpiry ${person.last} ${person.first} - ${new Date(
-      refreshTokenExpiry || 0,
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+    `🍓 signin: new refreshTokenExpiry ${person.last} ${person.first} - ${toLocaleString(refreshTokenExpiry)}`,
   )
 
   if (!checkValidSeigEmail(person.email)) {

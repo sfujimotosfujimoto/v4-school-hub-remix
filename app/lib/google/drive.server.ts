@@ -161,7 +161,8 @@ function convertPermissions(
     if (isType(p.type)) {
       type_ = p.type
     }
-    let role: "owner" | "writer" | "reader" | "unknown" = "unknown"
+    let role: "owner" | "writer" | "reader" | "commenter" | "unknown" =
+      "unknown"
     if (isRole(p.role)) {
       role = p.role
     }
@@ -179,8 +180,8 @@ function convertPermissions(
 function isType(x: unknown): x is "user" | "group" {
   return ["user", "group"].includes(x as string)
 }
-function isRole(x: unknown): x is "owner" | "writer" | "reader" {
-  return ["owner", "writer", "reader"].includes(x as string)
+function isRole(x: unknown): x is "owner" | "writer" | "reader" | "commenter" {
+  return ["owner", "writer", "reader", "commenter"].includes(x as string)
 }
 
 /**

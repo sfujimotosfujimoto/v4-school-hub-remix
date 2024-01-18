@@ -224,3 +224,7 @@ export function parseAppProperties(appProperties: string | object) {
   }
   return appProps
 }
+
+export function toLocaleString(date: Date | number | string) {
+  return new Date(date).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
+}

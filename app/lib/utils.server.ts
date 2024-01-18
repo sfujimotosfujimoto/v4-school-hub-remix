@@ -1,5 +1,6 @@
 import { logger } from "~/logger"
 import type { ActionResponse, DriveFile } from "~/types"
+import { toLocaleString } from "./utils"
 
 export function setSelected(driveFiles: DriveFile[], selected: boolean) {
   return driveFiles.map((df) => {
@@ -22,11 +23,9 @@ export function isExpired(expire: number): boolean {
   if (expire < 10_000_000_000 && expire > 0)
     throw Error(`expire is incorrect: ${expire}`)
   logger.info(
-    `🍇 isExpired: ${expire < Date.now()}, expire ${new Date(
+    `🍇 isExpired: ${expire < Date.now()}, expire ${toLocaleString(
       expire,
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}, now ${new Date(
-      Date.now(),
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+    )}, now ${toLocaleString(Date.now())}`,
   )
 
   const now = Date.now()

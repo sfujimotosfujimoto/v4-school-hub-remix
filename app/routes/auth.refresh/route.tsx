@@ -4,6 +4,7 @@ import { prisma } from "~/lib/db.server"
 import { getRefreshedToken } from "~/lib/google/google.server"
 import { returnUser } from "~/lib/return-user"
 import { selectUser } from "~/lib/user.server"
+import { toLocaleString } from "~/lib/utils"
 import { logger } from "~/logger"
 
 export const config = {
@@ -60,9 +61,7 @@ export async function action({ request }: ActionFunctionArgs) {
   // expiry_date = expiryDateDummy
 
   logger.debug(
-    `✅ in auth.refresh action: expiry ${new Date(
-      Number(expiry_date),
-    ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
+    `✅ in auth.refresh action: expiry ${toLocaleString(expiry_date) || 0}`,
   )
 
   // 2. update user.credential in db
