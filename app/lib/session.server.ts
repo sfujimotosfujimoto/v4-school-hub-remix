@@ -62,12 +62,11 @@ export async function getUserFromSession(
 
   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
 
-  const userId = Number(session.get("userId") || 0)
+  const userId = session.get("userId")
+  if (!userId) return null
 
   const user = await getUserById(userId)
-  if (!user) {
-    return null
-  }
+  if (!user) return null
 
   logger.debug(
     `👑 getUserFromSession: exp ${toLocaleString(
