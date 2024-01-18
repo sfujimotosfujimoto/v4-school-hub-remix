@@ -1,7 +1,7 @@
 import { google } from "googleapis"
 
 import type { drive_v3, sheets_v4 } from "googleapis"
-import type { DriveFile, PermissionGoogle, Student } from "~/types"
+import type { DriveFile, PermissionGoogle, RoleGoogle, Student } from "~/types"
 
 import { logger } from "~/logger"
 import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"
@@ -9,6 +9,7 @@ import { getFolderId, getGakusekiFromString } from "../utils"
 
 import { getClient } from "./google.server"
 import { getStudentDataWithAccessToken } from "./sheets.server"
+import { roleGoogle } from "~/types/schemas"
 
 /**
  * Create a Google Drive Query with given folderId
@@ -161,8 +162,7 @@ function convertPermissions(
     if (isType(p.type)) {
       type_ = p.type
     }
-    let role: "owner" | "writer" | "reader" | "commenter" | "unknown" =
-      "unknown"
+    let role: RoleGoogle = "unknown"
     if (isRole(p.role)) {
       role = p.role
     }
@@ -180,8 +180,9 @@ function convertPermissions(
 function isType(x: unknown): x is "user" | "group" {
   return ["user", "group"].includes(x as string)
 }
-function isRole(x: unknown): x is "owner" | "writer" | "reader" | "commenter" {
-  return ["owner", "writer", "reader", "commenter"].includes(x as string)
+
+function isRole(x: unknown): x is RoleGoogle {
+  return roleGoogle.includes(x as string)
 }
 
 /**

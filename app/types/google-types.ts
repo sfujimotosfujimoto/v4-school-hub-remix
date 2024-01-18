@@ -26,8 +26,10 @@ export type PermissionGoogle = {
   displayName: string
   type: "user" | "group" | "unknown"
   emailAddress: string
-  role: "owner" | "writer" | "reader" | "commenter" | "unknown"
+  role: RoleGoogle
 }
+
+export type RoleGoogle = "owner" | "writer" | "reader" | "commenter" | "unknown"
 
 // export type DriveFileGoogle = {
 //   id: string
