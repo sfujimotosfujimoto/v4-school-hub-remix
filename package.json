@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@prisma/client": "^5.8.1",
-    "@remix-run/node": "^2.5.0",
-    "@remix-run/react": "^2.5.0",
-    "@remix-run/serve": "^2.5.0",
-    "@vercel/analytics": "^1.1.1",
+    "@remix-run/node": "^2.5.1",
+    "@remix-run/react": "^2.5.1",
+    "@remix-run/serve": "^2.5.1",
+    "@vercel/analytics": "^1.1.2",
     "framer-motion": "^10.18.0",
     "gaxios": "^6.1.1",
     "googleapis": "^129.0.0",
@@ -29,8 +29,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.5.0",
-    "@remix-run/eslint-config": "^2.5.0",
+    "@remix-run/dev": "^2.5.1",
+    "@remix-run/eslint-config": "^2.5.1",
     "@tailwindcss/typography": "^0.5.10",
     "@types/papaparse": "^5.3.14",
     "@types/react": "^18.2.48",
