@@ -132,7 +132,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: files.$gakunen.$hr._index ${request.url}`)
-  const user = await getUserFromSession(request)
+  const { user } = await getUserFromSession(request)
   if (!user || !user.credential) throw redirectToSignin(request)
   await requireAdminRole(request, user)
 
@@ -290,7 +290,7 @@ export default function FilesGakunenHrQueryPage() {
             data-name="file count"
             className="absolute right-0 top-0 ml-1 flex gap-1"
           >
-            <span className="text-md  rounded-md bg-slate-300 p-1">
+            <span className="text-md rounded-md bg-slate-300 p-1">
               {driveFiles.length} files
             </span>
             <span className="text-md justify-content ml-2 flex items-center gap-1 rounded-md bg-slate-300 px-2 py-1">

@@ -1,26 +1,7 @@
-// components
-import { LogoIcon, LogoTextIcon, DriveLogoIcon } from "~/components/icons"
-// import { type LoaderFunctionArgs, json } from "@remix-run/node"
-// import { logger } from "~/logger"
-// import { getUserFromSession } from "~/lib/session.server"
-import { NavLinkButton } from "~/components/buttons/button"
 import { useRouteLoaderData } from "@remix-run/react"
-
+import { NavLinkButton } from "~/components/buttons/button"
+import { DriveLogoIcon, LogoIcon, LogoTextIcon } from "~/components/icons"
 import type { loader as rootLoader } from "~/root"
-
-/**
- * Root loader
- */
-// export async function loader({ request }: LoaderFunctionArgs) {
-//   logger.debug(`🍿 loader: _index ${request.url}`)
-//   const user = await getUserFromSession(request)
-
-//   return json({
-//     role: user?.role || null,
-//     picture: user?.picture || null,
-//     email: user?.email || null,
-//   })
-// }
 
 export default function Index() {
   // const data = useRouteLoaderData<typeof rootLoader>("root")
@@ -30,6 +11,7 @@ export default function Index() {
   if (!data) {
     throw Error("no data")
   }
+
   const { email } = data
   return (
     <section className="mx-auto flex h-full w-screen max-w-7xl flex-col items-center justify-center gap-8">

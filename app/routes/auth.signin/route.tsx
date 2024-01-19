@@ -22,7 +22,7 @@ import type { User } from "~/types"
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: auth.signin ${request.url}`)
-  const user = await getUserFromSession(request)
+  const { user } = await getUserFromSession(request)
 
   // if user is expired, check for refresh token
   if (!user) {
@@ -35,14 +35,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     const redirectUrl = new URL(request.url).searchParams.get("redirect")
 
-    const jsn = await fetchRefresh(refreshUser)
+    const res = await fetchRefresh(refreshUser)
 
     logger.info(
       `👑 auth.signin: expiry: ${toLocaleString(
-        jsn.data.user.credential.expiry,
+        res.data.user.credential.expiry,
       )}`,
     )
-    if (!jsn.ok) {
+    if (!res.ok) {
       throw redirectToSignin(request, {
         authstate: "unauthorized-refresherror",
       })
@@ -50,12 +50,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
 
     // update the session with the new values
-    const headers = await updateSession("userId", jsn.data.user.id)
+    const headers = await updateSession("userId", res.data.user.id)
 
     // redirect to the same URL if the request was a GET (loader)
     if (request.method === "GET") {
       logger.debug(
-        `👑 auth.signin: request GET redirect: userId: ${jsn.data.user.id}`,
+        `👑 auth.signin: request GET redirect: userId: ${res.data.user.id}`,
       )
       throw redirect(redirectUrl ? redirectUrl : request.url, { headers })
     }
@@ -143,11 +143,11 @@ export default function AuthSigninPage() {
         )}
       >
         <div className="flex items-center">
-          <LogoIcon className="w-16  sm:w-24" />
-          <DriveLogoIcon className="w-24 h-24" />
+          <LogoIcon className="w-16 sm:w-24" />
+          <DriveLogoIcon className="h-24 w-24" />
         </div>
 
-        <div className="max-w-xl p-4 rounded-lg shadow-lg bg-base-100">
+        <div className="max-w-xl rounded-lg bg-base-100 p-4 shadow-lg">
           <span
             className={clsx(
               `font-bold underline decoration-sfred-200 decoration-4 underline-offset-4`,
@@ -167,7 +167,7 @@ export default function AuthSigninPage() {
 function GoogleSigninButton({ disabled }: { disabled: boolean }) {
   return (
     <>
-      <div className="relative flex items-center justify-center w-full gap-8 ">
+      <div className="relative flex w-full items-center justify-center gap-8 ">
         <Form method="post" action="/auth/signin">
           <Button type="submit" variant="info" size="md" disabled={disabled}>
             <DriveLogoIcon className="h-7" />

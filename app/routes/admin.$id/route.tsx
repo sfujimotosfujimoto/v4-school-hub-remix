@@ -27,7 +27,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<{
 
   const { id } = params
 
-  const targetUser = await getUserById(Number(id))
+  const { user: targetUser } = await getUserById(Number(id))
   if (!targetUser || !id) throw redirect(`/?authstate=unauthenticated`)
 
   const outputUser = {
@@ -62,7 +62,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
      */
     case "update": {
       // Find User from id
-      const user = await getUserById(Number(id))
+      const { user } = await getUserById(Number(id))
       // Validate form
       if (!user) throw redirect("/?authstate=unauthenticated", 302)
 
@@ -85,7 +85,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
      */
     case "delete": {
       // Find User from id
-      const user = await getUserById(Number(id))
+      const { user } = await getUserById(Number(id))
       // Validate form
       if (!user) throw redirect("/?authstate=unauthenticated")
 

@@ -102,7 +102,7 @@ export async function undoMoveDataExecute(
   logger.debug("✅ undoMoveDataExecute")
   logger.debug(`✅ undoMoveDataExecute -- ${driveFiles.length} files`)
 
-  const user = await getUserFromSession(request)
+  const { user } = await getUserFromSession(request)
   if (!user || !user.credential) {
     return { error: "エラーが発生しました。" }
   }

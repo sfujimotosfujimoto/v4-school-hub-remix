@@ -32,7 +32,9 @@ export const selectUser = {
   },
 }
 
-export async function getUserById(userId: number): Promise<User | null> {
+export async function getUserById(
+  userId: number,
+): Promise<{ user: User | null; refreshUser: User | null }> {
   logger.debug(`👑 getUserById: userId: ${userId}`)
 
   try {
@@ -48,17 +50,33 @@ export async function getUserById(userId: number): Promise<User | null> {
       },
     })
 
-    if (!user || !user.credential) {
-      return null
+    // if (!user || !user.credential) {
+    //   return { user: null, refreshUser: null }
+    // }
+
+    // if (!user.stats) user.stats = null
+
+    if (user) {
+      return { user, refreshUser: null }
     }
 
-    if (!user.stats) user.stats = null
+    const refreshUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+        credential: {
+          refreshTokenExpiry: { gt: new Date() },
+        },
+      },
+      select: {
+        ...selectUser,
+      },
+    })
 
-    return user
+    return { user: user || null, refreshUser: refreshUser || null }
     // return returnUser(user)
   } catch (error) {
     console.error(`getUserById: ${error}`)
-    return null
+    return { user: null, refreshUser: null }
   }
 }
 
