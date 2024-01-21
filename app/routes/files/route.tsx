@@ -34,7 +34,7 @@ export default function FilesLayout() {
       <section data-name="files.tsx_(Layout)" className="mx-auto h-full">
         <div
           data-name="__overflow-wrapper h-full"
-          className=" h-full overflow-x-auto"
+          className="h-full overflow-x-auto "
         >
           <div
             data-name="__wrapper"

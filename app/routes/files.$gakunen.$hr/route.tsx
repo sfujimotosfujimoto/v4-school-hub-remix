@@ -100,7 +100,7 @@ export default function FilesGakunenHrLayout() {
       >
         <h1>{gakunen === "ALL" ? "" : gakunen}</h1>
         <h1>{hr === "ALL" ? "" : hr}</h1>
-        <h1 className=" pl-4 text-2xl font-normal">
+        <h1 className="pl-4 text-2xl font-normal ">
           {query ? `- ${query}` : null}
         </h1>
       </div>
@@ -117,7 +117,7 @@ export default function FilesGakunenHrLayout() {
           size="sm"
         >
           <LogoIcon className="h-7 w-4" />
-          <span className=" ml-2 sm:ml-4 sm:inline">GO</span>
+          <span className="ml-2  sm:ml-4 sm:inline">GO</span>
         </NavLinkButton>
       </div>
 
