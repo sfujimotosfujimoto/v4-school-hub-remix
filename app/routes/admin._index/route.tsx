@@ -1,28 +1,28 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
-import { z } from "zod"
 import { requireAdminRole } from "~/lib/require-roles.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { getUsers } from "~/lib/user.server"
 import { logger } from "~/logger"
 import type { User } from "~/types"
-import Tables from "./components/tables"
+import Tables from "./tables"
+import { UsersSchema } from "~/types/schemas"
 
-const userSchema = z.array(
-  z.object({
-    id: z.string(),
-    email: z.string(),
-    activated: z.boolean(),
-    last: z.string(),
-    first: z.string(),
-    stats: z
-      .object({
-        count: z.number(),
-        lastVisited: z.string(),
-      })
-      .optional(),
-  }),
-)
+// const userSchema = z.array(
+//   z.object({
+//     id: z.string(),
+//     email: z.string(),
+//     activated: z.boolean(),
+//     last: z.string(),
+//     first: z.string(),
+//     stats: z
+//       .object({
+//         count: z.number(),
+//         lastVisited: z.string(),
+//       })
+//       .optional(),
+//   }),
+// )
 
 /**
  * Loader
@@ -55,7 +55,7 @@ export const meta: MetaFunction = () => {
   return [{ title: "ADMIN | SCHOOL HUB TEACHER" }]
 }
 
-export type PartialUsers = z.infer<typeof userSchema>
+// type PartialUsers = z.infer<typeof userSchema>
 
 /**
  * Page
@@ -63,9 +63,9 @@ export type PartialUsers = z.infer<typeof userSchema>
 export default function AdminPage() {
   const { users: rawUsers } = useLoaderData<typeof loader>()
 
-  const result = userSchema.safeParse(rawUsers)
+  const result = UsersSchema.safeParse(rawUsers)
 
-  let users: PartialUsers | null = null
+  let users: User[] | null = null
 
   if (result.success) {
     users = result.data

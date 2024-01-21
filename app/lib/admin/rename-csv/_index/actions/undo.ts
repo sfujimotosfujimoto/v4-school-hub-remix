@@ -6,7 +6,7 @@ import { getDrive } from "~/lib/google/drive.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { logger } from "~/logger"
-import { undoRenameDataExecute } from "~/routes/admin.rename._index/actions/undo"
+import { undoRenameDataExecute } from "~/lib/admin/rename/_index/actions/undo"
 import type { ActionTypeGoogle } from "~/types"
 
 const FormDataScheme = z.object({

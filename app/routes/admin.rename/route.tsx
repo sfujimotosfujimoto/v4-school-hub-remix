@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import DriveFilesProvider from "~/context/drive-files-context"
-import RenamePageProvider from "./context/rename-page-context"
+import RenamePageProvider from "~/lib/admin/rename/context/rename-page-context"
 
 export default function RenameLayout() {
   return (

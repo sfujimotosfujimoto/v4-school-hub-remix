@@ -3,7 +3,7 @@ import React from "react"
 import SubmitButton from "~/components/ui/buttons/submit-button"
 import { useLoadingModal } from "~/components/ui/loading-modal"
 import { useTasksContext } from "~/context/tasks-context"
-import { useRenamePageContext } from "~/routes/admin.rename/context/rename-page-context"
+import { useRenamePageContext } from "~/lib/admin/rename/context/rename-page-context"
 import type { ActionTypeGoogle } from "~/types"
 
 export default function RenameForm() {

@@ -1,4 +1,4 @@
-import { useRenameCsvPageContext } from "../context/rename-csv-page-context"
+import { useRenameCsvPageContext } from "~/lib/admin/rename-csv/_index/context/rename-csv-page-context"
 
 export default function SourceFolderHeader() {
   const { renameCsvPage } = useRenameCsvPageContext()

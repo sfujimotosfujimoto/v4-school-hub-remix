@@ -14,15 +14,15 @@ import {
 } from "~/lib/google/sheets.server"
 import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
+import { setSelected } from "~/lib/utils.server"
 import { filterSegments, parseTags } from "~/lib/utils/utils"
 import { convertDriveFiles } from "~/lib/utils/utils-loader"
-import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
 import type { DriveFile, Student } from "~/types"
-import AllPill from "./components/all-pill"
-import ExtensionPills from "./components/extensions-pills"
-import FileCount from "./components/file-count"
-import SegmentPills from "./components/segment-pills"
+import AllPill from "./all-pill"
+import ExtensionPills from "./extensions-pills"
+import FileCount from "./file-count"
+import SegmentPills from "./segment-pills"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 

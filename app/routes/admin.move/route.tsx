@@ -1,5 +1,5 @@
 import DriveFilesProvider from "~/context/drive-files-context"
-import MovePageProvider from "~/routes/admin.move._index/context/move-page-context"
+import MovePageProvider from "~/lib/admin/move/_index/context/move-page-context"
 
 import { Outlet } from "@remix-run/react"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"

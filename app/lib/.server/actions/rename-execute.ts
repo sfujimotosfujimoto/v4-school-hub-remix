@@ -11,7 +11,7 @@ import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { logger } from "~/logger"
 import { arrayIntoChunks } from "~/lib/utils/utils"
 import { CHUNK_SIZE } from "~/lib/config"
-import { renameDriveFiles } from "~/routes/admin.rename._index/actions/execute"
+import { renameDriveFiles } from "~/lib/admin/rename/_index/actions/execute"
 
 // Zod Data Type
 const FormDataScheme = z.object({

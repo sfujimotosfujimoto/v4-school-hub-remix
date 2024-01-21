@@ -2,9 +2,9 @@ import React from "react"
 import { formatDate } from "~/lib/utils/utils"
 
 import TableRow from "./table-row"
+import type { User } from "~/types"
 
-import type { PartialUsers } from "../route"
-export default function Tables({ users }: { users: PartialUsers }) {
+export default function Tables({ users }: { users: User[] }) {
   return (
     <table className="table table-zebra table-pin-rows table-xs rounded-lg border border-slate-300 bg-slate-100 text-sm">
       <thead>

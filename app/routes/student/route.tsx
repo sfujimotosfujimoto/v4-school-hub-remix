@@ -14,7 +14,7 @@ import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { filterStudentDataByGakunen } from "~/lib/utils/utils"
 import { logger } from "~/logger"
 import type { Gakunen, Hr } from "~/types"
-import Sidebar from "./components/sidebar"
+import Sidebar from "./sidebar"
 
 /**
  * loader function

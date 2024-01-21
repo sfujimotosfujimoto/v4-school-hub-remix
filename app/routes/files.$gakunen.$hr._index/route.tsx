@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/node"
 import { useActionData, useLoaderData, useNavigation } from "@remix-run/react"
 import React from "react"
 import { z } from "zod"
+import DeleteButton from "./delete-button"
 import { CheckIcon } from "~/components/icons"
 import { useLoadingModal } from "~/components/ui/loading-modal"
 import StudentCards from "~/components/ui/student-card/student-cards"
@@ -26,11 +27,10 @@ import {
   getUserFromSession,
   getUserFromSessionOrRedirect,
 } from "~/lib/session.server"
+import { setSelected } from "~/lib/utils.server"
 import { parseAppProperties, parseTags } from "~/lib/utils/utils"
 import { convertDriveFiles } from "~/lib/utils/utils-loader"
-import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
-import DeleteButton from "./components/delete-button"
 
 import AllCheckButtons from "~/components/ui/buttons/all-check-buttons"
 import BaseNameButton from "~/components/ui/buttons/base-name-button"

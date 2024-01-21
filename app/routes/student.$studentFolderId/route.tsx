@@ -23,7 +23,7 @@ import {
 import { requireUserRole } from "~/lib/require-roles.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { logger } from "~/logger"
-import StudentHeader from "./components/student-header"
+import StudentHeader from "./student-header"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 

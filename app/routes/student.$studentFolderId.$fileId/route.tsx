@@ -28,9 +28,9 @@ import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { parseTags } from "~/lib/utils/utils"
 import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { logger } from "~/logger"
-import DeleteButton from "~/routes/files.$gakunen.$hr._index/components/delete-button"
-import PermissionTags from "./components/permission-tags"
-import ToFolderButton from "./components/to-folder-button"
+import DeleteButton from "~/routes/files.$gakunen.$hr._index/delete-button"
+import PermissionTags from "./permission-tags"
+import ToFolderButton from "./to-folder-button"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
