@@ -6,18 +6,15 @@ import type {
 import { json } from "@remix-run/node"
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react"
 import React from "react"
-
-// components
 import { MenuIcon } from "~/components/icons"
-import Sidebar from "./components/sidebar"
-// functions
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { errorResponses } from "~/lib/error-responses"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { filterStudentDataByGakunen } from "~/lib/utils"
 import { logger } from "~/logger"
 import type { Gakunen, Hr } from "~/types"
-import { errorResponses } from "~/lib/error-responses"
+import Sidebar from "./components/sidebar"
 
 /**
  * loader function

@@ -18,10 +18,11 @@ import type { DriveFile, Student } from "~/types"
 import AllPill from "./components/all-pill"
 import ExtensionPills from "./components/extensions-pills"
 import FileCount from "./components/file-count"
-import NendoPills from "./components/nendo-pills"
+import NendoPills from "~/components/nendo-pills"
 import SegmentPills from "./components/segment-pills"
-import TagPills from "./components/tag-pills"
+import TagPills from "~/components/tag-pills"
 import { errorResponses } from "~/lib/error-responses"
+import AllCheckButtons from "~/components/all-check-buttons"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
@@ -151,6 +152,7 @@ export default function StudentFolderIdIndexPage() {
         {nendos.length > 0 && (
           <div className="divider divider-horizontal mx-0"></div>
         )}
+        <AllCheckButtons role={role} driveFiles={dfd} />
         <NendoPills url={url} nendos={nendos} />
         {tags.length > 0 && (
           <div className="divider divider-horizontal mx-0"></div>

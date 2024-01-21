@@ -8,13 +8,16 @@ import type {
 import { json } from "@remix-run/node"
 import { useLoaderData, useParams, useRouteLoaderData } from "@remix-run/react"
 import { z } from "zod"
+import BaseNameButton from "~/components/base-name-button"
+import PropertyButton from "~/components/property-button"
 import BackButton from "~/components/ui/buttons/back-button"
 import StudentCard from "~/components/ui/student-card/student-card"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
-import { deleteExecuteAction } from "~/lib/actions/delete-execute"
-import { deleteUndoAction } from "~/lib/actions/delete-undo"
-import { propertyExecuteAction } from "~/lib/actions/property-execute"
-import { renameExecuteAction } from "~/lib/actions/rename-execute"
+import { deleteExecuteAction } from "~/lib/.server/actions/delete-execute"
+import { deleteUndoAction } from "~/lib/.server/actions/delete-undo"
+import { propertyExecuteAction } from "~/lib/.server/actions/property-execute"
+import { renameExecuteAction } from "~/lib/.server/actions/rename-execute"
+import { errorResponses } from "~/lib/error-responses"
 import {
   execPermissions,
   getDrive,
@@ -25,12 +28,9 @@ import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { parseTags } from "~/lib/utils"
 import { convertDriveFiles } from "~/lib/utils-loader"
 import { logger } from "~/logger"
-import DeleteButton from "../files.$gakunen.$hr._index/components/delete-button"
-import BaseNameButton from "../student.$studentFolderId._index/components/base-name-button"
-import PropertyButton from "../student.$studentFolderId._index/components/property-button"
+import DeleteButton from "~/routes/files.$gakunen.$hr._index/components/delete-button"
 import PermissionTags from "./components/permission-tags"
 import ToFolderButton from "./components/to-folder-button"
-import { errorResponses } from "~/lib/error-responses"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
