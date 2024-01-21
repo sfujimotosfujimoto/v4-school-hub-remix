@@ -6,7 +6,8 @@
     "build": "remix vite:build",
     "dev": "PORT=4000 vite dev",
     "start": "remix-serve ./build/server/index.js",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "vitest"
   },
   "dependencies": {
     "@prisma/client": "^5.8.1",
