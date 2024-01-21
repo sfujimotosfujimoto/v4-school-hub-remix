@@ -228,3 +228,11 @@ export function parseAppProperties(appProperties: string | object) {
 export function toLocaleString(date: Date | number | string) {
   return new Date(date).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
 }
+
+export function getBaseNameFromFileName(name: string) {
+  const ext = name.match(/\.[a-zA-Z0-9]+$/)?.at(-1) ?? ""
+  const nameNoExt = name.replace(ext, "")
+  const segments = Array.from(new Set(nameNoExt.split(/[_.]/)))
+  const lastName = segments.at(-1)
+  return lastName
+}
