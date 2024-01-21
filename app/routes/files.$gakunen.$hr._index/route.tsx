@@ -26,18 +26,18 @@ import {
   getUserFromSession,
   getUserFromSessionOrRedirect,
 } from "~/lib/session.server"
-import { parseAppProperties, parseTags } from "~/lib/utils"
-import { convertDriveFiles } from "~/lib/utils-loader"
+import { parseAppProperties, parseTags } from "~/lib/utils/utils"
+import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
 import DeleteButton from "./components/delete-button"
 
+import AllCheckButtons from "~/components/ui/buttons/all-check-buttons"
+import BaseNameButton from "~/components/ui/buttons/base-name-button"
+import PropertyButton from "~/components/ui/buttons/property-button"
+import NendoPills from "~/components/ui/pills/nendo-pills"
+import TagPills from "~/components/ui/pills/tag-pills"
 import type { ActionTypeGoogle, DriveFile } from "~/types"
-import PropertyButton from "../../components/property-button"
-import BaseNameButton from "../../components/base-name-button"
-import AllCheckButtons from "../../components/all-check-buttons"
-import NendoPills from "../../components/nendo-pills"
-import TagPills from "../../components/tag-pills"
 
 /**
  * loader function

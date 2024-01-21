@@ -5,7 +5,7 @@ import {
   TimeIcon,
 } from "~/components/icons"
 import { useDriveFilesContext } from "~/context/drive-files-context"
-import { createURLFromId, dateFormat } from "~/lib/utils"
+import { createURLFromId, dateFormat } from "~/lib/utils/utils"
 
 import type { DriveFile } from "~/types"
 

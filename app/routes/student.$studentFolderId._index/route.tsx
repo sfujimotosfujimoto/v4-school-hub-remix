@@ -1,7 +1,11 @@
 import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/node"
 import { json, useLoaderData, useNavigation } from "@remix-run/react"
+import AllCheckButtons from "~/components/ui/buttons/all-check-buttons"
 import BackButton from "~/components/ui/buttons/back-button"
+import NendoPills from "~/components/ui/pills/nendo-pills"
+import TagPills from "~/components/ui/pills/tag-pills"
 import StudentCards from "~/components/ui/student-card/student-cards"
+import { errorResponses } from "~/lib/error-responses"
 import { getDrive, getDriveFiles } from "~/lib/google/drive.server"
 import {
   getSheets,
@@ -10,19 +14,15 @@ import {
 } from "~/lib/google/sheets.server"
 import { redirectToSignin } from "~/lib/responses"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
-import { filterSegments, parseTags } from "~/lib/utils"
-import { convertDriveFiles } from "~/lib/utils-loader"
+import { filterSegments, parseTags } from "~/lib/utils/utils"
+import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
 import type { DriveFile, Student } from "~/types"
 import AllPill from "./components/all-pill"
 import ExtensionPills from "./components/extensions-pills"
 import FileCount from "./components/file-count"
-import NendoPills from "~/components/nendo-pills"
 import SegmentPills from "./components/segment-pills"
-import TagPills from "~/components/tag-pills"
-import { errorResponses } from "~/lib/error-responses"
-import AllCheckButtons from "~/components/all-check-buttons"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 

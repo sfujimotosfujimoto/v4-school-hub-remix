@@ -8,8 +8,8 @@ import {
   getUserFromSession,
   getUserFromSessionOrRedirect,
 } from "~/lib/session.server"
-import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils"
-import { convertDriveFiles } from "~/lib/utils-loader"
+import { arrayIntoChunks, getIdFromUrl } from "~/lib/utils/utils"
+import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile } from "~/types"
 

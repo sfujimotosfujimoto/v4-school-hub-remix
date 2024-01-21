@@ -9,7 +9,7 @@ import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { json, redirect } from "@remix-run/node"
 import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { logger } from "~/logger"
-import { arrayIntoChunks } from "~/lib/utils"
+import { arrayIntoChunks } from "~/lib/utils/utils"
 import { CHUNK_SIZE } from "~/lib/config"
 import { renameDriveFiles } from "~/routes/admin.rename._index/actions/execute"
 

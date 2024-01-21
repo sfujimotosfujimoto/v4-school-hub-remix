@@ -8,7 +8,7 @@ import { json, redirect } from "@remix-run/node"
 
 import type { ActionTypeGoogle, DriveFile, User } from "~/types"
 import { CHUNK_SIZE } from "~/lib/config"
-import { arrayIntoChunks } from "~/lib/utils"
+import { arrayIntoChunks } from "~/lib/utils/utils"
 import type { drive_v3 } from "googleapis"
 
 const FormDataScheme = z.object({

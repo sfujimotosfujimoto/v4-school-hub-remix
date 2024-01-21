@@ -1,5 +1,5 @@
 import React from "react"
-import { formatDate } from "~/lib/utils"
+import { formatDate } from "~/lib/utils/utils"
 
 import TableRow from "./table-row"
 

@@ -6,7 +6,7 @@ import {
   parseAppProperties,
   parseTags,
   stripText,
-} from "~/lib/utils"
+} from "~/lib/utils/utils"
 import type { DriveFile } from "~/types"
 import CheckBox from "./checkbox"
 
@@ -200,13 +200,13 @@ export default function StudentCard({
           {size === "big" && (
             <div className="flex gap-4">
               <div className="flex items-center gap-1">
-                <TimeIcon className="h-3 w-4" />
+                <TimeIcon className="w-4 h-3" />
                 <span>
                   {dateFormat(driveFileDatum.createdTime || "") || ""}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <RenewIcon className="h-3 w-3" />
+                <RenewIcon className="w-3 h-3" />
                 <span>
                   {dateFormat(driveFileDatum.modifiedTime || "") || ""}
                 </span>
@@ -233,7 +233,7 @@ export default function StudentCard({
           {driveFileDatum.studentFolder && size === "small" && (
             <div className="flex items-center gap-2 text-sm">
               <h3 className="font-bold">TO:</h3>
-              <div className="rounded-md bg-sky-500 px-2 py-1 text-white transition-all duration-500 lg:card-side hover:bg-sky-400">
+              <div className="px-2 py-1 text-white transition-all duration-500 rounded-md bg-sky-500 lg:card-side hover:bg-sky-400">
                 {driveFileDatum.studentFolder.folderLink && (
                   <NavLink
                     to={driveFileDatum.studentFolder.folderLink}

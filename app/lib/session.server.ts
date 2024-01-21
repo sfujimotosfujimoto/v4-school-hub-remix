@@ -8,7 +8,7 @@ import type { TypedResponse } from "@remix-run/node"
 import type { Credential, User } from "~/types"
 import { getRefreshUserById, getUserById } from "./user.server"
 import { redirectToSignin } from "./responses"
-import { toLocaleString } from "./utils"
+import { toLocaleString } from "./utils/utils"
 const SESSION_SECRET = process.env.SESSION_SECRET
 if (!SESSION_SECRET) throw Error("session secret is not set")
 

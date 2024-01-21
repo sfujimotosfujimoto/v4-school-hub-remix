@@ -1,6 +1,6 @@
 import type { User } from "~/types"
 import React from "react"
-import { formatDate } from "~/lib/utils"
+import { formatDate } from "~/lib/utils/utils"
 
 function AdminRow({
   label,

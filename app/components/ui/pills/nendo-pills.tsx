@@ -1,6 +1,6 @@
 import { useNavigation } from "@remix-run/react"
 import { NavLinkPill } from "~/components/buttons/button"
-import { setSearchParams } from "~/lib/utils"
+import { setSearchParams } from "~/lib/utils/utils"
 
 export default function NendoPills({
   url,

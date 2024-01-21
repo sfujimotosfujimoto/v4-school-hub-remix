@@ -6,8 +6,12 @@ import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
 import { errorResponses } from "~/lib/error-responses"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
-import { arrayIntoChunks, getIdFromUrl, parseAppProperties } from "~/lib/utils"
-import { convertDriveFiles } from "~/lib/utils-loader"
+import {
+  arrayIntoChunks,
+  getIdFromUrl,
+  parseAppProperties,
+} from "~/lib/utils/utils"
+import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { logger } from "~/logger"
 import type { ActionResponse, ActionTypeGoogle, DriveFile } from "~/types"
 import { flatFiles, parseDateToString } from "~/lib/utils.server"

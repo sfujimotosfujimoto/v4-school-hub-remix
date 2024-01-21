@@ -13,7 +13,7 @@ import {
   getUserFromSession,
   updateSession,
 } from "~/lib/session.server"
-import { toLocaleString } from "~/lib/utils"
+import { toLocaleString } from "~/lib/utils/utils"
 import { logger } from "~/logger"
 import type { User } from "~/types"
 

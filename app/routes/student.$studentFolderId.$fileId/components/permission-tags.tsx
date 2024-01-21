@@ -1,4 +1,4 @@
-import { getStudentEmail } from "~/lib/utils"
+import { getStudentEmail } from "~/lib/utils/utils"
 import PermissionTag from "./permission-tag"
 import type { PermissionGoogle } from "~/types"
 

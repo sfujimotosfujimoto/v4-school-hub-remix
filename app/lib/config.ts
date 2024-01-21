@@ -1,4 +1,4 @@
-import { getSchoolYear } from "./utils"
+import { getSchoolYear } from "./utils/utils"
 
 export const LOG_LEVEL = "info"
 

@@ -9,7 +9,11 @@ import {
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
-import { getGakusekiFromString, getIdFromUrl, getSchoolYear } from "~/lib/utils"
+import {
+  getGakusekiFromString,
+  getIdFromUrl,
+  getSchoolYear,
+} from "~/lib/utils/utils"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile, Student } from "~/types"
 

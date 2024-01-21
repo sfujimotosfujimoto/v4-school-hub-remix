@@ -6,7 +6,7 @@ import { redirect } from "@remix-run/node"
 
 import { prisma } from "./db.server"
 import { getClientFromCode, getUserInfo } from "./google/google.server"
-import { checkValidSeigEmail, toLocaleString } from "./utils"
+import { checkValidSeigEmail, toLocaleString } from "./utils/utils"
 
 import { redirectToSignin } from "./responses"
 import { updateUser } from "./user.server"

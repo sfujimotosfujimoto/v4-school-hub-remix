@@ -16,7 +16,8 @@ import {
 } from "~/lib/google/sheets.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
-import { getIdFromUrl, getStudentEmail } from "~/lib/utils"
+import { getIdFromUrl, getStudentEmail } from "~/lib/utils/utils"
+import { getExtensions, getHrAndHrNoFromString } from "~/lib/utils/utils.search"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile, Gakunen, Hr, Student } from "~/types"
 
@@ -45,6 +46,9 @@ const FormDataScheme = z.object({
     }),
 })
 
+/**
+ * Rename searchAction
+ */
 export async function searchRenameAction(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: searchAction()`)
   const { user, credential } = await getUserFromSessionOrRedirect(request)
@@ -171,8 +175,11 @@ export async function searchRenameAction(request: Request, formData: FormData) {
   })
 }
 
-// add student permission to driveFiles meta
-// then add studentEmail to meta.file
+/**
+ * addPermissionToDriveFiles
+ * add student permission to driveFiles meta
+ * then add studentEmail to meta.file
+ */
 async function addPermissionToDriveFiles(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
@@ -195,7 +202,10 @@ async function addPermissionToDriveFiles(
   })
 }
 
-export async function findStudentDataFromSegments(
+/**
+ * findStudentDataFromSegments
+ */
+async function findStudentDataFromSegments(
   driveFiles: DriveFile[],
   students: Student[],
   gakunen: Gakunen,
@@ -227,7 +237,10 @@ export async function findStudentDataFromSegments(
   return newDriveFiles
 }
 
-// then create new name and add to meta.file
+/**
+ * _findStudentDataFromSegments
+ * then create new name and add to meta.file
+ */
 async function _findStudentDataFromSegments(
   df: DriveFile,
   students: Student[],
@@ -246,205 +259,213 @@ async function _findStudentDataFromSegments(
     },
   }
 
-  // get file extension
-  const extensions = [
-    "pdf",
-    "jpg",
-    "jpeg",
-    "png",
-    "doc",
-    "docx",
-    "xls",
-    "xlsx",
-    "m4a",
-  ]
-  // get ex. "pdf", "document"
-  const ext =
-    extensions
-      .map((ext) => {
-        const match = df.name.match(new RegExp(`\\.${ext}$`))
-        if (match) return match.at(-1)
-        else return null
-      })
-      .filter((a) => a)[0] ?? null
-
-  // get name without extension
-  const nameNoExt = ext ? df.name.replace(ext, "") : df.name
-
-  // get segments from name
-  const segments = Array.from(new Set(nameNoExt.split(/[-_.]/)))
-  df.meta = {
-    ...df.meta,
-    file: {
-      ...df.meta?.file,
-      segments,
-    },
-  }
-
-  // get joined segments
-  const joinedSegments = segments.join("")
+  // get file extension, segments, and joinedSegments and add segments to df
+  const { ext, segments, joinedSegments } = getExtensions(df)
   logger.debug(
     `✅ _findStudentDataFromSegments: joinedSegments ${joinedSegments}`,
   )
   // logger.debug(`✅ df.meta: ${JSON.stringify(df.meta, null, 2)}}`)
 
-  // look up if studentEmail is set in meta.file
-  // is so, find students from studentEmail
+  /**
+   * 1. StudentEmail
+   * look up if studentEmail is set in meta.file
+   */
   if (df.meta.file?.studentEmail) {
-    logger.debug(`✅ _findStudentDataFromSegments: in studentEmail`)
-    const student = students.find((sd) => {
-      return sd.email === df.meta?.file?.studentEmail
-    })
-
-    if (student) {
-      df.meta = {
-        ...df.meta,
-        student,
-        file: {
-          ...df.meta?.file,
-          name: createNewName(
-            student,
-            segments,
-            ext,
-            segment,
-            includeSuffix,
-            includeGakunenHrHrNo,
-            gakunenHrHrNoStart,
-          ),
-        },
-      }
-      return df
-    } else {
-      errorResponses.server(
-        `メールアドレス ${df.meta.file?.studentEmail} の生徒が名簿から見つかりません。`,
-      )
-    }
+    return getDriveFileIfStudentEmailExists(
+      df,
+      students,
+      ext,
+      segments,
+      segment,
+      includeSuffix,
+      includeGakunenHrHrNo,
+      gakunenHrHrNoStart,
+    )
   }
 
+  /**
+   * 2. Gakuseki
+   * get student by gakuseki
+   */
+  const gakuseki = getGakusekiFromString(segments)
+  if (gakuseki) {
+    return getDriveFileIfGakusekiExists(
+      gakuseki,
+      df,
+      students,
+      ext,
+      segments,
+      segment,
+      includeSuffix,
+      includeGakunenHrHrNo,
+      gakunenHrHrNoStart,
+    )
+  }
+
+  const { hr, hrNo } = getHrAndHrNoFromString(joinedSegments)
+
+  // console.log("✅ hr, hrNo, gakunen", hr, hrNo, gakunen)
+
+  /**
+   * 3. Get by Hr and HrNo
+   * look up student by Hr, HrNo, and Gakunen
+   */
+  if (gakunen !== "ALL" && hr && hrNo) {
+    return getDriveFileIfHrHrNoExists(
+      gakunen,
+      hr,
+      hrNo,
+      df,
+      students,
+      ext,
+      segments,
+      segment,
+      includeSuffix,
+      includeGakunenHrHrNo,
+      gakunenHrHrNoStart,
+    )
+  }
+
+  return getDriveFileIfLastFirstExists(
+    joinedSegments,
+    df,
+    students,
+    ext,
+    segments,
+    segment,
+    includeSuffix,
+    includeGakunenHrHrNo,
+    gakunenHrHrNoStart,
+  )
+}
+
+function getDriveFileIfStudentEmailExists(
+  df: DriveFile,
+  students: Student[],
+  ext: string | null,
+  segments: string[],
+  segment: string | null,
+  includeSuffix: boolean,
+  includeGakunenHrHrNo: boolean,
+  gakunenHrHrNoStart: boolean,
+) {
+  logger.debug(`✅ in getStudentIfStudentEmailExists: ${segments}`)
+  // look up if studentEmail is set in meta.file
+  // is so, find students from studentEmail
+  const student = students.find((sd) => {
+    return sd.email === df.meta?.file?.studentEmail
+  })
+
+  if (student) {
+    const newName = createNewName(
+      student,
+      segments,
+      ext,
+      segment,
+      includeSuffix,
+      includeGakunenHrHrNo,
+      gakunenHrHrNoStart,
+    )
+    df = addNewNameToMeta(df, newName, student)
+
+    return df
+  } else {
+    errorResponses.server(
+      `メールアドレス ${df.meta?.file?.studentEmail} の生徒が名簿から見つかりません。`,
+    )
+  }
+}
+
+function getGakusekiFromString(segments: string[]) {
   // get student by gakuseki
   const gakusekiString = segments.find((s) => s.match(/([0-9]{7})|(b[0-9]{7})/))
   const gMatches = gakusekiString?.match(/[0-9]{7}|b([0-9]{7})/)
   const gakuseki = gMatches?.at(1) ?? gMatches?.at(0)
+  return gakuseki
+}
 
-  logger.debug(
-    `✅ _findStudentDataFromSegments: gakusekiString ${gakusekiString}`,
-  )
-  logger.debug(`✅ _findStudentDataFromSegments: gMatches ${gMatches}`)
-  logger.debug(`✅ _findStudentDataFromSegments: gakuseki ${gakuseki}`)
+function getDriveFileIfGakusekiExists(
+  gakuseki: string,
+  df: DriveFile,
+  students: Student[],
+  ext: string | null,
+  segments: string[],
+  segment: string | null,
+  includeSuffix: boolean,
+  includeGakunenHrHrNo: boolean,
+  gakunenHrHrNoStart: boolean,
+) {
+  logger.debug(`✅ in getDriveFileIfGakusekiExists: ${segments}`)
 
   // Check for gakuseki in segments
   if (gakuseki) {
     const student = students.find((sd) => String(sd.gakuseki) === gakuseki)
 
-    // logger.debug(
-    //   `✅ _findStudentDataFromSegments: student ${student?.email}, students ${students.length}`,
-    // )
-
     if (student) {
-      df.meta = {
-        ...df.meta,
+      const newName = createNewName(
         student,
-        file: {
-          ...df.meta?.file,
-          name: createNewName(
-            student,
-            segments,
-            ext,
-            segment,
-            includeSuffix,
-            includeGakunenHrHrNo,
-            gakunenHrHrNoStart,
-          ),
-        },
-      }
+        segments,
+        ext,
+        segment,
+        includeSuffix,
+        includeGakunenHrHrNo,
+        gakunenHrHrNoStart,
+      )
+      df = addNewNameToMeta(df, newName, student)
 
       return df
     }
   }
+}
 
-  logger.debug(
-    `✅ _findStudentDataFromSegments: {joinedSegments}
-    ✨ ${JSON.stringify({ joinedSegments }, null, 2)}`,
-  )
+function getDriveFileIfHrHrNoExists(
+  gakunen: Gakunen,
+  hr: Hr | null,
+  hrNo: number | null,
+  df: DriveFile,
+  students: Student[],
+  ext: string | null,
+  segments: string[],
+  segment: string | null,
+  includeSuffix: boolean,
+  includeGakunenHrHrNo: boolean,
+  gakunenHrHrNoStart: boolean,
+) {
+  logger.debug(`✅ in getDriveFileIfHrHrNoExists: ${segments}`)
 
-  // @todo actions/search.ts: NEED TO REFACTOR this regex, create separate function
-  // for 中学1年A組13番
-  const rx1 = /(中学|高校)\d?(年)?.*(?<hr>[a-eA-E])組(?<hrNo>[0-9]{1,2})番/g
-  // A組12番
-  const rx2 = /(?<hr>[a-eA-E])組(?<hrNo>[0-9]{1,2})番/g
-  // J3A09
-  const rx3 = /[jJhH中高]\d?(?<hr>[a-eA-E])[\s_-]?(?<hrNo>[0-9]{1,2})/g
-  // D01
-  const rx4 = /(?<hr>[a-eA-E])(?<hrNo>[0-9]{1,2})/g
+  if (hr && hrNo) {
+    const student = getStudentByGakunenHrHrNo(gakunen, hr, hrNo, students)
 
-  const rxArr = [rx1, rx2, rx3, rx4]
-
-  let rxRes: { hr?: Hr; hrNo?: string } = { hr: undefined, hrNo: undefined }
-  for (let rx of rxArr) {
-    rxRes = rx.exec(joinedSegments)?.groups as {
-      hr?: Hr
-      hrNo?: string
-    }
-    console.log("✅ rxRes", rxRes)
-    if (rxRes?.hr && rxRes?.hrNo) break
-  }
-
-  // look up student by Hr, HrNo, and Gakunen
-  if (gakunen !== `ALL`) {
-    console.log("✅ gakunen !== `ALL`")
-    // const rx = /(?<hr>[A-F])組(?<hrNo>[0-9]{1,2})番/g
-
-    // J3A_15
-    // j3a_01
-    // J3A_01
-    // j3a01
-    // j3a-1
-    // 中3A01
-    // 高1B 13
-    // 中学1年A組13番
-    // 高校2年E組 04番
-    // 高校3A01
-    // 中学1A01
-    // const rx = /([jJhH中高]|(中学|高校))?\d?(年)?.*(?<hr>[a-eA-E]).*(?<hrNo>[0-9]{1,2}.?)/g
-
-    // const rx = new RegExp(`(${rx1.source})|(${rx2.source})|(${rx3.source}`)
-    // const rxRes = rx.exec(joinedSegments)?.groups as {
-    //   hr: Hr
-    //   hrNo: string
-    // }
-
-    console.log("✅ rxRes", rxRes, "joinedSegments", joinedSegments)
-
-    if (rxRes?.hr && rxRes?.hrNo) {
-      const student = getStudentByGakunenHrHrNo(
-        gakunen,
-        rxRes.hr.toUpperCase() as Hr,
-        Number(rxRes.hrNo),
-        students,
+    if (student) {
+      const newName = createNewName(
+        student,
+        segments,
+        ext,
+        segment,
+        includeSuffix,
+        includeGakunenHrHrNo,
+        gakunenHrHrNoStart,
       )
-      console.log("✅ student", student)
-
-      if (student) {
-        df.meta = {
-          ...df.meta,
-          student,
-          file: {
-            ...df.meta?.file,
-            name: createNewName(
-              student,
-              segments,
-              ext,
-              segment,
-              includeSuffix,
-              includeGakunenHrHrNo,
-              gakunenHrHrNoStart,
-            ),
-          },
-        }
-        return df
-      }
+      df = addNewNameToMeta(df, newName, student)
+      return df
     }
   }
+}
+
+function getDriveFileIfLastFirstExists(
+  joinedSegments: string,
+  df: DriveFile,
+  students: Student[],
+  ext: string | null,
+  segments: string[],
+  segment: string | null,
+  includeSuffix: boolean,
+  includeGakunenHrHrNo: boolean,
+  gakunenHrHrNoStart: boolean,
+) {
+  logger.debug(
+    `✅ in getDriveFileIfLastFirstExists: ${segments},  ${students.length} students`,
+  )
 
   // let hr = rxRes?.hr?.toUpperCase() as Hr
   // let hrNo = rxRes?.hrNo
@@ -453,45 +474,67 @@ async function _findStudentDataFromSegments(
     const student = students[i]
 
     // regex for searching student last and first name
-    const reg = new RegExp(`${student.last}${student.first}`)
+    const reg = /`${student.last}`[\s-_]?`${student.first}`/
+
+    console.log(
+      "✅ includes",
+      "last",
+      student.last,
+      "first",
+      student.first,
+      "joinedSegments",
+      joinedSegments,
+      "includes last",
+      joinedSegments.includes(student.last),
+      "includes first",
+      joinedSegments.includes(student.first),
+      "match reg",
+      joinedSegments.match(reg),
+    )
 
     // check if segments include student last and first name
     if (
-      (segments.includes(student.last) && segments.includes(student.first)) ||
+      (joinedSegments.includes(student.last) &&
+        joinedSegments.includes(student.first)) ||
       segments.includes(`${student.last}${student.first}`) ||
       joinedSegments.match(reg)
     ) {
-      df.meta = {
-        ...df.meta,
+      console.log("✅ found student", student.last, student.first)
+      const newName = createNewName(
         student,
-        file: {
-          ...df.meta?.file,
-          name: createNewName(
-            student,
-            segments,
-            ext,
-            segment,
-            includeSuffix,
-            includeGakunenHrHrNo,
-            gakunenHrHrNoStart,
-          ),
-        },
-      }
-      return df
-    } else {
-      df.meta = {
-        ...df.meta,
-        file: {
-          ...df.meta?.file,
-          name:
-            rxRes?.hr && rxRes?.hrNo
-              ? `${rxRes.hr}${rxRes.hrNo.padStart(2, "0")}`
-              : "NO_NAME",
-        },
-      }
+        segments,
+        ext,
+        segment,
+        includeSuffix,
+        includeGakunenHrHrNo,
+        gakunenHrHrNoStart,
+      )
+      df = addNewNameToMeta(df, newName, student)
       return df
     }
   }
+
+  df.meta = {
+    ...df.meta,
+    file: {
+      ...df.meta?.file,
+      name: "NO_NAME",
+    },
+  }
+  return df
+}
+
+function addNewNameToMeta(df: DriveFile, newName: string, student: Student) {
+  const tmp = { ...df }
+  tmp.meta = {
+    ...tmp.meta,
+    student,
+    file: {
+      ...tmp.meta?.file,
+      name: newName,
+    },
+  }
+  return tmp
 }
 
 function createNewName(

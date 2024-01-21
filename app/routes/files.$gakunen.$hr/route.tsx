@@ -16,7 +16,7 @@ import {
 } from "~/lib/google/drive.server"
 import { getSheets, getStudents } from "~/lib/google/sheets.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
-import { filterStudentNameSegments } from "~/lib/utils"
+import { filterStudentNameSegments } from "~/lib/utils/utils"
 import { setSelected } from "~/lib/utils.server"
 import { logger } from "~/logger"
 
@@ -117,7 +117,7 @@ export default function FilesGakunenHrLayout() {
           size="sm"
         >
           <LogoIcon className="h-7 w-4" />
-          <span className="ml-2  sm:ml-4 sm:inline">GO</span>
+          <span className="ml-2 sm:ml-4 sm:inline">GO</span>
         </NavLinkButton>
       </div>
 

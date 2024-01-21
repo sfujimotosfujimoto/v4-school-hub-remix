@@ -1,5 +1,5 @@
 import React from "react"
-import { parseAppProperties } from "~/lib/utils"
+import { parseAppProperties } from "~/lib/utils/utils"
 
 import type { DriveFile } from "~/types"
 

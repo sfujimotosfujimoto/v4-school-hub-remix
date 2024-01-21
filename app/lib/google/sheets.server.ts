@@ -1,7 +1,7 @@
 import { google } from "googleapis"
 import invariant from "tiny-invariant"
 
-import { getFolderId } from "../utils"
+import { getFolderId } from "../utils/utils"
 import { getClient } from "./google.server"
 
 import type { sheets_v4 } from "googleapis"

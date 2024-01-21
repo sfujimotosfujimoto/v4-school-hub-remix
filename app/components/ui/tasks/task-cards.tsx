@@ -1,9 +1,8 @@
 import React from "react"
 import { useTasksContext } from "~/context/tasks-context"
-
+import type { Task } from "~/types"
 import TaskCard from "./task-card"
 
-import type { Task } from "~/types"
 export default function TaskCards({ taskType }: { taskType: Task["type"] }) {
   const { tasks, tasksDispatch } = useTasksContext()
 

@@ -1,4 +1,4 @@
-import { formatDate } from "~/lib/utils"
+import { formatDate } from "~/lib/utils/utils"
 
 import { Form } from "@remix-run/react"
 

@@ -1,6 +1,6 @@
 import { logger } from "~/logger"
 import type { ActionResponse, DriveFile } from "~/types"
-import { toLocaleString } from "./utils"
+import { toLocaleString } from "./utils/utils"
 
 export function setSelected(driveFiles: DriveFile[], selected: boolean) {
   return driveFiles.map((df) => {

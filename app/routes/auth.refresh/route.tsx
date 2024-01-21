@@ -4,7 +4,7 @@ import { prisma } from "~/lib/db.server"
 import { getRefreshedToken } from "~/lib/google/google.server"
 import { returnUser } from "~/lib/return-user"
 import { selectUser } from "~/lib/user.server"
-import { toLocaleString } from "~/lib/utils"
+import { toLocaleString } from "~/lib/utils/utils"
 import { logger } from "~/logger"
 
 export const config = {

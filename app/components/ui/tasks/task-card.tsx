@@ -1,7 +1,7 @@
 import React from "react"
 import { TimeIcon } from "~/components/icons"
 import { convertDriveFileToCsv } from "~/lib/csv"
-import { dateFormat, toLocaleString } from "~/lib/utils"
+import { dateFormat, toLocaleString } from "~/lib/utils/utils"
 
 import { Form, useNavigation } from "@remix-run/react"
 
@@ -61,7 +61,7 @@ export default function TaskCard({ task }: { task: Task }) {
             </h2>
 
             <div className="flex items-center gap-2 text-sm">
-              <TimeIcon className="w-4 h-3" />
+              <TimeIcon className="h-3 w-4" />
               <span>{dateFormat(toLocaleString(task.time)) || ""}</span>
               <span>
                 {task.driveFiles ? task.driveFiles.length : 0}{" "}
@@ -100,7 +100,7 @@ export default function TaskCard({ task }: { task: Task }) {
           <button
             name="intent"
             value="undo"
-            className="w-32 btn btn-warning btn-sm"
+            className="btn btn-warning btn-sm w-32"
             onClick={() => {
               if (dialogEl.current) dialogEl.current.close()
             }}
