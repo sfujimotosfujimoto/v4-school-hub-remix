@@ -1,8 +1,7 @@
 import { Toaster } from "react-hot-toast"
-import "./styles/tailwind.css"
-import "./styles/shared.css"
-// import sharedStyles from "~/styles/shared.css"
-// import tailwindStyles from "~/styles/tailwind.css"
+
+import sharedStyles from "~/styles/shared.css"
+import tailwindStyles from "~/styles/tailwind.css"
 import { Analytics } from "@vercel/analytics/react"
 import { logger } from "./logger"
 
@@ -94,6 +93,8 @@ export const meta: MetaFunction = () => {
  */
 export const links: LinksFunction = () => {
   return [
+    { rel: "stylesheet", href: tailwindStyles },
+    { rel: "stylesheet", href: sharedStyles },
     {
       rel: "apple-touch-icon",
       sizes: "180x180",

@@ -3,9 +3,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
-    "dev": "PORT=4000 remix vite:dev",
-    "start": "remix-serve ./build/server/index.js",
+    "build": "remix build",
+    "dev": "PORT=4000 remix dev --manual",
+    "start": "remix-serve ./build/index.js",
     "postinstall": "prisma generate",
     "test": "vitest"
   },
