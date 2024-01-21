@@ -10,7 +10,7 @@ export default defineConfig({
   },
   plugins: [
     remix({
-      ignoredRouteFiles: ["**/.*"],
+      ignoredRouteFiles: ["**/.*", "**/*"],
     }),
     tsconfigPaths(),
   ],
