@@ -1,7 +1,7 @@
 import { Form, useNavigation } from "@remix-run/react"
 import React from "react"
 import { AddIcon } from "~/components/icons"
-import { getBaseNameFromFileName } from "~/lib/actions/rename-execute"
+import { getBaseNameFromFileName } from "~/lib/utils"
 import type { DriveFile } from "~/types"
 
 export default function BaseNameButton({
