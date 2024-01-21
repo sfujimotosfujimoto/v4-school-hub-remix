@@ -73,7 +73,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 async function fetchRefresh(user: User) {
   logger.debug("🍺 fetchRefresh: ")
 
-  const jsn = await fetch(`${process.env.BASE_URL}/auth/refresh`, {
+  const res = await fetch(`${process.env.BASE_URL}/auth/refresh`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -97,7 +97,7 @@ async function fetchRefresh(user: User) {
       return { error: "error in fetch" }
     })
 
-  return jsn
+  return res
 }
 
 const scopes = [

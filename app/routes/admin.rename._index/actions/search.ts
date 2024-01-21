@@ -283,9 +283,9 @@ async function _findStudentDataFromSegments(
 
   // get joined segments
   const joinedSegments = segments.join("")
-  // logger.debug(
-  //   `✅ _findStudentDataFromSegments: joinedSegments ${joinedSegments}`,
-  // )
+  logger.debug(
+    `✅ _findStudentDataFromSegments: joinedSegments ${joinedSegments}`,
+  )
   // logger.debug(`✅ df.meta: ${JSON.stringify(df.meta, null, 2)}}`)
 
   // look up if studentEmail is set in meta.file
@@ -326,12 +326,13 @@ async function _findStudentDataFromSegments(
   const gMatches = gakusekiString?.match(/[0-9]{7}|b([0-9]{7})/)
   const gakuseki = gMatches?.at(1) ?? gMatches?.at(0)
 
-  // logger.debug(
-  //   `✅ _findStudentDataFromSegments: gakusekiString ${gakusekiString}`,
-  // )
-  // logger.debug(`✅ _findStudentDataFromSegments: gMatches ${gMatches}`)
-  // logger.debug(`✅ _findStudentDataFromSegments: gakuseki ${gakuseki}`)
+  logger.debug(
+    `✅ _findStudentDataFromSegments: gakusekiString ${gakusekiString}`,
+  )
+  logger.debug(`✅ _findStudentDataFromSegments: gMatches ${gMatches}`)
+  logger.debug(`✅ _findStudentDataFromSegments: gakuseki ${gakuseki}`)
 
+  // Check for gakuseki in segments
   if (gakuseki) {
     const student = students.find((sd) => String(sd.gakuseki) === gakuseki)
 
@@ -361,27 +362,67 @@ async function _findStudentDataFromSegments(
     }
   }
 
-  // logger.debug(
-  //   `✅ _findStudentDataFromSegments: {joinedSegments}
-  //   ✨ ${JSON.stringify({ joinedSegments }, null, 2)}`,
-  // )
+  logger.debug(
+    `✅ _findStudentDataFromSegments: {joinedSegments}
+    ✨ ${JSON.stringify({ joinedSegments }, null, 2)}`,
+  )
+
+  // @todo actions/search.ts: NEED TO REFACTOR this regex, create separate function
+  // for 中学1年A組13番
+  const rx1 = /(中学|高校)\d?(年)?.*(?<hr>[a-eA-E])組(?<hrNo>[0-9]{1,2})番/g
+  // A組12番
+  const rx2 = /(?<hr>[a-eA-E])組(?<hrNo>[0-9]{1,2})番/g
+  // J3A09
+  const rx3 = /[jJhH中高]\d?(?<hr>[a-eA-E])[\s_-]?(?<hrNo>[0-9]{1,2})/g
+  // D01
+  const rx4 = /(?<hr>[a-eA-E])(?<hrNo>[0-9]{1,2})/g
+
+  const rxArr = [rx1, rx2, rx3, rx4]
+
+  let rxRes: { hr?: Hr; hrNo?: string } = { hr: undefined, hrNo: undefined }
+  for (let rx of rxArr) {
+    rxRes = rx.exec(joinedSegments)?.groups as {
+      hr?: Hr
+      hrNo?: string
+    }
+    console.log("✅ rxRes", rxRes)
+    if (rxRes?.hr && rxRes?.hrNo) break
+  }
 
   // look up student by Hr, HrNo, and Gakunen
   if (gakunen !== `ALL`) {
-    const rx = /(?<hr>[A-F])組(?<hrNo>[0-9]{1,2})番/g
+    console.log("✅ gakunen !== `ALL`")
+    // const rx = /(?<hr>[A-F])組(?<hrNo>[0-9]{1,2})番/g
 
-    const rxRes = rx.exec(joinedSegments)?.groups as {
-      hr: Hr
-      hrNo: string
-    }
+    // J3A_15
+    // j3a_01
+    // J3A_01
+    // j3a01
+    // j3a-1
+    // 中3A01
+    // 高1B 13
+    // 中学1年A組13番
+    // 高校2年E組 04番
+    // 高校3A01
+    // 中学1A01
+    // const rx = /([jJhH中高]|(中学|高校))?\d?(年)?.*(?<hr>[a-eA-E]).*(?<hrNo>[0-9]{1,2}.?)/g
+
+    // const rx = new RegExp(`(${rx1.source})|(${rx2.source})|(${rx3.source}`)
+    // const rxRes = rx.exec(joinedSegments)?.groups as {
+    //   hr: Hr
+    //   hrNo: string
+    // }
+
+    console.log("✅ rxRes", rxRes, "joinedSegments", joinedSegments)
 
     if (rxRes?.hr && rxRes?.hrNo) {
       const student = getStudentByGakunenHrHrNo(
         gakunen,
-        rxRes.hr,
+        rxRes.hr.toUpperCase() as Hr,
         Number(rxRes.hrNo),
         students,
       )
+      console.log("✅ student", student)
 
       if (student) {
         df.meta = {
@@ -405,6 +446,8 @@ async function _findStudentDataFromSegments(
     }
   }
 
+  // let hr = rxRes?.hr?.toUpperCase() as Hr
+  // let hrNo = rxRes?.hrNo
   // loop through students to find match
   for (let i = 0; i < students.length; i++) {
     const student = students[i]
@@ -412,6 +455,7 @@ async function _findStudentDataFromSegments(
     // regex for searching student last and first name
     const reg = new RegExp(`${student.last}${student.first}`)
 
+    // check if segments include student last and first name
     if (
       (segments.includes(student.last) && segments.includes(student.first)) ||
       segments.includes(`${student.last}${student.first}`) ||
@@ -431,6 +475,18 @@ async function _findStudentDataFromSegments(
             includeGakunenHrHrNo,
             gakunenHrHrNoStart,
           ),
+        },
+      }
+      return df
+    } else {
+      df.meta = {
+        ...df.meta,
+        file: {
+          ...df.meta?.file,
+          name:
+            rxRes?.hr && rxRes?.hrNo
+              ? `${rxRes.hr}${rxRes.hrNo.padStart(2, "0")}`
+              : "NO_NAME",
         },
       }
       return df
