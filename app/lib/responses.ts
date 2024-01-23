@@ -2,7 +2,7 @@ import { redirect } from "@remix-run/node"
 
 export function redirectToSignin(
   request: Request,
-  urlParams: { [key: string]: string } = { authstate: "unauthorized" },
+  urlParams: { [key: string]: string } = {},
   headers?: Headers,
   isRedirect = false,
 ): void {

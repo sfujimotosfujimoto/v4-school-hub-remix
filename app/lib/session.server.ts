@@ -66,11 +66,6 @@ export async function getUserFromSession(
   if (!userId) return { user: null, refreshUser: null }
 
   const { user, refreshUser } = await getUserById(userId)
-  logger.debug(
-    "✅ lib/session.server.ts ~ 	🌈 user, refreshUser ✅ ",
-    user,
-    refreshUser,
-  )
 
   if (user) {
     logger.debug(
