@@ -31,6 +31,13 @@ errorResponses.account = (
     status: 401,
   })
 }
+errorResponses.folder = (
+  message = "Googleフォルダがないか、名簿のGoogleSheetが共有されていません。",
+) => {
+  throw new Response(message, {
+    status: 401,
+  })
+}
 
 /**
  * 403

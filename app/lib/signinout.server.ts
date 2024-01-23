@@ -8,8 +8,8 @@ import { prisma } from "./db.server"
 import { getClientFromCode, getUserInfo } from "./google/google.server"
 import { checkValidSeigEmail, toLocaleString } from "./utils/utils"
 
-import { redirectToSignin } from "./responses"
 import { updateUser } from "./user.server"
+import { errorResponses } from "./error-responses"
 const SESSION_SECRET = process.env.SESSION_SECRET
 if (!SESSION_SECRET) throw Error("session secret is not set")
 
@@ -55,13 +55,15 @@ export async function signin({
   let refreshTokenExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14) // 14 days
 
   if (!access_token) {
-    throw redirectToSignin(request, { authstate: "no-access-token" })
+    throw errorResponses.unauthorized()
+    // throw redirectToSignin(request, { authstate: "no-access-token" })
   }
 
   const person = await getUserInfo(access_token)
 
   if (!person) {
-    throw redirectToSignin(request, { authstate: "unauthorized" })
+    throw errorResponses.unauthorized()
+    // throw redirectToSignin(request, { authstate: "unauthorized" })
   }
 
   logger.info(
@@ -73,7 +75,8 @@ export async function signin({
   )
 
   if (!checkValidSeigEmail(person.email)) {
-    throw redirectToSignin(request, { authstate: `not-seig-account` })
+    throw errorResponses.account()
+    // throw redirectToSignin(request, { authstate: `not-seig-account` })
   }
 
   let userPrisma = await prisma.user.upsert({
@@ -129,7 +132,8 @@ export async function signin({
   const updatedUser = await updateUser(userPrisma.id)
 
   if (!updatedUser) {
-    throw redirectToSignin(request, { authstate: `not-seig-account` })
+    throw errorResponses.account()
+    // throw redirectToSignin(request, { authstate: `not-seig-account` })
   }
 
   return {

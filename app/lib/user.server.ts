@@ -50,12 +50,6 @@ export async function getUserById(
       },
     })
 
-    // if (!user || !user.credential) {
-    //   return { user: null, refreshUser: null }
-    // }
-
-    // if (!user.stats) user.stats = null
-
     if (user) {
       return { user, refreshUser: null }
     }
