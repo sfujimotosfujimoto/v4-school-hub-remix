@@ -45,8 +45,6 @@ test.each([
 
 
 
-  // @todo actions/search.ts: NEED TO REFACTOR this regex, create separate function
-  // for 中学1年A組13番
   const rx1 = /(中学|高校)\d?(年)?.*(?<hr>[a-eA-E])組(?<hrNo>[0-9]{1,2})番/g
   // A組12番
   const rx2 = /(?<hr>[a-eA-E])組(?<hrNo>[0-9]{1,2})番/g

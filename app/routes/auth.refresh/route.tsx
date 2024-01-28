@@ -8,7 +8,7 @@ import { toLocaleString } from "~/lib/utils/utils"
 import { logger } from "~/logger"
 
 export const config = {
-  // TODO: set maxDuration for production
+  // @note auth.refresh/route.tsx: set maxDuration for production
   maxDuration: 60,
 }
 
@@ -87,7 +87,6 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ ok: false }, { status: 400 })
   }
   // const folderId = getFolderId(updatedUser.student?.folderLink || "")
-  // TODO: update error response
   // if (!folderId) {
   //   return json({ ok: false }, { status: 400 })
   // }

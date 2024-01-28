@@ -73,15 +73,6 @@ async function execute(request: Request) {
 
   //   const files = await moveDriveFiles(drive, driveFiles)
 
-  //   // // TODO: checking defer
-  //   // return defer({
-  //   //   ok: true,
-  //   //   type: "execute",
-  //   //   data: {
-  //   //     driveFiles: mapFilesToDriveFiles(files),
-  //   //   },
-  //   // })
-
   //   return json<ActionType>({
   //     ok: true,
   //     type: "execute",

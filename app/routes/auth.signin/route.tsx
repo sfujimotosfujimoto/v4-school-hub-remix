@@ -123,7 +123,6 @@ export async function action({ request }: ActionFunctionArgs) {
     access_type: "offline",
     scope: scopes,
     include_granted_scopes: true,
-    // TODO: check what this means
     prompt: "consent select_account",
   })
 

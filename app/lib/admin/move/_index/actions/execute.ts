@@ -253,7 +253,6 @@ async function _moveDriveFilesG(
 //   driveFiles: DriveFile[],
 //   idx: number,
 // ) {
-//   // @note Before, you didn't have to make a copy of the array
 //   // Why do you have to create a copy now?
 //   const dfs = [...driveFiles]
 
@@ -296,8 +295,6 @@ async function _moveDriveFilesG(
 //             },
 //           },
 //           fields: QUERY_FILE_FIELDS,
-//           // TODO: {responseType: "stream"} implement
-//           // }, {responseType: "stream"})
 //         })
 //         files.push(file.data)
 //         // console.log(`moveDriveFiles: ${d.name}, idx:${j} of chunk: ${idx}`)

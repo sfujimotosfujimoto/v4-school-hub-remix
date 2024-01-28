@@ -21,7 +21,7 @@ import MoveConfirmForm from "./move-confirm-form"
 import MoveCards from "./move-cards"
 
 export const config = {
-  // TODO: set maxDuration for production
+  // @note admin.move._index/route.tsx: set maxDuration for production
   maxDuration: 120,
 }
 

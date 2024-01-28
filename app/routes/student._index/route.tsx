@@ -30,7 +30,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   )
 }
 
-//TODO: headers here?
 export const headers: HeadersFunction = ({ loaderHeaders, parentHeaders }) => {
   const loaderCache = loaderHeaders.get("Cache-Control")
 

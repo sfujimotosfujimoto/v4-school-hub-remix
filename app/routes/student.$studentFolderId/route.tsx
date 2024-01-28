@@ -131,7 +131,6 @@ export default function StudentFolderIdLayout() {
   )
 }
 
-// TODO: This is needed because appProperties is sometimes string and sometimes object
 // I was storing it as an json object in db but found out that it is
 // better to store as string for future proofing
 // function parseAppProperties(appProperties: string | object) {
