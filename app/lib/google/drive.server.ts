@@ -57,7 +57,7 @@ export function queryMultipleStudentsAndFilename(
     .map((f) => `'${f}' in parents`)
     .join(" or ")
 
-  // TODO: fullText to name
+  // @note google/drive.server.ts: changed `fulltext` to `name`
   const qQuery = q
     .map((item) => `name contains '${decodeURI(item)}'`)
     .join(" and ")
