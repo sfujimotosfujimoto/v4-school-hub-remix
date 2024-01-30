@@ -49,7 +49,10 @@ const FormDataScheme = z.object({
 /**
  * Rename searchAction
  */
-export async function searchRenameAction(request: Request, formData: FormData) {
+export async function searchRenameAction2(
+  request: Request,
+  formData: FormData,
+) {
   logger.debug(`🍎 rename: searchAction()`)
   const { user, credential } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)

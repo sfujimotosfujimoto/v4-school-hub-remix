@@ -15,7 +15,7 @@ const FormDataScheme = z.object({
   driveFilesString: z.string().optional(),
 })
 
-export async function undoAction(request: Request, formData: FormData) {
+export async function undoAction2(request: Request, formData: FormData) {
   logger.debug(`🍎 rename: undoAction()`)
   // get user
   const { user, credential } = await getUserFromSessionOrRedirect(request)
