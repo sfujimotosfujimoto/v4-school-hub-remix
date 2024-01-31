@@ -71,7 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
      */
     case "execute": {
       logger.debug('✅ action: "execute"')
-      return await executeAction2(request, formData)
+      return executeAction2(request, formData)
     }
 
     /**

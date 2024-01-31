@@ -2,16 +2,18 @@ import { json } from "@remix-run/node"
 import { GaxiosError } from "gaxios"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
-import { CHUNK_SIZE } from "~/lib/config"
+// import { CHUNK_SIZE } from "~/lib/config"
 import { errorResponses } from "~/lib/error-responses"
-import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
+import { getDrive } from "~/lib/google/drive.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
 import { getUserFromSessionOrRedirect } from "~/lib/session.server"
-import { flatFiles, parseDateToString } from "~/lib/utils.server"
-import { arrayIntoChunks, parseAppProperties } from "~/lib/utils/utils"
+import { parseDateToString } from "~/lib/utils.server"
+import { parseAppProperties } from "~/lib/utils/utils"
 import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { logger } from "~/logger"
-import type { ActionResponse, ActionTypeGoogle, DriveFile } from "~/types"
+import type { ActionTypeGoogle, DriveFile, User } from "~/types"
+
+const WEB_HOOK_URL = "https://wide-regions-watch.loca.lt"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -23,7 +25,7 @@ const FormDataScheme = z.object({
  * Rename executeAction
  */
 export async function executeAction2(request: Request, formData: FormData) {
-  logger.debug(`🍎 rename: executeAction()`)
+  logger.debug(`🍎 rename: executeAction2()`)
   const { user, credential } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
 
@@ -70,21 +72,21 @@ export async function executeAction2(request: Request, formData: FormData) {
 
     // make a copy of the array because renameDriveFiles mutates the array
     const dfz = [...driveFiles]
-    const res = await renameDriveFiles(drive, dfz)
+    renameDriveFiles(drive, dfz, user)
 
     // from the successFiles, get the files that were actually moved
     // from the original array of files
     // because the original data has "meta" data in them
     // and we need the data for undo task data
     let successFiles: DriveFile[] = []
-    res.successFiles.forEach((sf) => {
-      const found = driveFiles.find((df) => {
-        return df.id === sf.id
-      })
-      if (found) {
-        successFiles.push(found)
-      }
-    })
+    // res.successFiles.forEach((sf) => {
+    //   const found = driveFiles.find((df) => {
+    //     return df.id === sf.id
+    //   })
+    //   if (found) {
+    //     successFiles.push(found)
+    //   }
+    // })
 
     console.log("✅ rename successFiles", successFiles.length)
 
@@ -94,7 +96,8 @@ export async function executeAction2(request: Request, formData: FormData) {
       type: "rename",
       data: {
         driveFiles: successFiles,
-        errorFiles: mapFilesToDriveFiles(res.errorFiles),
+        errorFiles: [],
+        // errorFiles: mapFilesToDriveFiles(res.errorFiles),
       },
     })
   } catch (error: unknown) {
@@ -112,24 +115,104 @@ export async function executeAction2(request: Request, formData: FormData) {
 export async function renameDriveFiles(
   drive: drive_v3.Drive,
   driveFiles: DriveFile[],
-): Promise<ActionResponse> {
+  user: User,
+) {
   logger.debug(`✅ renameDriveFiles: ${driveFiles.length} files total`)
-  const driveFilesChunks = arrayIntoChunks<DriveFile>(driveFiles, CHUNK_SIZE)
+  logger.debug(`✅ renameDriveFiles: ${driveFiles[0].name}`)
 
-  const promises = driveFilesChunks.map((dfs, idx) => {
-    return _renameDriveFiles(drive, dfs, idx)
-  })
+  // const promises: GaxiosPromise<drive_v3.Schema$File>[] = []
 
-  const files = await Promise.all([...promises])
-  const newFiles = files.filter((d): d is ActionResponse => d !== null)
+  const channelIds: string[] = []
+  for (let i = 0; i < driveFiles.length; i++) {
+    const d = {
+      ...driveFiles[i],
+      appProperties: parseAppProperties(driveFiles[i].appProperties || "[]"),
+      createdTime: parseDateToString(driveFiles[i]?.createdTime),
+      modifiedTime: parseDateToString(driveFiles[i]?.modifiedTime),
+    }
 
-  const successFiles = flatFiles(newFiles, "successFiles")
-  const errorFiles = flatFiles(newFiles, "errorFiles")
-  logger.debug(`Finished renaming: ${successFiles.length} files`)
-  logger.debug(`Errored renaming: ${errorFiles.length} files`)
+    try {
+      if (!d.meta?.file?.name || !d.id) {
+        continue
+      }
 
-  return { successFiles, errorFiles }
+      if (d.meta.file?.name) {
+        drive.files.update({
+          fileId: d.id,
+          requestBody: {
+            name: d.meta.file?.name,
+          },
+        })
+
+        console.log("✅ actions/execute.ts ~ 	😀 before .watch()")
+        const channelId = `file-move-sub-${d.id}`
+        channelIds.push(channelId)
+        const res = await fetch(
+          `https://www.googleapis.com/drive/v3/files/${d.id}/watch`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + user.credential?.accessToken,
+            },
+            body: JSON.stringify({
+              id: channelId,
+              type: "web_hook",
+              address: `${WEB_HOOK_URL}/webhook`,
+              kind: "api#channel",
+            }),
+          },
+        )
+          .then((res) => res.json())
+          .catch((err) => console.log(err))
+
+        console.log("✅ actions/execute.ts ~ 	🌈 res ✅ ", res)
+        // await drive.files.watch({
+        //   fileId: d.id,
+
+        //   requestBody: {
+        //     id: `file-move-sub-${d.id}`,
+        //     type: "web_hook",
+        //     address: `${process.env.BASE_URL}/webhook`,
+        //     params: {
+        //       events: "update",
+        //     },
+        //   },
+        // })
+      }
+    } catch (error) {
+      continue
+    }
+    console.log("✅ actions/execute.ts ~ 	🌈 channelIds ✅ ", channelIds)
+
+    //     // Create push subscription immediately
+
+    //     // promises.push(filePromise)
+    //     logger.debug(
+    //       `renameDriveFiles: ${d.meta.file.name}, idx:${i} `,
+    //     )
+    //   } else {
+    //     console.error(`error: ${d.id}: ${d.meta?.file?.name}`)
+    //     continue
+    //   }
+    // }
+  }
 }
+// const driveFilesChunks = arrayIntoChunks<DriveFile>(driveFiles, CHUNK_SIZE)
+
+// const promises = driveFilesChunks.map((dfs, idx) => {
+//   return _renameDriveFiles(drive, dfs, idx)
+// })
+
+// const files = await Promise.all([...promises])
+// const newFiles = files.filter((d): d is ActionResponse => d !== null)
+
+// const successFiles = flatFiles(newFiles, "successFiles")
+// const errorFiles = flatFiles(newFiles, "errorFiles")
+// logger.debug(`Finished renaming: ${successFiles.length} files`)
+// logger.debug(`Errored renaming: ${errorFiles.length} files`)
+
+// return { successFiles, errorFiles }
 
 export async function _renameDriveFiles(
   drive: drive_v3.Drive,
