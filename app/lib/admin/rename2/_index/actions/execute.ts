@@ -13,7 +13,7 @@ import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { logger } from "~/logger"
 import type { ActionTypeGoogle, DriveFile, User } from "~/types"
 
-const WEB_HOOK_URL = "https://wide-regions-watch.loca.lt"
+const WEB_HOOK_URL = "https://spotty-streets-smash.loca.l"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -120,8 +120,6 @@ export async function renameDriveFiles(
   logger.debug(`✅ renameDriveFiles: ${driveFiles.length} files total`)
   logger.debug(`✅ renameDriveFiles: ${driveFiles[0].name}`)
 
-  // const promises: GaxiosPromise<drive_v3.Schema$File>[] = []
-
   const channelIds: string[] = []
   for (let i = 0; i < driveFiles.length; i++) {
     const d = {
@@ -160,6 +158,9 @@ export async function renameDriveFiles(
               type: "web_hook",
               address: `${WEB_HOOK_URL}/webhook`,
               kind: "api#channel",
+              token: `fileId=${d.id}`,
+              // @todo actions/execute.ts: !! TIME !!
+              expiration: Date.now() + 1000 * 60 * 3, // 1 minutes
             }),
           },
         )
@@ -167,36 +168,13 @@ export async function renameDriveFiles(
           .catch((err) => console.log(err))
 
         console.log("✅ actions/execute.ts ~ 	🌈 res ✅ ", res)
-        // await drive.files.watch({
-        //   fileId: d.id,
-
-        //   requestBody: {
-        //     id: `file-move-sub-${d.id}`,
-        //     type: "web_hook",
-        //     address: `${process.env.BASE_URL}/webhook`,
-        //     params: {
-        //       events: "update",
-        //     },
-        //   },
-        // })
       }
     } catch (error) {
+      console.error("renameDriveFiles ~ error", error)
       continue
     }
-    console.log("✅ actions/execute.ts ~ 	🌈 channelIds ✅ ", channelIds)
-
-    //     // Create push subscription immediately
-
-    //     // promises.push(filePromise)
-    //     logger.debug(
-    //       `renameDriveFiles: ${d.meta.file.name}, idx:${i} `,
-    //     )
-    //   } else {
-    //     console.error(`error: ${d.id}: ${d.meta?.file?.name}`)
-    //     continue
-    //   }
-    // }
   }
+  console.log("✅ actions/execute.ts ~ 	🌈 channelIds ✅ ", channelIds)
 }
 // const driveFilesChunks = arrayIntoChunks<DriveFile>(driveFiles, CHUNK_SIZE)
 
