@@ -63,11 +63,6 @@ export async function executeAction(request: Request, formData: FormData) {
     })
 
   try {
-    const drive = await getDrive(credential.accessToken)
-    if (!drive) {
-      throw errorResponses.google()
-    }
-
     // make a copy of the array because renameDriveFiles mutates the array
     const dfz = [...driveFiles]
     const res = await renameDriveFiles(drive, dfz)
