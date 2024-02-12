@@ -18,6 +18,7 @@ export default function AllPill({
     <NavLinkPill
       to={`/student/${studentFolderId}`}
       url={_url}
+      size="sm"
       hoverColor="sfred"
       baseColor="bg-sfred-400"
       navSearch={navSearch}

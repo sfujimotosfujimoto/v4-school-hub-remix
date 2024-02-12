@@ -41,6 +41,6 @@ button.nendo-active {
 button.tag-active {
   background-color: them("colors.sfgreen.400");
 }
-div.flex.gap-2 > button.btn.btn-sm:hover {
+/* div.flex.gap-2 > button.btn.btn-sm:hover {
   background-color: hsl(1, 54%, 72%);
-}
+} */

@@ -1,10 +1,9 @@
-import { useNavigation } from "@remix-run/react"
-import { NavLinkPill } from "~/components/buttons/button"
+import { useNavigate, useNavigation, useParams } from "@remix-run/react"
 
-function setSearchParams(url: string, key: string, value: string) {
+function setSearchParams2(url: string, key: string, value: string) {
   const _url = new URL(url)
   _url.searchParams.set(key, value ? value : "ALL")
-  return _url.href
+  return _url.search
 }
 
 export default function ExtensionPills({
@@ -15,13 +14,48 @@ export default function ExtensionPills({
   extensions: string[]
 }) {
   const _url = new URL(url)
-  // const currentSegment = _url.searchParams.get("segments")
+  const urlExtension = _url.searchParams.get("extensions")
+  const params = useParams()
+  const navigation = useNavigation()
+  const navigate = useNavigate()
 
-  const navigate = useNavigation()
+  const isNavigating = navigation.state !== "idle"
 
-  const isNavigating = navigate.state !== "idle"
-  const navSearch = navigate.location?.search
+  function handleClick(e: React.ChangeEvent<HTMLSelectElement>) {
+    const target = e.target as HTMLSelectElement
+    const extension = target.value
+    if (!extension) return
+    navigate({
+      pathname: `/student/${params.studentFolderId}`,
+      search: setSearchParams2(_url.href, "extensions", extension),
+    })
+  }
 
+  return (
+    <>
+      {extensions && (
+        <select
+          className="select select-primary select-sm w-48 max-w-sm "
+          onChange={handleClick}
+          disabled={isNavigating}
+          value={"ファイルタイプで検索"}
+        >
+          <option disabled value="ファイルタイプで検索">
+            {urlExtension ?? "ファイルタイプで検索"}
+          </option>
+          <option value={"ALL"}>ALL</option>
+          {extensions.sort().map((extension, idx) => (
+            <option key={idx} value={extension}>
+              {extension}
+            </option>
+          ))}
+        </select>
+      )}
+    </>
+  )
+}
+
+/*
   return (
     <>
       {extensions &&
@@ -42,4 +76,5 @@ export default function ExtensionPills({
           ))}
     </>
   )
-}
+
+*/

@@ -1,7 +1,10 @@
-import { useNavigation } from "@remix-run/react"
-import { NavLinkPill } from "~/components/buttons/button"
-import { setSearchParams } from "~/lib/utils/utils"
+import { useNavigate, useNavigation, useParams } from "@remix-run/react"
 
+function setSearchParams2(url: string, key: string, value: string) {
+  const _url = new URL(url)
+  _url.searchParams.set(key, value ? value : "ALL")
+  return _url.search
+}
 export default function NendoPills({
   url,
   nendos,
@@ -10,27 +13,43 @@ export default function NendoPills({
   nendos: string[]
 }) {
   const _url = new URL(url)
-  // const currentNendo = _url.searchParams.get("nendo")
+  const urlNendo = _url.searchParams.get("nendo")
+  const params = useParams()
+  const navigation = useNavigation()
+  const navigate = useNavigate()
+  const isNavigating = navigation.state !== "idle"
 
-  const navigate = useNavigation()
+  function handleClick(e: React.ChangeEvent<HTMLSelectElement>) {
+    const target = e.target as HTMLSelectElement
+    const nendo = target.value
+    if (!nendo) return
+    navigate({
+      pathname: `/student/${params.studentFolderId}`,
+      search: setSearchParams2(_url.href, "nendo", nendo),
+    })
+  }
 
-  const isNavigating = navigate.state !== "idle"
-  const navSearch = navigate.location?.search
   return (
     <>
-      {nendos.map((_nendo) => (
-        <NavLinkPill
-          to={`${setSearchParams(_url.href, "nendo", _nendo)}`}
-          key={_nendo}
-          url={_url}
-          baseColor="bg-sfred-300"
-          hoverColor={"sfred"}
-          navSearch={navSearch}
-          isNavigating={isNavigating}
-          name={_nendo}
-          searchParam="nendo"
-        />
-      ))}
+      {nendos && (
+        <select
+          className="select select-primary select-sm w-48 max-w-sm "
+          onChange={handleClick}
+          disabled={isNavigating}
+          value={"年度で検索"}
+        >
+          <option disabled value={"年度で検索"}>
+            {urlNendo ?? "年度で検索"}
+          </option>
+          {nendos
+            .sort((a, b) => Number(b) - Number(a))
+            .map((nendo, idx) => (
+              <option key={idx} value={nendo}>
+                {nendo}
+              </option>
+            ))}
+        </select>
+      )}
     </>
   )
 }
