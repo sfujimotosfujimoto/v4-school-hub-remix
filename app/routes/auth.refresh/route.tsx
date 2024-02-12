@@ -101,22 +101,6 @@ export async function action({ request }: ActionFunctionArgs) {
   // await updateThumbnails(driveFiles)
 
   try {
-    // 3. update userJWT in session
-    // const userJWT = await updateUserJWT(
-    //   updatedUser.email,
-    //   new Date(expiry_date),
-    //   updatedUser.credential?.refreshTokenExpiry || new Date(),
-    // )
-    // const payload = await parseVerifyUserJWT(userJWT)
-    // if (!payload) {
-    //   return json({ ok: false }, { status: 400 })
-    // }
-
-    // logger.debug(
-    //   `✅ in auth.refresh action: new payload.exp ${new Date(
-    //     Number(payload.exp),
-    //   ).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}`,
-    // )
     const newUser = returnUser(updatedUser)
 
     return json({

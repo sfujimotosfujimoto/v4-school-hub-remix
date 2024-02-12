@@ -102,7 +102,7 @@ async function fetchRefresh(user: User) {
 
 const scopes = [
   "https://www.googleapis.com/auth/drive",
-  "https://www.googleapis.com/auth/spreadsheets",
+  "https://www.googleapis.com/auth/spreadsheets.readonly",
   "https://www.googleapis.com/auth/userinfo.email",
   "https://www.googleapis.com/auth/userinfo.profile",
 ]
@@ -120,10 +120,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
   // get authorization URL from created client
   const authUrl = oauth2Client.generateAuthUrl({
-    access_type: "offline",
+    access_type: "online",
     scope: scopes,
-    include_granted_scopes: true,
-    prompt: "consent select_account",
+    include_granted_scopes: false,
+    prompt: "select_account",
   })
 
   return redirect(authUrl, { status: 302 })

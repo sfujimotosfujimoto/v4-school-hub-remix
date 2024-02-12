@@ -18,5 +18,5 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const { userId } = await signin({ request, code })
 
-  return createUserSession(userId, "/student")
+  return createUserSession(userId, "/")
 }
