@@ -33,7 +33,16 @@ export async function signin({
   code: string
 }) {
   logger.debug("🍓 signin")
+
+  logger.debug(`💥 start: getClientFromCode`)
+  let start1 = performance.now()
+
   const { tokens } = await getClientFromCode(code)
+
+  let end1 = performance.now()
+  logger.debug(
+    `🔥   end: getClientFromCode time: ${(end1 - start1).toFixed(2)} ms`,
+  )
 
   // verify token with zod
   const result = TokenSchema.safeParse(tokens)
@@ -59,7 +68,13 @@ export async function signin({
     // throw redirectToSignin(request, { authstate: "no-access-token" })
   }
 
+  logger.debug(`💥 start: getUserInfo`)
+  let start2 = performance.now()
+
   const person = await getUserInfo(access_token)
+
+  let end2 = performance.now()
+  logger.debug(`🔥   end: getUserInfo time: ${(end2 - start2).toFixed(2)} ms`)
 
   if (!person) {
     throw errorResponses.unauthorized()
@@ -79,6 +94,9 @@ export async function signin({
     // throw redirectToSignin(request, { authstate: `not-seig-account` })
   }
 
+  logger.debug(`💥 start: upsert`)
+  let start3 = performance.now()
+
   let userPrisma = await prisma.user.upsert({
     where: {
       email: person.email,
@@ -93,7 +111,7 @@ export async function signin({
     },
   })
 
-  await prisma.$transaction([
+  prisma.$transaction([
     prisma.stats.upsert({
       where: {
         userId: userPrisma.id,
@@ -127,14 +145,18 @@ export async function signin({
     }),
   ])
 
+  let end3 = performance.now()
+  logger.debug(`🔥   end: upsert time: ${(end3 - start3).toFixed(2)} ms`)
+
   // if user passes email check, set user.activated to true
 
-  const updatedUser = await updateUser(userPrisma.id)
+  updateUser(userPrisma.id)
+  // const updatedUser = await updateUser(userPrisma.id)
 
-  if (!updatedUser) {
-    throw errorResponses.account()
-    // throw redirectToSignin(request, { authstate: `not-seig-account` })
-  }
+  // if (!updatedUser) {
+  //   throw errorResponses.account()
+  //   // throw redirectToSignin(request, { authstate: `not-seig-account` })
+  // }
 
   return {
     userId: userPrisma.id,
