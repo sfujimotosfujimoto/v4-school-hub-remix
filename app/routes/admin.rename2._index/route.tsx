@@ -35,7 +35,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
  * Action Function
  */
 export async function action({ request }: ActionFunctionArgs) {
-  logger.debug(`🍺 action: admin.rename2._index ${request.url}`)
+  logger.debug(`🍺 action: admin.rename._index ${request.url}`)
 
   // Zod Data Type
   const FormDataScheme = z.object({
@@ -104,7 +104,7 @@ export default function RenamePage() {
         data-name="admin.rename._index"
         className="mx-auto h-full w-full max-w-lg gap-4 rounded-md border-4 border-sfgreen-500 bg-slate-50 p-8 shadow-lg"
       >
-        RENAME2
+        rename
         {/* FORM */}
         <RenameForm />
         {/* CONFIRM FORM  */}
