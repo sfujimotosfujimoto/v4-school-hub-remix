@@ -1,19 +1,13 @@
 import { Form, useNavigation } from "@remix-run/react"
 import React from "react"
 import { TrashIcon } from "~/components/icons"
-import { useDriveFilesContext } from "~/context/drive-files-context"
 import { useTasksContext } from "~/context/tasks-context"
 import type { DriveFile } from "~/types"
 
-export default function DeleteButton({
-  driveFiles,
-}: {
-  driveFiles: DriveFile[]
-}) {
+export default function DeleteButton({ driveFile }: { driveFile: DriveFile }) {
   const { state, formData } = useNavigation()
   const dialogEl = React.useRef<HTMLDialogElement>(null)
   const { tasksDispatch } = useTasksContext()
-  const { driveFiles: _driveFiles } = useDriveFilesContext()
 
   const isExecuting =
     state === "submitting" && formData?.get("intent") === "delete"
@@ -22,7 +16,7 @@ export default function DeleteButton({
     tasksDispatch({
       type: "SET",
       payload: {
-        driveFiles: _driveFiles.filter((df) => df.meta?.selected),
+        driveFiles: [driveFile],
         taskType: "delete",
       },
     })
@@ -48,15 +42,13 @@ export default function DeleteButton({
           <h2 className="text-lg font-bold">
             これらのファイルをゴミ箱へ移動しますか？
           </h2>
-          <pre>{JSON.stringify(_driveFiles, null, 2)}</pre>
+          <pre>{JSON.stringify(driveFile, null, 2)}</pre>
 
           {/* Hidden fileIdsString */}
           <input
             type="hidden"
             name="fileIdsString"
-            value={JSON.stringify(
-              _driveFiles.filter((df) => df.meta?.selected).map((df) => df.id),
-            )}
+            value={JSON.stringify([driveFile.id])}
           />
 
           <button

@@ -41,6 +41,7 @@ export async function deleteExecuteAction(
   }
 
   let { fileIdsString } = result.data
+  console.log("✅ action: fileIdsString: ", fileIdsString)
 
   const fileIds = JSON.parse(fileIdsString || "[]")
   const fileIdsChunks = arrayIntoChunks<string>(fileIds, CHUNK_SIZE)
@@ -57,19 +58,31 @@ export async function deleteExecuteAction(
     // const resArr = await Promise.all([...promises])
     // const res = resArr.filter((d) => d).flat()
 
-    return json<ActionTypeGoogle>({
+    return {
       ok: true,
       intent: "execute",
       type: "delete",
-    })
+    }
+
+    // return json<ActionTypeGoogle>({
+    //   ok: true,
+    //   intent: "execute",
+    //   type: "delete",
+    // })
   } catch (error) {
     console.error(error)
-    return json<ActionTypeGoogle>({
+    return {
       ok: false,
       intent: "execute",
       type: "delete",
       error: `データ処理に問題が発生しました。ERROR#:DELETEEXECUTE-002`,
-    })
+    }
+    // return json<ActionTypeGoogle>({
+    //   ok: false,
+    //   intent: "execute",
+    //   type: "delete",
+    //   error: `データ処理に問題が発生しました。ERROR#:DELETEEXECUTE-002`,
+    // })
   }
 }
 
