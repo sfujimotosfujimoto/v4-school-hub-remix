@@ -23,8 +23,9 @@ import AllPill from "./all-pill"
 import ExtensionPills from "./extensions-pills"
 import FileCount from "./file-count"
 import SegmentPills from "./segment-pills"
+import { SearchIcon } from "~/components/icons"
 
-const CACHE_MAX_AGE = 60 * 10 // 10 minutes
+// const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
 /**
  * Loader
@@ -90,9 +91,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const { nendos, segments, extensions, tags } =
       getNendosSegmentsExtensionsTags(driveFiles, student)
 
-    const headers = new Headers()
+    // const headers = new Headers()
 
-    headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
+    // @todo student.$studentFolderId._index/route.tsx: Maybe use Etags?
+    // headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
 
     return json(
       {
@@ -108,9 +110,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         student,
         role: user.role,
       },
-      {
-        headers,
-      },
+      // {
+      //   headers,
+      // },
     )
   } catch (error) {
     console.error(error)
@@ -125,6 +127,8 @@ export default function StudentFolderIdIndexPage() {
   const navigation = useNavigation()
   const isNavigating = navigation.state !== "idle"
 
+  // const [searchParams, setSearchParams] = useSearchParams();
+
   const {
     studentFolderId,
     url,
@@ -137,36 +141,78 @@ export default function StudentFolderIdIndexPage() {
     role,
   } = useLoaderData<SerializeFrom<typeof loader>>()
 
+  const _url = new URL(url)
+  const urlNendo = _url.searchParams.get("nendo") || ""
+  const urlSegment = _url.searchParams.get("segments") || ""
+  const urlExtension = _url.searchParams.get("extensions") || ""
+  const urlTag = _url.searchParams.get("tags") || ""
+
+  // const intentString = _url.searchParams.get("intent") || ""
+  // const revalidator = useRevalidator()
+  // const [searchParams, setSearchParams] = useSearchParams()
+
+  // useEffect(() => {
+  //   if (intentString === "delete") {
+  //     revalidator.revalidate()
+  //     setSearchParams({ intent: "" })
+  //   }
+  // }, [intentString, revalidator, setSearchParams])
+
   const dfd = convertDriveFiles(driveFiles)
 
   // JSX -------------------------
   return (
     <section className="flex h-full flex-col space-y-4">
       <div className="flex flex-none items-center justify-between">
-        <BackButton />
+        <div className="flex items-center gap-2">
+          <BackButton />
+          <AllPill url={url} studentFolderId={studentFolderId} />
+          <div className="dropdown self-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="avatar btn btn-circle btn-sm bg-sky-400 hover:bg-sky-300"
+            >
+              <SearchIcon />
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu dropdown-content menu-sm z-[1] mt-3 w-56 rounded-box bg-slate-100 bg-opacity-80 p-2 shadow"
+            >
+              <div className="flex flex-wrap justify-center gap-2">
+                <NendoPills url={url} nendos={nendos} />
+                <ExtensionPills url={url} extensions={extensions} />
+
+                <TagPills url={url} tags={tags} />
+
+                <SegmentPills url={url} segments={segments} />
+              </div>
+            </ul>
+          </div>
+        </div>
         <FileCount driveFiles={dfd} />
       </div>
 
+      {/* TODO: Need to implement this */}
       <div className="flex flex-none flex-wrap gap-1">
-        <AllPill url={url} studentFolderId={studentFolderId} />
         {nendos.length > 0 && (
           <div className="divider divider-horizontal mx-0"></div>
         )}
         <AllCheckButtons role={role} driveFiles={dfd} />
-        <NendoPills url={url} nendos={nendos} />
-        {tags.length > 0 && (
-          <div className="divider divider-horizontal mx-0"></div>
-        )}
-        <TagPills url={url} tags={tags} />
-        {extensions.length > 0 && (
-          <div className="divider divider-horizontal mx-0"></div>
-        )}
-        <ExtensionPills url={url} extensions={extensions} />
-        {segments.length > 0 && (
-          <div className="divider divider-horizontal mx-0"></div>
-        )}
-        <SegmentPills url={url} segments={segments} />
       </div>
+
+      {/* SHOW SEARCH PARAMS USED CURRENTLY */}
+      {urlNendo ||
+        urlSegment ||
+        urlExtension ||
+        (urlTag && (
+          <div className="flex flex-wrap items-center gap-1 pt-2">
+            <Pill name="年度" text={urlNendo} color={"bg-sky-400"} />
+            <Pill name="単語" text={urlSegment} color={"bg-sfgreen-400"} />
+            <Pill name="タイプ" text={urlExtension} color={"bg-sfyellow-300"} />
+            <Pill name="タグ" text={urlTag} color={"bg-sfred-300"} />
+          </div>
+        ))}
 
       {/* STUDENTCARDS */}
       <div className="mb-12 mt-4 overflow-x-auto px-2">
@@ -288,6 +334,28 @@ function getNendosSegmentsExtensionsTags(
     extensions,
     tags,
   }
+}
+
+function Pill({
+  name,
+  text,
+  color,
+}: {
+  color: string
+  name: string
+  text: string
+}) {
+  if (!text) return null
+  return (
+    <>
+      <span
+        className={`select-none rounded-lg px-2 py-1 text-xs ${color} border-none font-bold shadow-md`}
+      >
+        {name}
+      </span>
+      <h3 className="ml-1 mr-2 select-none">{text}</h3>
+    </>
+  )
 }
 
 // @note student.$studentFolderId._index/route.tsx: This is needed because appProperties is sometimes string and sometimes object

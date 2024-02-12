@@ -5,7 +5,7 @@ import type {
   MetaFunction,
   SerializeFrom,
 } from "@remix-run/node"
-import { json } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import { useLoaderData, useParams, useRouteLoaderData } from "@remix-run/react"
 import { z } from "zod"
 import BackButton from "~/components/ui/buttons/back-button"
@@ -28,9 +28,9 @@ import { getUserFromSessionOrRedirect } from "~/lib/session.server"
 import { parseTags } from "~/lib/utils/utils"
 import { convertDriveFiles } from "~/lib/utils/utils-loader"
 import { logger } from "~/logger"
-import DeleteButton from "~/routes/files.$gakunen.$hr._index/delete-button"
 import PermissionTags from "./permission-tags"
 import ToFolderButton from "./to-folder-button"
+import DeleteButton from "./delete-button"
 
 const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
@@ -83,7 +83,7 @@ const FormDataScheme = z.object({
  * Action
  * /student/$studentFolderId/$fileId
  */
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   logger.debug(`🍺 action: student.$studentFolderId.$fileId ${request.url}`)
   const { user } = await getUserFromSessionOrRedirect(request)
   await requireAdminRole(request, user)
@@ -117,7 +117,18 @@ export async function action({ request }: ActionFunctionArgs) {
 
     case "delete": {
       logger.debug(`✅ action: delete`)
-      return await deleteExecuteAction(request, formData)
+      const res = await deleteExecuteAction(request, formData)
+
+      console.log(
+        "✅ student.$studentFolderId.$fileId/route.tsx ~ 	🌈 res ✅ ",
+        res,
+      )
+
+      return redirect(`/student/${params.studentFolderId}?intent=delete`, {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      })
       // logger.debug(`✅ action: "delete": ${fileIdsString}`)
       // return json({ ok: true })
       // return json({ ok: true, data: { fileIds } })
@@ -151,6 +162,17 @@ export default function StudentFolderIdFileIdPage() {
   const { driveFile, permissions, tags } =
     useLoaderData<SerializeFrom<typeof loader>>()
   // console.log("✅ student.$studentFolderId.$fileId/route.tsx")
+  // const actionData = useActionData<typeof action>()
+  // const { studentFolderId } = useParams()
+  // const navigate = useNavigate()
+
+  // if (actionData) {
+  //   if (actionData.ok) {
+  //     navigate(`/student/${studentFolderId}`)
+  //   } else {
+  //     toast.error(`データ処理に問題が発生しました。`)
+  //   }
+  // }
 
   const { role } = useRouteLoaderData("routes/student.$studentFolderId") as {
     role: Role
@@ -169,7 +191,7 @@ export default function StudentFolderIdFileIdPage() {
           <>
             <PropertyButton driveFiles={df ? [df] : []} tags={tags} />
             <BaseNameButton driveFiles={df ? [df] : []} />
-            <DeleteButton driveFiles={[df]} />
+            <DeleteButton driveFile={df} />
           </>
         )}
       </div>
