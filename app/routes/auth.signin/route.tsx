@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
-import { redirect } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import { Form, useNavigation } from "@remix-run/react"
 import clsx from "clsx"
 import { Button } from "~/components/buttons/button"
@@ -7,15 +7,8 @@ import { LogoIcon } from "~/components/icons"
 import DriveLogoIcon from "~/components/icons/drive-logo-icon"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 import { initializeClient } from "~/lib/google/google.server"
-import { redirectToSignin } from "~/lib/responses"
-import {
-  getRefreshUserFromSession,
-  getUserFromSession,
-  updateSession,
-} from "~/lib/session.server"
-import { toLocaleString } from "~/lib/utils/utils"
+import { getUserFromSession } from "~/lib/session.server"
 import { logger } from "~/logger"
-import type { User } from "~/types"
 
 /**
  * Loader
@@ -24,80 +17,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: auth.signin ${request.url}`)
   const { user } = await getUserFromSession(request)
 
-  // if user is expired, check for refresh token
-  if (!user) {
-    // get refresh token expiry
-    logger.debug("🐝 before getRefreshUserFromSession: in if (user)")
-    const refreshUser = await getRefreshUserFromSession(request)
-    if (!refreshUser) {
-      return null
-    }
-
-    const redirectUrl = new URL(request.url).searchParams.get("redirect")
-
-    const res = await fetchRefresh(refreshUser)
-
-    logger.info(
-      `👑 auth.signin: expiry: ${toLocaleString(
-        res.data.user.credential.expiry,
-      )}`,
-    )
-    if (!res.ok) {
-      throw redirectToSignin(request, {
-        authstate: "unauthorized-refresherror",
-      })
-      // throw redirect("/auth/signin?authstate=unauthorized-refresherror")
-    }
-
-    // update the session with the new values
-    const headers = await updateSession("userId", res.data.user.id)
-
-    // redirect to the same URL if the request was a GET (loader)
-    if (request.method === "GET") {
-      logger.debug(
-        `👑 auth.signin: request GET redirect: userId: ${res.data.user.id}`,
-      )
-      throw redirect(redirectUrl ? redirectUrl : request.url, { headers })
-    }
-  }
-
   // get redirect from search params
   const redirectUrl = new URL(request.url).searchParams.get("redirect")
   if (redirectUrl) {
     throw redirect(redirectUrl)
   }
 
-  throw redirect(`/student`)
-}
-
-async function fetchRefresh(user: User) {
-  logger.debug("🍺 fetchRefresh: ")
-
-  const res = await fetch(`${process.env.BASE_URL}/auth/refresh`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(
-      {
-        user,
-        email: user.email,
-        accessToken: user.credential?.accessToken,
-        refreshToken: user.credential?.refreshToken,
-      },
-      // (key, value) => (typeof value === "bigint" ? Number(value) : value),
-    ),
-  })
-    .then((res) => {
-      logger.debug("🍺 fetchRefresh: fetch res")
-      return res.json()
-    })
-    .catch((err) => {
-      console.error(`🍺 fetchRefresh: fetch error`, err.message, err)
-      return { error: "error in fetch" }
-    })
-
-  return res
+  return json({ user })
 }
 
 const scopes = [
@@ -133,6 +59,7 @@ export default function AuthSigninPage() {
   // console.log("✅ auth.signin/route.tsx ~ 	😀 ")
   const navigation = useNavigation()
   const isNavigating = navigation.state !== "idle"
+
   return (
     <>
       <section
