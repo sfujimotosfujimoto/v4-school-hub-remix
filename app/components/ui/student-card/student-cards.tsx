@@ -41,7 +41,7 @@ export default function StudentCards({
             )
           } else {
             return (
-              <Link prefetch="viewport" key={d.id} id="_StudentCard" to={`/`}>
+              <Link prefetch="intent" key={d.id} id="_StudentCard" to={`/`}>
                 <StudentCard
                   driveFile={d}
                   size={size}
