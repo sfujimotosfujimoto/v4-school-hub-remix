@@ -219,7 +219,6 @@ async function findStudentDataFromSegments(
   )
   // 1. add segemented name to meta
   // 2. if hr and hrNo, or lastname firstname in segments get it
-
   const newDriveFiles: DriveFile[] = []
   for await (const d of driveFiles) {
     const a = await _findStudentDataFromSegments(

@@ -1,9 +1,7 @@
 import * as jose from "jose"
 import { z } from "zod"
 import { logger } from "~/logger"
-
 import { redirect } from "@remix-run/node"
-
 import { prisma } from "./db.server"
 import { getClientFromCode, getUserInfo } from "./google/google.server"
 import { checkValidSeigEmail, toLocaleString } from "./utils/utils"
@@ -111,7 +109,7 @@ export async function signin({
     },
   })
 
-  prisma.$transaction([
+  await prisma.$transaction([
     prisma.stats.upsert({
       where: {
         userId: userPrisma.id,
