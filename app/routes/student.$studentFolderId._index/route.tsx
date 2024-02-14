@@ -1,5 +1,5 @@
-import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/node"
-import { json, useLoaderData, useNavigation } from "@remix-run/react"
+import type { LoaderFunctionArgs } from "@remix-run/node"
+import { Await, defer, useLoaderData, useNavigation } from "@remix-run/react"
 import AllCheckButtons from "~/components/ui/buttons/all-check-buttons"
 import BackButton from "~/components/ui/buttons/back-button"
 import NendoPills from "~/components/ui/pills/nendo-pills"
@@ -24,6 +24,8 @@ import ExtensionPills from "./extensions-pills"
 import FileCount from "./file-count"
 import SegmentPills from "./segment-pills"
 import { SearchIcon } from "~/components/icons"
+import { Suspense } from "react"
+import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
 
 // const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
@@ -51,10 +53,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const segmentsString = url.searchParams.get("segments")
   const extensionsString = url.searchParams.get("extensions")
 
-  try {
+  const promiseData: Promise<{
+    nendos: string[]
+    student: Student
+    segments: string[]
+    extensions: string[]
+    tags: string[]
+    driveFiles: DriveFile[]
+  }> = new Promise(async (resolve, reject) => {
     const drive = await getDrive(accessToken)
     if (!drive) throw redirectToSignin(request)
-
     // get sheets
     const sheets = await getSheets(accessToken)
     if (!sheets) throw redirectToSignin(request)
@@ -91,33 +99,29 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const { nendos, segments, extensions, tags } =
       getNendosSegmentsExtensionsTags(driveFiles, student)
 
-    // const headers = new Headers()
+    resolve({
+      student,
+      nendos,
+      segments,
+      extensions,
+      tags,
+      driveFiles,
+    })
+  })
 
-    // @todo student.$studentFolderId._index/route.tsx: Maybe use Etags?
-    // headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
+  // const headers = new Headers()
 
-    return json(
-      {
-        studentFolderId,
-        nendoString,
-        tagString,
-        url: request.url,
-        nendos,
-        segments,
-        extensions,
-        tags,
-        driveFiles,
-        student,
-        role: user.role,
-      },
-      // {
-      //   headers,
-      // },
-    )
-  } catch (error) {
-    console.error(error)
-    throw redirectToSignin(request)
-  }
+  // @todo student.$studentFolderId._index/route.tsx: Maybe use Etags?
+  // headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
+
+  return defer({
+    tagString,
+    url: request.url,
+    studentFolderId,
+    nendoString,
+    role: user.role,
+    promiseData,
+  })
 }
 
 /**
@@ -125,21 +129,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
  */
 export default function StudentFolderIdIndexPage() {
   const navigation = useNavigation()
-  const isNavigating = navigation.state !== "idle"
+  const isNavigating =
+    navigation.state !== "idle" && !!navigation.location.pathname
 
-  // const [searchParams, setSearchParams] = useSearchParams();
-
-  const {
-    studentFolderId,
-    url,
-    nendos,
-    tags,
-    extensions,
-    segments,
-    // student,
-    driveFiles,
-    role,
-  } = useLoaderData<SerializeFrom<typeof loader>>()
+  const { studentFolderId, url, role, promiseData } =
+    useLoaderData<typeof loader>()
 
   const _url = new URL(url)
   const urlNendo = _url.searchParams.get("nendo") || ""
@@ -147,81 +141,90 @@ export default function StudentFolderIdIndexPage() {
   const urlExtension = _url.searchParams.get("extensions") || ""
   const urlTag = _url.searchParams.get("tags") || ""
 
-  // const intentString = _url.searchParams.get("intent") || ""
-  // const revalidator = useRevalidator()
-  // const [searchParams, setSearchParams] = useSearchParams()
-
-  // useEffect(() => {
-  //   if (intentString === "delete") {
-  //     revalidator.revalidate()
-  //     setSearchParams({ intent: "" })
-  //   }
-  // }, [intentString, revalidator, setSearchParams])
-
-  const dfd = convertDriveFiles(driveFiles)
-
   // JSX -------------------------
   return (
     <section className="flex h-full flex-col space-y-4">
-      <div className="flex flex-none items-center justify-between">
-        <div className="flex items-center gap-2">
-          <BackButton />
-          <AllPill url={url} studentFolderId={studentFolderId} />
-          <div className="dropdown self-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="avatar btn btn-circle btn-sm bg-sky-400 hover:bg-sky-300"
-            >
-              <SearchIcon />
-            </div>
-            <ul
-              tabIndex={0}
-              className="menu dropdown-content menu-sm z-[1] mt-3 w-56 rounded-box bg-slate-100 bg-opacity-80 p-2 shadow"
-            >
-              <div className="flex flex-wrap justify-center gap-2">
-                <NendoPills url={url} nendos={nendos} />
-                <ExtensionPills url={url} extensions={extensions} />
+      <Suspense fallback={<SkeletonUI />} key={Math.random()}>
+        <Await
+          resolve={promiseData}
+          errorElement={
+            <ErrorBoundaryDocument
+              toHome={true}
+              message="ファイルが見つかりませんでした。"
+            />
+          }
+        >
+          {({ driveFiles, nendos, tags, extensions, segments }) => {
+            const dfd = convertDriveFiles(driveFiles)
 
-                <TagPills url={url} tags={tags} />
+            return (
+              <>
+                <div className="flex flex-none items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <BackButton />
+                    <AllPill url={url} studentFolderId={studentFolderId} />
+                    <div className="dropdown self-end">
+                      <div
+                        tabIndex={0}
+                        role="button"
+                        className="avatar btn btn-circle btn-sm bg-sky-400 hover:bg-sky-300"
+                      >
+                        <SearchIcon />
+                      </div>
+                      <ul
+                        tabIndex={0}
+                        className="menu dropdown-content menu-sm z-[1] mt-3 w-56 rounded-box bg-slate-100 bg-opacity-80 p-2 shadow"
+                      >
+                        <div className="flex flex-wrap justify-center gap-2">
+                          <NendoPills url={url} nendos={nendos} />
+                          <ExtensionPills url={url} extensions={extensions} />
 
-                <SegmentPills url={url} segments={segments} />
-              </div>
-            </ul>
-          </div>
-        </div>
-        <FileCount driveFiles={dfd} />
-      </div>
+                          <TagPills url={url} tags={tags} />
 
-      {/* TODO: Need to implement this */}
-      <div className="flex flex-none flex-wrap gap-1">
-        {nendos.length > 0 && (
-          <div className="divider divider-horizontal mx-0"></div>
-        )}
-        <AllCheckButtons role={role} driveFiles={dfd} />
-      </div>
-
-      {/* SHOW SEARCH PARAMS USED CURRENTLY */}
-      {urlNendo ||
-        urlSegment ||
-        urlExtension ||
-        (urlTag && (
-          <div className="flex flex-wrap items-center gap-1 pt-2">
-            <Pill name="年度" text={urlNendo} color={"bg-sky-400"} />
-            <Pill name="単語" text={urlSegment} color={"bg-sfgreen-400"} />
-            <Pill name="タイプ" text={urlExtension} color={"bg-sfyellow-300"} />
-            <Pill name="タグ" text={urlTag} color={"bg-sfred-300"} />
-          </div>
-        ))}
-
-      {/* STUDENTCARDS */}
-      <div className="mb-12 mt-4 overflow-x-auto px-2">
-        <StudentCards
-          role={role}
-          driveFiles={dfd}
-          isNavigating={isNavigating}
-        />
-      </div>
+                          <SegmentPills url={url} segments={segments} />
+                        </div>
+                      </ul>
+                    </div>
+                  </div>
+                  <FileCount driveFiles={dfd} />
+                </div>
+                {/* TODO: Need to implement this */}
+                <div className="flex flex-none flex-wrap gap-1">
+                  {nendos.length > 0 && (
+                    <div className="divider divider-horizontal mx-0"></div>
+                  )}
+                  <AllCheckButtons role={role} driveFiles={dfd} />
+                </div>
+                {/* SHOW SEARCH PARAMS USED CURRENTLY */}
+                {(urlNendo || urlSegment || urlExtension || urlTag) && (
+                  <div className="flex flex-wrap items-center gap-1">
+                    <Pill name="年度" text={urlNendo} color={"bg-sky-400"} />
+                    <Pill
+                      name="単語"
+                      text={urlSegment}
+                      color={"bg-sfgreen-400"}
+                    />
+                    <Pill
+                      name="タイプ"
+                      text={urlExtension}
+                      color={"bg-sfyellow-300"}
+                    />
+                    <Pill name="タグ" text={urlTag} color={"bg-sfred-300"} />
+                  </div>
+                )}
+                {/* STUDENTCARDS */}
+                <div className="mb-12 overflow-x-auto px-2">
+                  <StudentCards
+                    role={role}
+                    driveFiles={dfd}
+                    isNavigating={isNavigating}
+                  />
+                </div>
+              </>
+            )
+          }}
+        </Await>
+      </Suspense>
     </section>
   )
 }
@@ -370,4 +373,29 @@ function parseAppProperties(appProperties: string | object) {
     appProps = appProperties
   }
   return appProps
+}
+
+function SkeletonUI() {
+  return (
+    <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="flex w-full items-center gap-4">
+        <div className="skeleton h-16 w-16 shrink-0 rounded-full"></div>
+        <div className="flex flex-col gap-4">
+          <div className="skeleton h-4 w-60"></div>
+          <div className="skeleton h-4 w-64"></div>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="skeleton h-16 w-16 shrink-0 rounded-full"></div>
+        <div className="flex flex-col gap-4">
+          <div className="skeleton h-4 w-60"></div>
+          <div className="skeleton h-4 w-64"></div>
+        </div>
+      </div>
+      <div className="skeleton h-64"></div>
+      <div className="skeleton h-64"></div>
+      <div className="skeleton h-64"></div>
+      <div className="skeleton h-64"></div>
+    </div>
+  )
 }
