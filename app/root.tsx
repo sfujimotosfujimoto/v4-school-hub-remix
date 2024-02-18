@@ -40,7 +40,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const headers = new Headers()
     headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 1 hour
 
-    const user = await getUserFromSession(request)
+    const { user } = await getUserFromSession(request)
 
     if (!user?.email) {
       return { role: null, picture: null, email: null }

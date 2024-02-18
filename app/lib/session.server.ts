@@ -4,7 +4,7 @@ import { createCookieSessionStorage, redirect } from "@remix-run/node"
 
 import type { TypedResponse } from "@remix-run/node"
 import type { Credential, User } from "~/types"
-import { getRefreshUserById, getUserById } from "./user.server"
+import { getUserById } from "./user.server"
 import { redirectToSignin } from "./responses"
 import { toLocaleString } from "./utils/utils"
 import { SESSION_MAX_AGE } from "~/config"
@@ -77,16 +77,16 @@ export async function getSession(
 // used in [`root.tsx`, `user.server.ts`]
 export async function getUserFromSession(
   request: Request,
-): Promise<User | null> {
+): Promise<{ user: User | null; refreshUser: User | null }> {
   logger.debug(
     `👑 getUserFromSession: request ${request.url}, ${request.method}`,
   )
 
   const { userId } = await getSession(request)
 
-  const user = await getUserById(Number(userId))
+  const { user, refreshUser } = await getUserById(Number(userId))
 
-  return user
+  return { user, refreshUser }
 }
 
 export async function getUserFromSessionOrRedirect(request: Request): Promise<{
@@ -101,47 +101,48 @@ export async function getUserFromSessionOrRedirect(request: Request): Promise<{
 
   const userId = session.get("userId")
 
-  if (!userId) throw redirectToSignin(request)
+  if (!userId) throw redirectToSignin(request, { redirect: request.url })
 
-  const user = await getUserById(userId)
+  const { user } = await getUserById(userId)
 
-  if (!user || !user.credential) throw redirectToSignin(request)
+  if (!user || !user.credential)
+    throw redirectToSignin(request, { redirect: request.url })
   logger.debug(
-    `👑 getUserFromSession: exp ${toLocaleString(
+    `👑 getUserFromSessionOrRedirect: exp ${toLocaleString(
       user.credential?.expiry || 0,
     )} -- request.url ${request.url}`,
   )
   return { user, credential: user.credential }
 }
 
-export async function getRefreshUserFromSession(
-  request: Request,
-): Promise<User | null> {
-  logger.debug(
-    `👑 getRefreshUserFromSession: request ${request.url}, ${request.method}`,
-  )
-  const session = await sessionStorage.getSession(request.headers.get("Cookie"))
+// export async function getRefreshUserFromSession(
+//   request: Request,
+// ): Promise<User | null> {
+//   logger.debug(
+//     `👑 getRefreshUserFromSession: request ${request.url}, ${request.method}`,
+//   )
+//   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
 
-  const userIdSession = session.get("userId")
+//   const userIdSession = session.get("userId")
 
-  if (!userIdSession) return null
-  const userId = Number(userIdSession || 0)
-  // get UserBase from Prisma
-  const user = await getRefreshUserById(userId)
-  // console.log("✅ user", user)
-  // if no user, create in prisma db
-  if (!user) {
-    return null
-  }
+//   if (!userIdSession) return null
+//   const userId = Number(userIdSession || 0)
+//   // get UserBase from Prisma
+//   const user = await getRefreshUserById(userId)
+//   // console.log("✅ user", user)
+//   // if no user, create in prisma db
+//   if (!user) {
+//     return null
+//   }
 
-  logger.debug(
-    `👑 getRefreshUserFromSession: rexp ${toLocaleString(
-      user?.credential?.refreshTokenExpiry || 0,
-    )} -- requrest.url ${request.url}`,
-  )
+//   logger.debug(
+//     `👑 getRefreshUserFromSession: rexp ${toLocaleString(
+//       user?.credential?.refreshTokenExpiry || 0,
+//     )} -- requrest.url ${request.url}`,
+//   )
 
-  return user
-}
+//   return user
+// }
 
 export async function updateSession(
   key: string,

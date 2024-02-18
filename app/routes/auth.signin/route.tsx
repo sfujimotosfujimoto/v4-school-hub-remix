@@ -10,6 +10,7 @@ import { SCOPES } from "~/config"
 import { initializeClient, refreshToken } from "~/lib/google/google.server"
 import { createUserSession, getUserFromSession } from "~/lib/session.server"
 import { updateUserCredential } from "~/lib/user.server"
+import { toLocaleString } from "~/lib/utils/utils"
 import { logger } from "~/logger"
 
 /**
@@ -19,21 +20,26 @@ import { logger } from "~/logger"
  */
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: auth.signin ${request.url}`)
-  const user = await getUserFromSession(request)
+  const { user, refreshUser } = await getUserFromSession(request)
 
-  if (!user?.credential?.refreshToken) {
+  if (user) {
+    logger.debug(`✅ auth.signin: user found in session`)
+    return redirect("/dashboard")
+  }
+
+  if (!refreshUser?.credential?.refreshToken) {
     logger.debug("🐝 auth.signin: no refresh token found in DB user")
     return null
   }
 
-  // check refreshToken expiry
-  if (user.credential.expiry.getTime() < Date.now()) {
-    logger.debug("🐝 auth.signin:  refresh token expired")
+  // 2. refresh token calling google
+  const refreshTokenString = refreshUser?.credential?.refreshToken
+  if (!refreshTokenString) {
+    logger.debug(`✅ auth.signin: no refresh token found in DB user`)
     return null
   }
-
-  // 2. refresh token calling google
-  const token = await refreshToken(user.credential.refreshToken)
+  logger.debug(`✅ auth.signin: refreshTokenString: ${refreshTokenString}`)
+  const token = await refreshToken(refreshTokenString)
 
   // 3. update user credential with new token in DB
   const accessToken = token.credentials.access_token
@@ -43,8 +49,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return null
   }
 
+  logger.debug(`✅ auth.signin: new accessToken: ${accessToken}`)
   const updatedUser = await updateUserCredential(
-    user.id,
+    refreshUser.id,
     accessToken,
     expiryDate,
   )
@@ -53,14 +60,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return null
   }
 
+  logger.debug(
+    `✅ auth.signin: updatedUser: ${toLocaleString(updatedUser?.credential?.expiry || "")}`,
+  )
   // get redirect from search params
   const redirectUrl = new URL(request.url).searchParams.get("redirect")
   if (redirectUrl) {
-    return createUserSession(user.id, accessToken, redirectUrl)
+    return createUserSession(refreshUser.id, accessToken, redirectUrl)
   }
 
   // 4. Update session with new access_token
-  return createUserSession(user.id, accessToken, "/dashboard")
+  return createUserSession(refreshUser.id, accessToken, "/dashboard")
 }
 
 /**

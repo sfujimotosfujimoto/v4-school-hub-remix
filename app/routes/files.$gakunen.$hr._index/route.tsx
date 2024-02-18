@@ -133,8 +133,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
  */
 export async function action({ request }: ActionFunctionArgs) {
   logger.debug(`🍺 action: files.$gakunen.$hr._index ${request.url}`)
-  const user = await getUserFromSession(request)
-  if (!user || !user?.credential) throw redirectToSignin(request)
+  const { user } = await getUserFromSession(request)
+  if (!user || !user?.credential)
+    throw redirectToSignin(request, { redirect: request.url })
   await requireAdminRole(request, user)
 
   // Zod Data Type
