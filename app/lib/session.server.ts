@@ -2,13 +2,12 @@ import { logger } from "~/logger"
 
 import { createCookieSessionStorage, redirect } from "@remix-run/node"
 
-import { SESSION_MAX_AGE } from "./config"
-
 import type { TypedResponse } from "@remix-run/node"
 import type { Credential, User } from "~/types"
 import { getRefreshUserById, getUserById } from "./user.server"
 import { redirectToSignin } from "./responses"
 import { toLocaleString } from "./utils/utils"
+import { SESSION_MAX_AGE } from "~/config"
 const SESSION_SECRET = process.env.SESSION_SECRET
 if (!SESSION_SECRET) throw Error("session secret is not set")
 
@@ -26,9 +25,15 @@ export const sessionStorage = createCookieSessionStorage({
 
 // Sets session called "userJWT"  -------------------------
 // used in [`signin.server.ts`]
-export async function createUserSession(userId: number, redirectPath: string) {
+export async function createUserSession(
+  userId: number,
+  accessToken: string,
+  redirectPath: string,
+) {
   const session = await sessionStorage.getSession()
   session.set("userId", userId)
+  session.set("accessToken", accessToken)
+
   return redirect(redirectPath, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session),
@@ -53,9 +58,9 @@ export async function destroyUserSession(
 
 // Gets UserBase from Session -------------------------
 // used in [`root.tsx`, `user.server.ts`]
-export async function getUserFromSession(
+export async function getSession(
   request: Request,
-): Promise<User | null> {
+): Promise<{ userId: number | null; accessToken: string | null }> {
   logger.debug(
     `👑 getUserFromSession: request ${request.url}, ${request.method}`,
   )
@@ -63,27 +68,25 @@ export async function getUserFromSession(
   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
 
   const userId = session.get("userId")
-  if (!userId) return null
+  const accessToken = session.get("accessToken")
+  if (!userId || !accessToken) return { userId: null, accessToken: null }
 
-  const { user, refreshUser } = await getUserById(userId)
+  return { userId: userId, accessToken: accessToken }
+}
+// Gets UserBase from Session -------------------------
+// used in [`root.tsx`, `user.server.ts`]
+export async function getUserFromSession(
+  request: Request,
+): Promise<User | null> {
+  logger.debug(
+    `👑 getUserFromSession: request ${request.url}, ${request.method}`,
+  )
 
-  if (user) {
-    logger.debug(
-      `👑 getUserFromSession: exp ${toLocaleString(
-        user.credential?.expiry || "",
-      )} -- request.url ${request.url}`,
-    )
-    return { user }
-  } else if (!user && refreshUser) {
-    logger.debug(
-      `👑 getUserFromSession: rexp ${toLocaleString(
-        refreshUser.credential?.refreshTokenExpiry || "",
-      )} -- request.url ${request.url}`,
-    )
-    return { user }
-  } else {
-    return { user: null }
-  }
+  const { userId } = await getSession(request)
+
+  const user = await getUserById(Number(userId))
+
+  return user
 }
 
 export async function getUserFromSessionOrRedirect(request: Request): Promise<{
@@ -100,7 +103,7 @@ export async function getUserFromSessionOrRedirect(request: Request): Promise<{
 
   if (!userId) throw redirectToSignin(request)
 
-  const { user } = await getUserById(userId)
+  const user = await getUserById(userId)
 
   if (!user || !user.credential) throw redirectToSignin(request)
   logger.debug(

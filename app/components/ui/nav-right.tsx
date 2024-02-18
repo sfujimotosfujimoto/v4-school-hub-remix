@@ -23,6 +23,7 @@ const userSchema = z.object({
 
 export default function NavRight() {
   const loaderData = useLoaderData<Partial<User>>()
+  console.log("✅ NavRight.tsx ~ loaderData: ", loaderData)
 
   const result = userSchema.safeParse(loaderData)
 

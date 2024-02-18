@@ -79,3 +79,17 @@ export async function getUserInfo(accessToken: string) {
 
   return person
 }
+
+/**
+ * Refresh token
+ * used in
+ * `auth.signin/route.tsx`
+ */
+export async function refreshToken(refreshToken: string) {
+  const oauth2Client = initializeClient()
+  oauth2Client.setCredentials({
+    refresh_token: refreshToken,
+  })
+  const token = await oauth2Client.refreshAccessToken()
+  return token
+}

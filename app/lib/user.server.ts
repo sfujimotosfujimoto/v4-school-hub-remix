@@ -32,9 +32,7 @@ export const selectUser = {
   },
 }
 
-export async function getUserById(
-  userId: number,
-): Promise<{ user: User | null; refreshUser: User | null }> {
+export async function getUserById(userId: number): Promise<User | null> {
   logger.debug(`👑 getUserById: userId: ${userId}`)
 
   try {
@@ -51,26 +49,13 @@ export async function getUserById(
     })
 
     if (user) {
-      return { user, refreshUser: null }
+      return user
     }
 
-    const refreshUser = await prisma.user.findUnique({
-      where: {
-        id: userId,
-        credential: {
-          refreshTokenExpiry: { gt: new Date() },
-        },
-      },
-      select: {
-        ...selectUser,
-      },
-    })
-
-    return { user: user || null, refreshUser: refreshUser || null }
-    // return returnUser(user)
+    return null
   } catch (error) {
     console.error(`getUserById: ${error}`)
-    return { user: null, refreshUser: null }
+    return null
   }
 }
 
@@ -209,6 +194,31 @@ export async function updateUser(userId: number) {
 
 function returnUsers(prismaUsers: User[]) {
   return prismaUsers.map((user) => returnUser(user))
+}
+
+export async function updateUserCredential(
+  userId: number,
+  accessToken: string,
+  expiryDate: number,
+) {
+  if (accessToken && expiryDate) {
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        credential: {
+          update: {
+            accessToken,
+            expiry: new Date(expiryDate),
+          },
+        },
+      },
+    })
+    return user
+  } else {
+    return null
+  }
 }
 
 // // Get UserBase

@@ -1,18 +1,32 @@
-import { useRouteLoaderData } from "@remix-run/react"
+import { type LoaderFunctionArgs, json, redirect } from "@remix-run/node"
+import { useLoaderData, useRouteLoaderData } from "@remix-run/react"
 import { NavLinkButton } from "~/components/buttons/button"
 import { DriveLogoIcon, LogoIcon, LogoTextIcon } from "~/components/icons"
+import { getSession } from "~/lib/session.server"
 import type { loader as rootLoader } from "~/root"
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userSession = await getSession(request)
+
+  if (userSession && userSession.userId) {
+    return redirect("/dashboard")
+  }
+
+  return json({
+    userId: null,
+    accessToken: null,
+  })
+}
 
 export default function Index() {
   // const data = useRouteLoaderData<typeof rootLoader>("root")
-  // const { email } = useLoaderData<typeof loader>()
+  const { userId, accessToken } = useLoaderData<typeof loader>()
   const data = useRouteLoaderData<typeof rootLoader>("root")
 
   if (!data) {
     throw Error("no data")
   }
 
-  const { email } = data
   return (
     <section className="mx-auto flex h-full w-screen max-w-7xl flex-col items-center justify-center gap-8">
       <div className="flex items-center">
@@ -23,7 +37,16 @@ export default function Index() {
         <WhatIsSchoolHub />
         <Explanation />
       </div>
-      <LoginButton email={email} />
+      <LoginButton />
+      {userId && accessToken ? (
+        <div className="w-10/12 text-wrap">
+          <pre className="overflow-auto text-wrap">
+            {JSON.stringify({ userId, accessToken }, null, 2)}
+          </pre>
+        </div>
+      ) : (
+        <h1>No Session</h1>
+      )}
     </section>
   )
 }
@@ -58,31 +81,43 @@ function Explanation() {
   )
 }
 
-function LoginButton({ email }: { email?: string | null }) {
+function LoginButton() {
   return (
     <>
       <div className="relative flex w-full items-center justify-center gap-8 ">
-        {!email ? (
-          <NavLinkButton to="/auth/signin" size="md">
-            <LogoIcon className="h-7 w-4" />
-            <span id="signin" className="ml-2 sm:ml-4 sm:inline">
-              SCHOOL HUB サインイン
-            </span>
-          </NavLinkButton>
-        ) : (
-          <>
-            <div className="mt-8 flex flex-col gap-4">
-              <h3 className="text-xl ">Hello, </h3>
-              <h2 className="text-2xl font-bold text-sfblue-400">{email}</h2>
-              <NavLinkButton className="mt-4" to={`/student`} size="md">
-                <LogoIcon className="h-7 w-4" />
-                <DriveLogoIcon className="h-4 w-4" />
-                ダッシュボードへ
-              </NavLinkButton>
-            </div>
-          </>
-        )}
+        <NavLinkButton to="/auth/signin" size="md">
+          <LogoIcon className="h-7 w-4" />
+          <span id="signin" className="ml-2 sm:ml-4 sm:inline">
+            SCHOOL HUB サインイン
+          </span>
+        </NavLinkButton>
       </div>
     </>
   )
 }
+
+// function LoginButton({ userId }: { userId?: number | null | undefined }) {
+//   return (
+//     <>
+//       <div className="relative flex w-full items-center justify-center gap-8 ">
+//         {!userId ? (
+//           <NavLinkButton to="/auth/signin" size="md">
+//             <LogoIcon className="h-7 w-4" />
+//             <span id="signin" className="ml-2 sm:ml-4 sm:inline">
+//               SCHOOL HUB サインイン
+//             </span>
+//           </NavLinkButton>
+//         ) : (
+//           <>
+//             <div className="mt-8 flex flex-col gap-4">
+//               <NavLinkButton className="mt-4" to={`/dashboard`} size="md">
+//                 <DriveLogoIcon className="h-4 w-4" />
+//                 ダッシュボードへ
+//               </NavLinkButton>
+//             </div>
+//           </>
+//         )}
+//       </div>
+//     </>
+//   )
+// }

@@ -18,9 +18,9 @@ import {
   RenameIcon,
   UserIcon,
 } from "../icons"
-import type { User } from "~/types"
 import { z } from "zod"
 import clsx from "clsx"
+import type { loader } from "~/root"
 
 const userSchema = z.object({
   role: z.string().optional(),
@@ -28,7 +28,8 @@ const userSchema = z.object({
 })
 
 export default function Navigation() {
-  const loaderData = useLoaderData<Partial<User>>()
+  const loaderData = useLoaderData<typeof loader>()
+  console.log("✅ Navigation.tsx ~ loaderData: ", loaderData)
   let navigation = useNavigation()
 
   let loading = navigation.state !== "idle"
