@@ -26,3 +26,5 @@ export const CHUNK_SIZE = 7
 
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 14 // 14 days
 export const CACHE_MAX_AGE = 60 * 10 // 10 minutes
+
+export const REFRESH_EXPIRY = Date.now() + 1000 * 60 * 60 * 24 * 14 // 14 days

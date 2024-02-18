@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
+import { REFRESH_EXPIRY } from "~/config"
 import { prisma } from "~/lib/db.server"
 import { getRefreshedToken } from "~/lib/google/google.server"
 import { returnUser } from "~/lib/return-user"
@@ -11,8 +12,6 @@ export const config = {
   // @note auth.refresh/route.tsx: set maxDuration for production
   maxDuration: 60,
 }
-
-const REFRESH_EXPIRY = Date.now() + 1000 * 60 * 60 * 24
 
 /**
  * Loader function
