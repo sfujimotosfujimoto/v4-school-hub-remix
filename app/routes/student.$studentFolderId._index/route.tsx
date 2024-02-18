@@ -62,10 +62,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     driveFiles: DriveFile[]
   }> = new Promise(async (resolve, reject) => {
     const drive = await getDrive(accessToken)
-    if (!drive) throw redirectToSignin(request)
+    if (!drive) throw redirectToSignin(request, { redirect: request.url })
     // get sheets
     const sheets = await getSheets(accessToken)
-    if (!sheets) throw redirectToSignin(request)
+    if (!sheets) throw redirectToSignin(request, { redirect: request.url })
 
     // call drive and get DriveFileData[] of student
     let driveFiles = await getDriveFiles(
