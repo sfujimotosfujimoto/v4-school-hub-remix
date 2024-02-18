@@ -28,8 +28,8 @@ import MotionWrapper from "./components/ui/motion-wrapper"
 import Navigation from "./components/ui/navigation"
 import ErrorDocument from "./components/util/error-document"
 import { getUserFromSession } from "./lib/session.server"
+import { CACHE_MAX_AGE } from "./config"
 
-// const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 /**
  * Root loader
  */
@@ -38,39 +38,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     const headers = new Headers()
-    // headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 1 hour
+    headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 1 hour
 
-    const { user, refreshUser } = await getUserFromSession(request)
+    const user = await getUserFromSession(request)
 
-    if (user?.email) {
-      console.log(`🍿 ${user.last}${user.first} - ${user.email}`)
-      return json(
-        {
-          role: user.role,
-          picture: user.picture,
-          email: user.email,
-        },
-        {
-          headers,
-        },
-      )
-    } else if (refreshUser?.email) {
-      console.log(
-        `🍟 ${refreshUser.last}${refreshUser.first} - ${refreshUser.email}`,
-      )
-      return json(
-        {
-          role: refreshUser.role,
-          picture: refreshUser.picture,
-          email: refreshUser.email,
-        },
-        {
-          headers,
-        },
-      )
+    if (!user?.email) {
+      return { role: null, picture: null, email: null }
     }
-
-    return json({ role: null, picture: null, email: null })
+    console.log(`🍿 ${user.last}${user.first} - ${user.email}`)
+    return json(
+      {
+        role: user.role,
+        picture: user.picture,
+        email: user.email,
+      },
+      {
+        headers,
+      },
+    )
   } catch (error) {
     console.error(`root.tsx: ${error}`)
     return json({ role: null, picture: null, email: null })
