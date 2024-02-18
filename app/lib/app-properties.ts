@@ -1,4 +1,4 @@
-import { QUERY_FILE_FIELDS } from "./config"
+import { QUERY_FILE_FIELDS } from "~/config"
 
 export async function updateAppProperties(
   accessToken: string,

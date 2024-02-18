@@ -10,7 +10,7 @@ import { json, redirect } from "@remix-run/node"
 import type { ActionTypeGoogle, DriveFile } from "~/types"
 import { logger } from "~/logger"
 import { arrayIntoChunks } from "~/lib/utils/utils"
-import { CHUNK_SIZE } from "~/lib/config"
+import { CHUNK_SIZE } from "~/config"
 import { renameDriveFiles } from "~/lib/admin/rename/_index/actions/execute"
 
 // Zod Data Type

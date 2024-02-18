@@ -6,7 +6,7 @@ import { json, redirect } from "@remix-run/node"
 import type { ActionTypeGoogle } from "~/types"
 import { logger } from "~/logger"
 import { arrayIntoChunks, getSchoolYear } from "~/lib/utils/utils"
-import { CHUNK_SIZE } from "~/lib/config"
+import { CHUNK_SIZE } from "~/config"
 import { updateAppProperties } from "~/lib/app-properties"
 
 // Zod Data Type

@@ -4,7 +4,7 @@ import type { drive_v3, sheets_v4 } from "googleapis"
 import type { DriveFile, PermissionGoogle, RoleGoogle, Student } from "~/types"
 
 import { logger } from "~/logger"
-import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "../config"
+import { QUERY_FILES_FIELDS, QUERY_FILE_FIELDS } from "~/config"
 import { getFolderId, getGakusekiFromString } from "../utils/utils"
 
 import { getClient } from "./google.server"

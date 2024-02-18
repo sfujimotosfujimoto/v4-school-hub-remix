@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node"
 import type { drive_v3 } from "googleapis"
 import { z } from "zod"
-import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/lib/config"
+import { CHUNK_SIZE, QUERY_FILE_FIELDS } from "~/config"
 import { errorResponses } from "~/lib/error-responses"
 import { getDrive, mapFilesToDriveFiles } from "~/lib/google/drive.server"
 import { requireAdminRole } from "~/lib/require-roles.server"
