@@ -1,16 +1,20 @@
-import { type LoaderFunctionArgs, json } from "@remix-run/node"
-import { useLoaderData, useRouteLoaderData } from "@remix-run/react"
+import { type LoaderFunctionArgs, json, redirect } from "@remix-run/node"
+import { useLoaderData } from "@remix-run/react"
 import { NavLinkButton } from "~/components/buttons/button"
 import { DriveLogoIcon, LogoIcon, LogoTextIcon } from "~/components/icons"
 import { getSession } from "~/lib/session.server"
-import type { loader as rootLoader } from "~/root"
+// import type { loader as rootLoader } from "~/root"
 import { getUserById } from "~/lib/user.server"
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userSession = await getSession(request)
 
   if (userSession && userSession.userId) {
-    const user = await getUserById(userSession.userId)
+    const { user } = await getUserById(userSession.userId)
+
+    if (!user) {
+      return redirect("/auth/signin")
+    }
 
     return json(
       {
@@ -26,24 +30,33 @@ export async function loader({ request }: LoaderFunctionArgs) {
         },
       },
     )
+
+    // else {
+    //   const refreshUser = await getRefreshUserById(userSession.userId)
+    //   if (refreshUser) {
+    //     return redirect("/auth/refresh")
+    //   }
+    // }
   }
 
-  return json({
-    userId: null,
-    email: null,
-    accessToken: null,
-    role: null,
-  })
+  return redirect("/auth/signin")
+
+  // return json({
+  //   userId: null,
+  //   email: null,
+  //   accessToken: null,
+  //   role: null,
+  // })
 }
 
 export default function Dashboard() {
   // const data = useRouteLoaderData<typeof rootLoader>("root")
   const { userId, accessToken, email, role } = useLoaderData<typeof loader>()
-  const data = useRouteLoaderData<typeof rootLoader>("root")
+  // const data = useRouteLoaderData<typeof rootLoader>("root")
 
-  if (!data) {
-    throw Error("no data")
-  }
+  // if (!data) {
+  //   throw Error("no data")
+  // }
 
   return (
     <section className="mx-auto flex h-full w-screen flex-col items-center justify-center gap-8">
