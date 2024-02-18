@@ -1,5 +1,6 @@
 import { redirect, type LoaderFunctionArgs } from "@remix-run/node"
 import { z } from "zod"
+import { DEV_EXPIRY, DEV_REFERSH_EXPIRY, REFRESH_EXPIRY } from "~/config"
 import { prisma } from "~/lib/db.server"
 import { errorResponses } from "~/lib/error-responses"
 import { getClientFromCode, getUserInfo } from "~/lib/google/google.server"
@@ -55,16 +56,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
   let { expiry_date } = result.data
 
   // TODO: !!DEBUG!!: setting expiryDateDummy to 10 seconds
-  // const expiryDummy = new Date().getTime() + 1000 * 15
-  // expiry_date = expiryDummy
+  if (process.env.NODE_ENV === "development") {
+    expiry_date = DEV_EXPIRY
+  }
 
-  // let refreshTokenExpiryDummy = Date.now() + 1000 * 30 // 30 seconds
-  // let refreshTokenExpiry = refreshTokenExpiryDummy
-  const refreshTokenExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14) // 14 days
+  let refreshTokenExpiry = new Date(REFRESH_EXPIRY) // 14 days
+
+  if (process.env.NODE_ENV === "development") {
+    refreshTokenExpiry = new Date(DEV_REFERSH_EXPIRY)
+  }
 
   if (!access_token) {
     throw errorResponses.unauthorized()
-    // throw redirectToSignin(request, { authstate: "no-access-token" })
   }
 
   logger.debug(`💥 start: getUserInfo`)
