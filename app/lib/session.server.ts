@@ -55,7 +55,7 @@ export async function destroyUserSession(
 // used in [`root.tsx`, `user.server.ts`]
 export async function getUserFromSession(
   request: Request,
-): Promise<{ user: User | null; refreshUser: User | null }> {
+): Promise<User | null> {
   logger.debug(
     `👑 getUserFromSession: request ${request.url}, ${request.method}`,
   )
@@ -63,7 +63,7 @@ export async function getUserFromSession(
   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
 
   const userId = session.get("userId")
-  if (!userId) return { user: null, refreshUser: null }
+  if (!userId) return null
 
   const { user, refreshUser } = await getUserById(userId)
 
@@ -73,16 +73,16 @@ export async function getUserFromSession(
         user.credential?.expiry || "",
       )} -- request.url ${request.url}`,
     )
-    return { user, refreshUser: null }
+    return { user }
   } else if (!user && refreshUser) {
     logger.debug(
       `👑 getUserFromSession: rexp ${toLocaleString(
         refreshUser.credential?.refreshTokenExpiry || "",
       )} -- request.url ${request.url}`,
     )
-    return { user: null, refreshUser }
+    return { user }
   } else {
-    return { user: null, refreshUser: null }
+    return { user: null }
   }
 }
 
