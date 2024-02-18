@@ -29,7 +29,6 @@ const userSchema = z.object({
 
 export default function Navigation() {
   const loaderData = useLoaderData<typeof loader>()
-  console.log("✅ Navigation.tsx ~ loaderData: ", loaderData)
   let navigation = useNavigation()
 
   let loading = navigation.state !== "idle"

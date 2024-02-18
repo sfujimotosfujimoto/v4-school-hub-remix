@@ -45,7 +45,6 @@ export async function getRefreshedToken(
 export async function getClient(
   accessToken: string,
 ): Promise<Auth.OAuth2Client> {
-  logger.debug(`✅ getClient`)
   const client = initializeClient()
   client.setCredentials({ access_token: accessToken })
 
@@ -53,7 +52,6 @@ export async function getClient(
 }
 
 export function initializeClient(): Auth.OAuth2Client {
-  logger.debug(`✅ initializeClient`)
   const client = new google.auth.OAuth2(
     process.env.GOOGLE_API_CLIENT_ID,
     process.env.GOOGLE_API_CLIENT_SECRET,
@@ -63,7 +61,7 @@ export function initializeClient(): Auth.OAuth2Client {
 }
 
 export async function getUserInfo(accessToken: string) {
-  logger.debug(`✅ getUserInfo`)
+  // logger.debug(`✅ getUserInfo`)
   const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
 
   const resp = await fetch(url)
