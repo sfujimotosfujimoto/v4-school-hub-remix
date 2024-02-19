@@ -1,9 +1,7 @@
 import { type LoaderFunctionArgs, json, redirect } from "@remix-run/node"
-import { useLoaderData, useRouteLoaderData } from "@remix-run/react"
 import { NavLinkButton } from "~/components/buttons/button"
 import { DriveLogoIcon, LogoIcon, LogoTextIcon } from "~/components/icons"
 import { getSession } from "~/lib/session.server"
-import type { loader as rootLoader } from "~/root"
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userSession = await getSession(request)
@@ -20,12 +18,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   // const data = useRouteLoaderData<typeof rootLoader>("root")
-  const { userId, accessToken } = useLoaderData<typeof loader>()
-  const data = useRouteLoaderData<typeof rootLoader>("root")
-
-  if (!data) {
-    throw Error("no data")
-  }
 
   return (
     <section className="mx-auto flex h-full w-screen max-w-7xl flex-col items-center justify-center gap-8">
@@ -38,15 +30,6 @@ export default function Index() {
         <Explanation />
       </div>
       <LoginButton />
-      {userId && accessToken ? (
-        <div className="w-10/12 text-wrap">
-          <pre className="overflow-auto text-wrap">
-            {JSON.stringify({ userId, accessToken }, null, 2)}
-          </pre>
-        </div>
-      ) : (
-        <h1>No Session</h1>
-      )}
     </section>
   )
 }

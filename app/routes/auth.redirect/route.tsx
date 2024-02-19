@@ -57,13 +57,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   // TODO: !!DEBUG!!: setting expiryDateDummy to 10 seconds
   if (process.env.NODE_ENV === "development") {
-    expiry_date = DEV_EXPIRY
+    expiry_date = Date.now() + DEV_EXPIRY
   }
 
-  let refreshTokenExpiry = new Date(REFRESH_EXPIRY) // 14 days
+  let refreshTokenExpiry = new Date(Date.now() + REFRESH_EXPIRY) // 14 days
 
   if (process.env.NODE_ENV === "development") {
-    refreshTokenExpiry = new Date(DEV_REFERSH_EXPIRY)
+    refreshTokenExpiry = new Date(Date.now() + DEV_REFERSH_EXPIRY)
   }
 
   if (!access_token) {

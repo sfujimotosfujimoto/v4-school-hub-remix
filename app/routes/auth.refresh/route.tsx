@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
 import { REFRESH_EXPIRY } from "~/config"
+
 import { prisma } from "~/lib/db.server"
 import { getRefreshedToken } from "~/lib/google/google.server"
 import { returnUser } from "~/lib/return-user"
@@ -74,7 +75,7 @@ export async function action({ request }: ActionFunctionArgs) {
           accessToken: newAccessToken,
           expiry: new Date(expiry_date),
           refreshToken: newRefreshToken,
-          refreshTokenExpiry: new Date(REFRESH_EXPIRY),
+          refreshTokenExpiry: new Date(Date.now() + REFRESH_EXPIRY),
         },
       },
     },

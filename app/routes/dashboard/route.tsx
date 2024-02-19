@@ -30,33 +30,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
         },
       },
     )
-
-    // else {
-    //   const refreshUser = await getRefreshUserById(userSession.userId)
-    //   if (refreshUser) {
-    //     return redirect("/auth/refresh")
-    //   }
-    // }
   }
 
   return redirect("/auth/signin")
-
-  // return json({
-  //   userId: null,
-  //   email: null,
-  //   accessToken: null,
-  //   role: null,
-  // })
 }
 
 export default function Dashboard() {
-  // const data = useRouteLoaderData<typeof rootLoader>("root")
-  const { userId, accessToken, email, role } = useLoaderData<typeof loader>()
-  // const data = useRouteLoaderData<typeof rootLoader>("root")
-
-  // if (!data) {
-  //   throw Error("no data")
-  // }
+  const { userId, email, role } = useLoaderData<typeof loader>()
 
   return (
     <section className="mx-auto flex h-full w-screen flex-col items-center justify-center gap-8">
@@ -65,15 +45,6 @@ export default function Dashboard() {
         <LogoTextIcon className="w-40 sm:w-48" />
       </div>
       <RedirectButtons userId={userId} email={email} role={role} />
-      {userId && accessToken ? (
-        <div className="w-10/12 text-wrap">
-          <pre className="overflow-auto text-wrap">
-            {JSON.stringify({ userId, accessToken, role }, null, 2)}
-          </pre>
-        </div>
-      ) : (
-        <h1>No Session</h1>
-      )}
     </section>
   )
 }
