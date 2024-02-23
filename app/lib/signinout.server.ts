@@ -9,7 +9,7 @@ import { checkValidSeigEmail, toLocaleString } from "./utils/utils"
 import { updateUser } from "./user.server"
 import { errorResponses } from "./error-responses"
 const SESSION_SECRET = process.env.SESSION_SECRET
-if (!SESSION_SECRET) throw Error("session secret is not set")
+if (!SESSION_SECRET) throw new Error("Session secret is not set.") // Improved error message clarity
 
 const TokenSchema = z.object({
   token_type: z.string(),
@@ -33,11 +33,11 @@ export async function signin({
   logger.debug("🍓 signin")
 
   logger.debug(`💥 start: getClientFromCode`)
-  let start1 = performance.now()
+  const start1 = performance.now() // Changed let to const
 
   const { tokens } = await getClientFromCode(code)
 
-  let end1 = performance.now()
+  const end1 = performance.now()
   logger.debug(
     `🔥   end: getClientFromCode time: ${(end1 - start1).toFixed(2)} ms`,
   )
@@ -50,8 +50,8 @@ export async function signin({
     throw redirect(`/?authstate=unauthorized-001`)
   }
 
-  let { access_token, expiry_date, scope, token_type, refresh_token } =
-    result.data
+  const { access_token, expiry_date, scope, token_type, refresh_token } =
+    result.data // Changed let to const
 
   // TODO: !!DEBUG!!: setting expiryDateDummy to 10 seconds
   // const expiryDummy = new Date().getTime() + 1000 * 15
@@ -67,11 +67,11 @@ export async function signin({
   }
 
   logger.debug(`💥 start: getUserInfo`)
-  let start2 = performance.now()
+  const start2 = performance.now() // Changed let to const
 
   const person = await getUserInfo(access_token)
 
-  let end2 = performance.now()
+  const end2 = performance.now()
   logger.debug(`🔥   end: getUserInfo time: ${(end2 - start2).toFixed(2)} ms`)
 
   if (!person) {
@@ -93,9 +93,10 @@ export async function signin({
   }
 
   logger.debug(`💥 start: upsert`)
-  let start3 = performance.now()
+  const start3 = performance.now() // Changed let to const
 
-  let userPrisma = await prisma.user.upsert({
+  const userPrisma = await prisma.user.upsert({
+    // Changed let to const
     where: {
       email: person.email,
     },
@@ -143,7 +144,7 @@ export async function signin({
     }),
   ])
 
-  let end3 = performance.now()
+  const end3 = performance.now()
   logger.debug(`🔥   end: upsert time: ${(end3 - start3).toFixed(2)} ms`)
 
   // if user passes email check, set user.activated to true

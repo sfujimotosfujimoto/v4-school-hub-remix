@@ -1,3 +1,4 @@
+import { captureRemixErrorBoundaryError, withSentry } from "@sentry/remix";
 import { Toaster } from "react-hot-toast"
 
 import sharedStyles from "~/styles/shared.css"
@@ -207,7 +208,7 @@ function Document({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function App() {
+function App() {
   return (
     <Document>
       <Outlet />
@@ -215,9 +216,12 @@ export default function App() {
   )
 }
 
+export default withSentry(App);
+
 export function ErrorBoundary() {
   let error = useRouteError()
   console.error("root error:", error)
+  captureRemixErrorBoundaryError(error);
   return (
     <html lang="en" data-theme="mytheme">
       <head>

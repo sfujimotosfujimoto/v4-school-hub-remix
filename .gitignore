@@ -17,3 +17,9 @@ docs/
 .vercel
 .DS_Store
 app/.DS_Store
+
+# Sentry Config File
+.sentryclirc
+
+# Sentry Config File
+.env.sentry-build-plugin
