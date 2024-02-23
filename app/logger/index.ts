@@ -7,9 +7,20 @@ const stream = pretty({
   ignore: "hostname,pid",
 })
 
-export const logger = pino(
-  {
-    level: process.env.NODE_ENV === "development" ? "debug" : "info",
-  },
-  stream,
-)
+// export const logger = pino({
+//   level: "debug",
+//   crlf: true,
+
+// })
+
+export const logger =
+  process.env.NODE_ENV === "development"
+    ? pino(
+        {
+          level: process.env.NODE_ENV === "development" ? "debug" : "info",
+        },
+        stream,
+      )
+    : pino({
+        level: "info",
+      })
