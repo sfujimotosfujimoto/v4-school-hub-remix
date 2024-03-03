@@ -1,4 +1,4 @@
-import { captureRemixErrorBoundaryError, withSentry } from "@sentry/remix";
+import { captureRemixErrorBoundaryError, withSentry } from "@sentry/remix"
 import { Toaster } from "react-hot-toast"
 
 import sharedStyles from "~/styles/shared.css"
@@ -29,7 +29,7 @@ import MotionWrapper from "./components/ui/motion-wrapper"
 import Navigation from "./components/ui/navigation"
 import ErrorDocument from "./components/util/error-document"
 import { getUserFromSession } from "./lib/session.server"
-import { CACHE_MAX_AGE } from "./config"
+// import { CACHE_MAX_AGE } from "./config"
 
 /**
  * Root loader
@@ -39,7 +39,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     const headers = new Headers()
-    headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 1 hour
+    // headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 1 hour
 
     const { user } = await getUserFromSession(request)
 
@@ -164,7 +164,7 @@ function Document({ children }: { children: React.ReactNode }) {
         {/* MAIN */}
         <div
           data-name="root.tsx"
-          className="mx-auto grid h-full grid-rows-layout text-sfblue-300"
+          className="grid h-full mx-auto grid-rows-layout text-sfblue-300"
         >
           <Navigation />
           <LoadingModalProvider>
@@ -216,12 +216,12 @@ function App() {
   )
 }
 
-export default withSentry(App);
+export default withSentry(App)
 
 export function ErrorBoundary() {
   let error = useRouteError()
   console.error("root error:", error)
-  captureRemixErrorBoundaryError(error);
+  captureRemixErrorBoundaryError(error)
   return (
     <html lang="en" data-theme="mytheme">
       <head>
@@ -243,7 +243,7 @@ export function ErrorBoundary() {
                 : "Unknown Error"}
           </h2>
 
-          <p className="text-md mt-4">
+          <p className="mt-4 text-md">
             Contact:
             <a
               href="mailto:sfujimotosfujimoto@gmail.com"
