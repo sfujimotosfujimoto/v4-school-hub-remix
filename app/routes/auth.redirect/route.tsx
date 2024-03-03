@@ -1,4 +1,4 @@
-import { redirect, type LoaderFunctionArgs } from "@remix-run/node"
+import { type LoaderFunctionArgs } from "@remix-run/node"
 import { z } from "zod"
 import { DEV_EXPIRY, DEV_REFERSH_EXPIRY, REFRESH_EXPIRY } from "~/config"
 import { prisma } from "~/lib/db.server"
@@ -45,12 +45,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (!result.success) {
     console.error(result.error.errors)
-    throw redirect(`/`)
+    throw Error("could not parse token")
   }
 
   const { access_token, scope, token_type, refresh_token } = result.data
   if (!access_token) {
-    throw Error("no access token")
+    throw errorResponses.unauthorized()
   }
 
   let { expiry_date } = result.data
@@ -66,13 +66,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     refreshTokenExpiry = new Date(Date.now() + DEV_REFERSH_EXPIRY)
   }
 
-  if (!access_token) {
-    throw errorResponses.unauthorized()
-  }
-
   logger.debug(`💥 start: getUserInfo`)
   let start2 = performance.now()
 
+  // const  = await getSession(request)
   const person = await getUserInfo(access_token)
 
   let end2 = performance.now()
@@ -80,7 +77,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (!person) {
     throw errorResponses.unauthorized()
-    // throw redirectToSignin(request, { authstate: "unauthorized" })
   }
 
   logger.info(
@@ -113,44 +109,44 @@ export async function loader({ request }: LoaderFunctionArgs) {
     },
   })
 
-  await prisma.$transaction([
-    prisma.stats.upsert({
-      where: {
-        userId: userPrisma.id,
-      },
-      update: {},
-      create: {
-        userId: userPrisma.id,
-      },
-    }),
-    prisma.credential.upsert({
-      where: {
-        userId: userPrisma.id,
-      },
-      update: {
-        accessToken: access_token,
-        scope: scope,
-        tokenType: token_type,
-        expiry: new Date(expiry_date),
-        refreshToken: refresh_token,
-        refreshTokenExpiry: refreshTokenExpiry,
-      },
-      create: {
-        accessToken: access_token,
-        scope: scope,
-        tokenType: token_type,
-        expiry: new Date(expiry_date),
-        userId: userPrisma.id,
-        refreshToken: refresh_token,
-        refreshTokenExpiry: refreshTokenExpiry,
-      },
-    }),
-  ])
+  const statsUpsert = prisma.stats.upsert({
+    where: {
+      userId: userPrisma.id,
+    },
+    update: {},
+    create: {
+      userId: userPrisma.id,
+    },
+  })
+
+  const credentialUpsert = prisma.credential.upsert({
+    where: {
+      userId: userPrisma.id,
+    },
+    update: {
+      accessToken: access_token,
+      scope: scope,
+      tokenType: token_type,
+      expiry: new Date(expiry_date),
+      refreshToken: refresh_token,
+      refreshTokenExpiry: refreshTokenExpiry,
+    },
+    create: {
+      accessToken: access_token,
+      scope: scope,
+      tokenType: token_type,
+      expiry: new Date(expiry_date),
+      userId: userPrisma.id,
+      refreshToken: refresh_token,
+      refreshTokenExpiry: refreshTokenExpiry,
+    },
+  })
+
+  prisma.$transaction([statsUpsert])
+  await prisma.$transaction([credentialUpsert])
 
   let end3 = performance.now()
   logger.debug(`🔥   end: upsert time: ${(end3 - start3).toFixed(2)} ms`)
-
-  // if user passes email check, set user.activated to true
 
   updateUser(userPrisma.id)
 
