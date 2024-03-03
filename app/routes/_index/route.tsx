@@ -82,19 +82,19 @@ function LoginButton() {
 // function LoginButton({ userId }: { userId?: number | null | undefined }) {
 //   return (
 //     <>
-//       <div className="relative flex w-full items-center justify-center gap-8 ">
+//       <div className="relative flex items-center justify-center w-full gap-8 ">
 //         {!userId ? (
 //           <NavLinkButton to="/auth/signin" size="md">
-//             <LogoIcon className="h-7 w-4" />
+//             <LogoIcon className="w-4 h-7" />
 //             <span id="signin" className="ml-2 sm:ml-4 sm:inline">
 //               SCHOOL HUB サインイン
 //             </span>
 //           </NavLinkButton>
 //         ) : (
 //           <>
-//             <div className="mt-8 flex flex-col gap-4">
+//             <div className="flex flex-col gap-4 mt-8">
 //               <NavLinkButton className="mt-4" to={`/dashboard`} size="md">
-//                 <DriveLogoIcon className="h-4 w-4" />
+//                 <DriveLogoIcon className="w-4 h-4" />
 //                 ダッシュボードへ
 //               </NavLinkButton>
 //             </div>

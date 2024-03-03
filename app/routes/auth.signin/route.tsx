@@ -22,38 +22,42 @@ export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: auth.signin ${request.url}`)
   const { user, refreshUser } = await getUserFromSession(request)
 
+  // if user is already signed in, redirect to dashboard
   if (user) {
     logger.debug(`✅ auth.signin: user found in session`)
     return redirect("/dashboard")
   }
 
+  // if no refresh user found, return null
   if (!refreshUser?.credential?.refreshToken) {
     logger.debug("🐝 auth.signin: no refresh token found in DB user")
     return null
   }
 
-  // 2. refresh token calling google
+  // refresh token calling google
   const refreshTokenString = refreshUser?.credential?.refreshToken
   if (!refreshTokenString) {
     logger.debug(`✅ auth.signin: no refresh token found in DB user`)
     return null
   }
   logger.debug(`✅ auth.signin: refreshTokenString: ${refreshTokenString}`)
+
+  // get new access token using refresh token
   const token = await refreshToken(refreshTokenString)
 
-  // 3. update user credential with new token in DB
-  const accessToken = token.credentials.access_token
-  const expiryDate = token.credentials.expiry_date
+  // update user credential with new token in DB
+  const newAccessToken = token.credentials.access_token
+  const newExpiryDate = token.credentials.expiry_date
 
-  if (!accessToken || !expiryDate) {
+  if (!newAccessToken || !newExpiryDate) {
     return null
   }
 
-  logger.debug(`✅ auth.signin: new accessToken: ${accessToken}`)
+  logger.debug(`✅ auth.signin: new accessToken: ${newAccessToken}`)
   const updatedUser = await updateUserCredential(
     refreshUser.id,
-    accessToken,
-    expiryDate,
+    newAccessToken,
+    newExpiryDate,
   )
 
   if (!updatedUser) {
@@ -66,11 +70,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   // get redirect from search params
   const redirectUrl = new URL(request.url).searchParams.get("redirect")
   if (redirectUrl) {
-    return createUserSession(refreshUser.id, accessToken, redirectUrl)
+    return createUserSession(refreshUser.id, newAccessToken, redirectUrl)
   }
 
-  // 4. Update session with new access_token
-  return createUserSession(refreshUser.id, accessToken, "/dashboard")
+  // Update session with new access_token
+  return createUserSession(refreshUser.id, newAccessToken, "/dashboard")
 }
 
 /**
@@ -94,8 +98,10 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(authUrl, { status: 302 })
 }
 
+/**
+ * Auth Signin Page
+ */
 export default function AuthSigninPage() {
-  // console.log("✅ auth.signin/route.tsx ~ 	😀 ")
   const navigation = useNavigation()
   const isNavigating = navigation.state !== "idle"
 

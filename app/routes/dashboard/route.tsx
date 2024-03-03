@@ -90,7 +90,7 @@ function RedirectButtons({
                 </div>
                 {role && ["ADMIN", "SUPER"].includes(role) ? (
                   <>
-                    <div className=" mt-4">
+                    <div className="mt-4 ">
                       <h2 className="text-xl font-bold underline decoration-sfred-300 decoration-2 underline-offset-2">
                         ADMIN メニュー
                       </h2>
