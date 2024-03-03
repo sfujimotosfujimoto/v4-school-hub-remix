@@ -58,21 +58,21 @@ export default function Navigation() {
         )}
       >
         <div className="flex-1">
-          <a href="/" className="btn btn-ghost btn-sm flex gap-0 text-xl">
+          <a href="/" className="flex gap-0 text-xl btn btn-ghost btn-sm">
             <LogoIcon
               className={`h-7 w-8 ease-in-out sm:h-8 ${
                 loading && "animate-bounce duration-1000"
               }`}
             />
-            <LogoTextIcon className="hidden h-8 w-20 sm:block" />
+            <LogoTextIcon className="hidden w-20 h-8 sm:block" />
           </a>
         </div>
         <div className="flex-none">
-          <ul className="menu menu-horizontal menu-sm px-1">
+          <ul className="px-1 menu menu-horizontal menu-sm">
             {!role && (
               <li>
                 <NavLink to="/auth/signin">
-                  <LoginIcon className="h-5 w-5 sm:hidden" />
+                  <LoginIcon className="w-5 h-5 sm:hidden" />
                   <span className="hidden sm:block">サインイン</span>
                 </NavLink>
               </li>
@@ -82,13 +82,13 @@ export default function Navigation() {
               <>
                 <li>
                   <Link to="/student" className="">
-                    <ClassIcon className="h-4 w-4 sm:hidden" />
+                    <ClassIcon className="w-4 h-4 sm:hidden" />
                     <span className="hidden sm:block">生徒</span>
                   </Link>
                 </li>
                 <li>
                   <Link to="/files" className="">
-                    <UserIcon className="h-4 w-4 sm:hidden" />
+                    <UserIcon className="w-4 h-4 sm:hidden" />
                     <span className="hidden sm:block">ファイル</span>
                   </Link>
                 </li>
@@ -102,7 +102,7 @@ export default function Navigation() {
               <div
                 tabIndex={0}
                 role="button"
-                className="btn btn-ghost btn-sm rounded-btn font-normal"
+                className="font-normal btn btn-ghost btn-sm rounded-btn"
               >
                 メニュー
                 <svg
@@ -111,7 +111,7 @@ export default function Navigation() {
                   viewBox="0 0 24 24"
                   strokeWidth={2.0}
                   stroke="currentColor"
-                  className="h-3 w-3"
+                  className="w-3 h-3"
                 >
                   <path
                     strokeLinecap="round"
@@ -128,20 +128,20 @@ export default function Navigation() {
                   <>
                     <li>
                       <Link to="/admin/rename">
-                        <RenameIcon className="h-4 w-4 sm:hidden" />
+                        <RenameIcon className="w-4 h-4 sm:hidden" />
                         <span className="hidden sm:block">🐣 名前変更</span>
                       </Link>
                     </li>
                     <li>
                       <Link to="/admin/move">
-                        <PlaneIcon className="h-4 w-4 sm:hidden" />
+                        <PlaneIcon className="w-4 h-4 sm:hidden" />
                         <span className="hidden sm:block">🚙 移動</span>
                       </Link>
                     </li>
 
                     <li>
                       <Link to="/admin/rename-csv">
-                        <RenameIcon className="h-4 w-4 sm:hidden" />
+                        <RenameIcon className="w-4 h-4 sm:hidden" />
                         <span className="hidden sm:block">👨🏻‍💻 CSV名前変更</span>
                       </Link>
                     </li>
@@ -151,22 +151,22 @@ export default function Navigation() {
                 {["SUPER"].includes(role) && (
                   <>
                     {/* SUPER */}
-                    <div className="divider my-0" />
+                    <div className="my-0 divider" />
                     <li>
                       <Link to="/playground">
-                        <EyeIcon className="h-4 w-4 sm:hidden" />
+                        <EyeIcon className="w-4 h-4 sm:hidden" />
                         <span className="hidden sm:block">Playground</span>
                       </Link>
                     </li>
                     <li>
                       <Link to="/admin/list">
-                        <Dashboard className="h-4 w-4 sm:hidden" />
+                        <Dashboard className="w-4 h-4 sm:hidden" />
                         <span className="hidden sm:block">List</span>
                       </Link>
                     </li>
                     <li>
                       <Link to="/admin/create">
-                        <FolderIcon className="h-4 w-4 sm:hidden" />
+                        <FolderIcon className="w-4 h-4 sm:hidden" />
                         <span className="hidden sm:block">Create</span>
                       </Link>
                     </li>
@@ -202,7 +202,7 @@ export default function Navigation() {
               <li>
                 <Form method="post" action="/auth/signout" className="">
                   <button type="submit">
-                    <LoginIcon className="h-5 w-5 sm:hidden" />
+                    <LoginIcon className="w-5 h-5 sm:hidden" />
                     <span className="hidden sm:block">サインアウト</span>
                   </button>
                 </Form>
