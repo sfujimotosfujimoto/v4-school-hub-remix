@@ -56,25 +56,28 @@ export async function destroyUserSession(
   })
 }
 
-// Gets UserBase from Session -------------------------
-// used in [`root.tsx`, `user.server.ts`]
-export async function getSession(
-  request: Request,
-): Promise<{ userId: number | null; accessToken: string | null }> {
-  logger.debug(
-    `👑 getUserFromSession: request ${request.url}, ${request.method}`,
-  )
+/**
+ * Gets Session from Request Headers
+ */
+export async function getSession(request: Request): Promise<{
+  userId: number | null
+  accessToken: string | null
+}> {
+  logger.debug(`👑 getSession: request ${request.url}, ${request.method}`)
 
   const session = await sessionStorage.getSession(request.headers.get("Cookie"))
 
   const userId = session.get("userId")
   const accessToken = session.get("accessToken")
+
   if (!userId || !accessToken) return { userId: null, accessToken: null }
 
   return { userId: userId, accessToken: accessToken }
 }
-// Gets UserBase from Session -------------------------
-// used in [`root.tsx`, `user.server.ts`]
+
+/**
+ * Gets UserBase from Session
+ */
 export async function getUserFromSession(
   request: Request,
 ): Promise<{ user: User | null; refreshUser: User | null }> {
@@ -89,6 +92,9 @@ export async function getUserFromSession(
   return { user, refreshUser }
 }
 
+/**
+ * Gets UserBase from Session or Redirect
+ */
 export async function getUserFromSessionOrRedirect(request: Request): Promise<{
   user: User
   credential: Omit<Credential, "userId">
