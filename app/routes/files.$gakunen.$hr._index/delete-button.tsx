@@ -38,7 +38,7 @@ export default function DeleteButton({
         className={`h-full rounded-lg bg-sfgreen-400 px-2 py-[0.05rem] shadow-md transition-all duration-500  hover:-translate-y-[1px] hover:bg-sfgreen-300`}
       >
         <div className="flex items-center justify-center font-bold">
-          <TrashIcon className="mr-2 h-6 w-6" />
+          <TrashIcon className="w-6 h-6 mr-2" />
           <span className="text-xs">ゴミ箱へ</span>
         </div>
       </button>
@@ -48,7 +48,6 @@ export default function DeleteButton({
           <h2 className="text-lg font-bold">
             これらのファイルをゴミ箱へ移動しますか？
           </h2>
-          <pre>{JSON.stringify(_driveFiles, null, 2)}</pre>
 
           {/* Hidden fileIdsString */}
           <input
@@ -70,7 +69,7 @@ export default function DeleteButton({
             }`}
           >
             {isExecuting ? (
-              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-600 border-t-transparent "></span>
+              <span className="inline-block w-4 h-4 border-2 rounded-full animate-spin border-slate-600 border-t-transparent "></span>
             ) : (
               "実行"
             )}
