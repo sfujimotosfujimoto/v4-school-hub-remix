@@ -89,7 +89,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (!checkValidSeigEmail(person.email)) {
     throw errorResponses.account()
-    // throw redirectToSignin(request, { authstate: `not-seig-account` })
   }
 
   logger.debug(`💥 start: upsert`)

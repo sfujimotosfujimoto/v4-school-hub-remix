@@ -83,7 +83,10 @@ export async function getUserInfo(accessToken: string) {
  * used in
  * `auth.signin/route.tsx`
  */
-export async function refreshToken(refreshToken: string) {
+export async function refreshToken(refreshToken: string, expiry: Date) {
+  if (expiry.getTime() > new Date().getTime()) {
+    return null
+  }
   const oauth2Client = initializeClient()
   oauth2Client.setCredentials({
     refresh_token: refreshToken,

@@ -29,21 +29,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   // if no refresh user found, return null
-  if (!refreshUser?.credential?.refreshToken) {
+  const refreshTokenString = refreshUser?.credential?.refreshToken
+  const refreshTokenExpiry = refreshUser?.credential?.refreshTokenExpiry
+  if (!refreshTokenString || !refreshTokenExpiry) {
     logger.debug("🐝 auth.signin: no refresh token found in DB user")
     return null
   }
 
-  // refresh token calling google
-  const refreshTokenString = refreshUser?.credential?.refreshToken
-  if (!refreshTokenString) {
-    logger.debug(`✅ auth.signin: no refresh token found in DB user`)
-    return null
-  }
   logger.debug(`✅ auth.signin: refreshTokenString: ${refreshTokenString}`)
 
   // get new access token using refresh token
-  const token = await refreshToken(refreshTokenString)
+  const token = await refreshToken(refreshTokenString, refreshTokenExpiry)
+
+  if (!token) {
+    return null
+  }
 
   // update user credential with new token in DB
   const newAccessToken = token.credentials.access_token
