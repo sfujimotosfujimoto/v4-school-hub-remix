@@ -45,7 +45,7 @@ export default function RenameForm() {
     <div className="grid grid-cols-1 place-content-center">
       <h1
         data-name="RenameForm.tsx h1"
-        className="text-center text-3xl font-semibold underline decoration-sfred-200 underline-offset-4"
+        className="text-3xl font-semibold text-center underline decoration-sfred-200 underline-offset-4"
       >
         🐣 名前を変更
       </h1>
@@ -72,13 +72,13 @@ export default function RenameForm() {
               name="sourceFolderId"
               type="string"
               placeholder="変更元フォルダID"
-              className="input input-bordered input-primary w-full border-2"
+              className="w-full border-2 input input-bordered input-primary"
               required
               maxLength={300}
             />
 
             {/* <!-- GAKUNEN --> */}
-            <label className="label mt-2 text-sfblue-300" htmlFor="gakunen">
+            <label className="mt-2 label text-sfblue-300" htmlFor="gakunen">
               <div>
                 <span className="font-semibold">📚 学年を選択</span>
                 <p className="text-xs">
@@ -88,13 +88,13 @@ export default function RenameForm() {
             </label>
             <select
               name="gakunen"
-              className="group select input-bordered input-primary w-full border-2 "
+              className="w-full border-2 group select input-bordered input-primary "
               required
             >
               <option
                 disabled
                 value={undefined}
-                className="bg-red-400 text-blue-500 "
+                className="text-blue-500 bg-red-400 "
               >
                 --- 学年を選択 ---
               </option>
@@ -108,7 +108,7 @@ export default function RenameForm() {
             </select>
 
             {/* <!-- SEGMENT --> */}
-            <label className="label mt-2 text-sfblue-300" htmlFor="segment">
+            <label className="mt-2 label text-sfblue-300" htmlFor="segment">
               <div>
                 <span className="font-semibold">📄 ファイルベース名</span>
                 <p className="text-xs">
@@ -120,12 +120,12 @@ export default function RenameForm() {
               name="segment"
               type="string"
               placeholder="ファイルベース名"
-              className="input input-bordered input-primary w-full border-2"
+              className="w-full border-2 input input-bordered input-primary"
             />
 
             {/* <!-- INCLUDESUFFIX? --> */}
             <label
-              className="label mt-2 text-sfblue-300"
+              className="mt-2 label text-sfblue-300"
               htmlFor="includeSuffix"
             >
               <div>
@@ -145,7 +145,7 @@ export default function RenameForm() {
 
             {/* <!-- INCLUDEGAKUNENHRHRNO? --> */}
             <label
-              className="label mt-2 text-sfblue-300"
+              className="mt-2 label text-sfblue-300"
               htmlFor="includeGakunenHrHrNo"
             >
               <div>
@@ -166,7 +166,7 @@ export default function RenameForm() {
 
             {/* <!-- gakunenHrHrNoStart --> */}
             <label
-              className="label mt-2 text-sfblue-300"
+              className="mt-2 label text-sfblue-300"
               htmlFor="gakunenHrHrNoStart"
             >
               <div>

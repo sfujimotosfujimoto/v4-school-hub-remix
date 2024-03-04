@@ -14,7 +14,7 @@ export default function AdminForm({ user }: { user: User }) {
     <>
       <h1
         data-name="AdminForm.h1"
-        className="text-center text-3xl font-semibold"
+        className="text-3xl font-semibold text-center"
       >
         {user.last}
         {user.first}
@@ -29,11 +29,11 @@ export default function AdminForm({ user }: { user: User }) {
           {/* ACTIVE */}
           <div className="w-full">
             <label className="label" htmlFor="activated">
-              <span className="label-text text-base">アクティブ</span>
+              <span className="text-base label-text">アクティブ</span>
             </label>
             <select
               name="activated"
-              className="select w-full border border-sfgreen-200"
+              className="w-full border select border-sfgreen-200"
               defaultValue={String(user.activated)}
             >
               {[true, false].map((activated, idx) => {
@@ -58,11 +58,11 @@ export default function AdminForm({ user }: { user: User }) {
           {/* ROLE */}
           <div className="w-full">
             <label className="label" htmlFor="role">
-              <span className="label-text text-base">ロール</span>
+              <span className="text-base label-text">ロール</span>
             </label>
             <select
               name="role"
-              className="select w-full border border-sfgreen-200"
+              className="w-full border select border-sfgreen-200"
               defaultValue={user.role}
             >
               {["USER", "ADMIN"].map((role, idx) => {

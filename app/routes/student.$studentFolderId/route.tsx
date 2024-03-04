@@ -119,7 +119,7 @@ export default function StudentFolderIdLayout() {
       <NendoTagsProvider>
         <div
           data-name="student.$studentFolderId"
-          className="container mx-auto h-full p-4 sm:p-8"
+          className="container h-full p-4 mx-auto sm:p-8"
         >
           <div className="mb-4 space-y-4">
             {student && <StudentHeader student={student} />}

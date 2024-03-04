@@ -24,20 +24,20 @@ export default function MoveCards({
       {driveFiles?.length > 0 && (
         <div
           data-name="file count"
-          className="absolute right-0 top-0 ml-1 flex gap-1"
+          className="absolute top-0 right-0 flex gap-1 ml-1"
         >
-          <span className="text-md rounded-md bg-slate-300 px-2 py-1">
+          <span className="px-2 py-1 rounded-md text-md bg-slate-300">
             {driveFiles?.length} files
           </span>
 
-          <span className="text-md justify-content ml-2 flex items-center gap-1 rounded-md bg-slate-300 px-2 py-1">
-            <CheckIcon className="h-3 w-3 font-bold" />
+          <span className="flex items-center gap-1 px-2 py-1 ml-2 rounded-md text-md justify-content bg-slate-300">
+            <CheckIcon className="w-3 h-3 font-bold" />
             {driveFiles?.filter((df) => df.meta?.selected === true).length}{" "}
           </span>
         </div>
       )}
 
-      <article className="mx-auto max-w-5xl p-12">
+      <article className="max-w-5xl p-12 mx-auto">
         <div
           data-name="MoveCards.tsx"
           className="grid grid-cols-1 gap-4 pt-4 outline-sfgreen-400 md:grid-cols-2 xl:grid-cols-3"
@@ -68,7 +68,7 @@ function MoveCard({
 
   return (
     <div className="relative">
-      <article className="mx-auto max-w-5xl p-1">
+      <article className="max-w-5xl p-1 mx-auto">
         <div
           data-name="MoveCard"
           className={`card  shadow-lg transition-all duration-300 lg:card-side ${
@@ -84,7 +84,7 @@ function MoveCard({
                 payload: { id: driveFile.id, checked: !selected },
               })
             }}
-            className="checkbox-info checkbox checkbox-lg absolute -right-4 -top-4 border-none bg-slate-300 shadow-lg"
+            className="absolute border-none shadow-lg checkbox-info checkbox checkbox-lg -right-4 -top-4 bg-slate-300"
           />
           <div
             className={`card-body  ${
@@ -111,7 +111,7 @@ function MoveCard({
             {size === "big" && (
               <div className="flex gap-4">
                 <div className="flex items-center gap-1">
-                  <TimeIcon className="h-3 w-4" />
+                  <TimeIcon className="w-4 h-3" />
                   <span>
                     {dateFormat(
                       driveFile.createdTime
@@ -121,7 +121,7 @@ function MoveCard({
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <RenewIcon className="h-3 w-3" />
+                  <RenewIcon className="w-3 h-3" />
                   <span>
                     {dateFormat(
                       driveFile.modifiedTime
@@ -140,7 +140,7 @@ function MoveCard({
                   <div>
                     <h3 className="font-bold">TO:</h3>
                   </div>
-                  <div className="rounded-md bg-sky-500 px-2 py-1 text-white">
+                  <div className="px-2 py-1 text-white rounded-md bg-sky-500">
                     <a
                       href={`https://drive.google.com/drive/u/1/folders/${driveFile.meta.studentFolder.folderId}`}
                       target="_blank"
@@ -156,10 +156,10 @@ function MoveCard({
             <a
               href={createURLFromId(driveFile.parents?.at(0) || "")}
               target="_blank"
-              className="btn btn-neutral btn-sm mt-1 w-24"
+              className="w-24 mt-1 btn btn-neutral btn-sm"
               rel="noreferrer"
             >
-              <DriveLogoIcon className="h-3 w-3" />
+              <DriveLogoIcon className="w-3 h-3" />
             </a>
           </div>
         </div>

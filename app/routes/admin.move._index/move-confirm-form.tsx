@@ -94,7 +94,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
   }
 
   return (
-    <div className="mt-4 grid grid-cols-1 place-content-center">
+    <div className="grid grid-cols-1 mt-4 place-content-center">
       <h2 data-name="Form H1" className="mb-4 text-lg">
         🚙 ファイルを移動しますか？
       </h2>
@@ -135,7 +135,7 @@ export default function MoveConfirmForm({ role }: { role: Role }) {
             }`}
           >
             {isExecuting ? (
-              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-600 border-t-transparent "></span>
+              <span className="inline-block w-4 h-4 border-2 rounded-full animate-spin border-slate-600 border-t-transparent "></span>
             ) : (
               "実行"
             )}

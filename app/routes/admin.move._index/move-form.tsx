@@ -48,7 +48,7 @@ export default function MoveForm() {
     <div className="grid grid-cols-1 place-content-center">
       <h1
         data-name="MoveForm.tsx h1"
-        className="text-center text-3xl font-semibold underline decoration-sfred-200 underline-offset-4"
+        className="text-3xl font-semibold text-center underline decoration-sfred-200 underline-offset-4"
       >
         🚙 生徒フォルダに移動
       </h1>
@@ -79,13 +79,13 @@ export default function MoveForm() {
               name="sourceFolderId"
               type="string"
               placeholder="移動元フォルダID"
-              className="input input-bordered input-primary w-full border-2"
+              className="w-full border-2 input input-bordered input-primary"
               required
               maxLength={300}
             />
 
             {/* <!-- TAGS --> */}
-            <label className="label my-2 text-sfblue-300" htmlFor="tags">
+            <label className="my-2 label text-sfblue-300" htmlFor="tags">
               <div className="text-base font-normal">
                 <span className="font-semibold">
                   ✅ チェックの入っているファイルに追加するタグ
@@ -105,10 +105,10 @@ export default function MoveForm() {
               name="tagsString"
               type="string"
               placeholder="プロパティ名"
-              className="input input-bordered input-primary w-full border-2"
+              className="w-full border-2 input input-bordered input-primary"
               onChange={(e) => setTags(e.target.value)}
             />
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-2">
               {tags.trim() &&
                 tags
                   .trim()
@@ -117,7 +117,7 @@ export default function MoveForm() {
                   .map((t) => (
                     <span
                       key={t}
-                      className="rounded-lg bg-slate-300 px-2 py-1 text-sm shadow-sm"
+                      className="px-2 py-1 text-sm rounded-lg shadow-sm bg-slate-300"
                     >
                       {t.trim()}
                     </span>

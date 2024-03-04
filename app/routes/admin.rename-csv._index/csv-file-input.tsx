@@ -94,7 +94,7 @@ export default function CsvFileInput({
           />
           <small>ex. SCHOOL-HUB_RENAME_1689827123771.csv</small>
 
-          <div className="mt-2 w-full">
+          <div className="w-full mt-2">
             <button
               onClick={() => {
                 if (dialogEl1.current !== null) dialogEl1.current.showModal()
@@ -129,7 +129,7 @@ export default function CsvFileInput({
             }`}
           >
             {isExecuting ? (
-              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-600 border-t-transparent "></span>
+              <span className="inline-block w-4 h-4 border-2 rounded-full animate-spin border-slate-600 border-t-transparent "></span>
             ) : (
               "実行"
             )}

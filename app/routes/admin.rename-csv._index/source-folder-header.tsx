@@ -6,9 +6,9 @@ export default function SourceFolderHeader() {
 
   if (!sourceFolderName) return null
   return (
-    <div className="mt-4 flex cursor-default items-center justify-start p-1">
+    <div className="flex items-center justify-start p-1 mt-4 cursor-default">
       <p>変更元フォルダ名：</p>
-      <p className="rounded-md bg-sky-300 px-2 py-1 text-sm">
+      <p className="px-2 py-1 text-sm rounded-md bg-sky-300">
         {sourceFolderName}
       </p>
     </div>

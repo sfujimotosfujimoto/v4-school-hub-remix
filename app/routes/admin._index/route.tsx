@@ -8,26 +8,9 @@ import type { User } from "~/types"
 import Tables from "./tables"
 import { UsersSchema } from "~/types/schemas"
 
-// const userSchema = z.array(
-//   z.object({
-//     id: z.string(),
-//     email: z.string(),
-//     activated: z.boolean(),
-//     last: z.string(),
-//     first: z.string(),
-//     stats: z
-//       .object({
-//         count: z.number(),
-//         lastVisited: z.string(),
-//       })
-//       .optional(),
-//   }),
-// )
-
 /**
  * Loader
  */
-// activtated,last, first, stats.count, stats.lastVisited
 export async function loader({ request }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: admin._index ${request.url}`)
   const { user } = await getUserFromSessionOrRedirect(request)
@@ -78,7 +61,7 @@ export default function AdminPage() {
   return (
     <section
       data-name="admin._index"
-      className="mx-auto w-full max-w-5xl overflow-x-auto p-4"
+      className="w-full max-w-5xl p-4 mx-auto overflow-x-auto"
     >
       <div className="mx-auto max-h-[calc(100dvh-200px)] w-full overflow-x-auto">
         {!users && <h1>NO DATA</h1>}

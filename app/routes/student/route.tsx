@@ -72,8 +72,8 @@ export default function StudentLayout() {
 
   return (
     <>
-      <section data-name="/student" className="mx-auto h-full">
-        <div className="drawer mx-auto h-full">
+      <section data-name="/student" className="h-full mx-auto">
+        <div className="h-full mx-auto drawer">
           <input
             onChange={() => {
               // console.lo.debug("clicked")
@@ -89,7 +89,7 @@ export default function StudentLayout() {
           {/* <!-- Right Content --> */}
           <div
             data-name="__rightside-content"
-            className="drawer-content relative flex h-full flex-col items-center justify-start"
+            className="relative flex flex-col items-center justify-start h-full drawer-content"
           >
             <Outlet context={{ setGakunen, gakunen, hr, setHr, drawerRef }} />
 
@@ -97,9 +97,9 @@ export default function StudentLayout() {
             <label
               data-name="__hamburger-wrapper"
               htmlFor="my-drawer"
-              className="btn drawer-button btn-xs fixed bottom-10 left-4 z-10 h-10 w-10 rounded-full border-none bg-sky-400 bg-opacity-70 font-bold text-sfblue-300 shadow-lg hover:bg-sky-600 hover:bg-opacity-60 sm:bottom-16 sm:left-6 sm:h-12 sm:w-12 md:h-14 md:w-14"
+              className="fixed z-10 w-10 h-10 font-bold border-none rounded-full shadow-lg btn drawer-button btn-xs bottom-10 left-4 bg-sky-400 bg-opacity-70 text-sfblue-300 hover:bg-sky-600 hover:bg-opacity-60 sm:bottom-16 sm:left-6 sm:h-12 sm:w-12 md:h-14 md:w-14"
             >
-              <MenuIcon className="h-6 w-6 sm:h-10 sm:w-10" />
+              <MenuIcon className="w-6 h-6 sm:h-10 sm:w-10" />
             </label>
           </div>
 

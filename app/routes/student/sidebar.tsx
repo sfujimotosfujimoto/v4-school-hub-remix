@@ -26,14 +26,14 @@ export default function Sidebar({
     <div
       id="sidebar"
       data-name="sidebar.tsx"
-      className="drawer-side rounded-md text-sfblue-300 shadow-md"
+      className="rounded-md shadow-md drawer-side text-sfblue-300"
     >
       <label htmlFor="my-drawer" className="drawer-overlay" />
 
       {studentData ? (
         <ul className="menu w-[240px] items-start bg-sfgreen-200 pt-20">
           {studentData.length === 0 && (
-            <li className="join-item flex flex-col items-center justify-center">
+            <li className="flex flex-col items-center justify-center join-item">
               <h1 className="mx-auto text-3xl font-bold">No Data</h1>
             </li>
           )}
@@ -56,7 +56,7 @@ export default function Sidebar({
           ))}
         </ul>
       ) : (
-        <div className="flex h-full flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center h-full">
           <SpinnerIcon />
         </div>
       )}

@@ -30,7 +30,7 @@ export default function RenameCsvForm() {
     <div className="grid grid-cols-1 place-content-center">
       <h1
         data-name="RenameCsvForm.tsx h1"
-        className="text-center text-3xl font-semibold underline decoration-sfred-200 underline-offset-4"
+        className="text-3xl font-semibold text-center underline decoration-sfred-200 underline-offset-4"
       >
         👨🏻‍💻 CSVファイルで名前を変更
       </h1>
@@ -61,7 +61,7 @@ export default function RenameCsvForm() {
               name="sourceFolderId"
               type="string"
               placeholder="変更元フォルダID"
-              className="input input-bordered input-primary w-full border-2 text-sfblue-300"
+              className="w-full border-2 input input-bordered input-primary text-sfblue-300"
               required
               maxLength={300}
             />
@@ -111,7 +111,7 @@ function DownloadLink({
 }) {
   if (!driveFiles || driveFiles.length === 0 || !blob) return null
   return (
-    <div className="my-4 flex flex-col">
+    <div className="flex flex-col my-4">
       <div className="mb-4">
         <h2
           data-name="Form H1"

@@ -36,11 +36,11 @@ export default function LoginButton() {
 
   return (
     <>
-      <div className="relative flex w-full items-center justify-center gap-8 text-sfblue-300">
+      <div className="relative flex items-center justify-center w-full gap-8 text-sfblue-300">
         {!role ? (
           <Form reloadDocument method="POST" action="/auth/signin">
             <button type="submit" className={`btn btn-success w-48 shadow-lg`}>
-              <LogoIcon className="h-7 w-4" />
+              <LogoIcon className="w-4 h-7" />
               <span className="sm:ml-2 sm:inline">サインイン</span>
             </button>
           </Form>

@@ -6,7 +6,7 @@ import type { User } from "~/types"
 
 export default function Tables({ users }: { users: User[] }) {
   return (
-    <table className="table table-zebra table-pin-rows table-xs rounded-lg border border-slate-300 bg-slate-100 text-sm">
+    <table className="table text-sm border rounded-lg table-zebra table-pin-rows table-xs border-slate-300 bg-slate-100">
       <thead>
         <tr>
           <th />

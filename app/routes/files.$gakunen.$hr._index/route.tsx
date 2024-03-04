@@ -236,7 +236,7 @@ export default function FilesGakunenHrQueryPage() {
   if (driveFiles.length === 0) {
     return (
       <p>
-        <span className="btn btn-xs m-1 bg-slate-400">ファイル名</span>
+        <span className="m-1 btn btn-xs bg-slate-400">ファイル名</span>
         を選択してください。
       </p>
     )
@@ -245,7 +245,7 @@ export default function FilesGakunenHrQueryPage() {
   return (
     <div
       data-name="files.$gakunen.$hr._index"
-      className="mb-12 mt-4 overflow-x-auto"
+      className="mt-4 mb-12 overflow-x-auto"
     >
       <div className="flex items-center gap-4">
         {/* PROPERTY BUTTON */}
@@ -277,10 +277,10 @@ export default function FilesGakunenHrQueryPage() {
       </div>
 
       {/* TAGS & NENDOS */}
-      <div className="mt-2 flex flex-none flex-wrap gap-1">
+      <div className="flex flex-wrap flex-none gap-1 mt-2">
         <NendoPills url={url} nendos={nendos} />
         {tags.length > 0 && (
-          <div className="divider divider-horizontal mx-0"></div>
+          <div className="mx-0 divider divider-horizontal"></div>
         )}
         <TagPills url={url} tags={tags} />
       </div>
@@ -290,13 +290,13 @@ export default function FilesGakunenHrQueryPage() {
           {" "}
           <div
             data-name="file count"
-            className="absolute right-0 top-0 ml-1 flex gap-1"
+            className="absolute top-0 right-0 flex gap-1 ml-1"
           >
-            <span className="text-md rounded-md bg-slate-300 p-1">
+            <span className="p-1 rounded-md text-md bg-slate-300">
               {driveFiles.length} files
             </span>
-            <span className="text-md justify-content ml-2 flex items-center gap-1 rounded-md bg-slate-300 px-2 py-1">
-              <CheckIcon className="h-3 w-3 font-bold" />
+            <span className="flex items-center gap-1 px-2 py-1 ml-2 rounded-md text-md justify-content bg-slate-300">
+              <CheckIcon className="w-3 h-3 font-bold" />
               {
                 driveFiles?.filter((df) => df.meta?.selected === true).length
               }{" "}
@@ -309,7 +309,7 @@ export default function FilesGakunenHrQueryPage() {
           />
           {/* <!-- ACTION CARD BLOCK --> */}
           {["ADMIN", "SUPER"].includes(role) && (
-            <article className="mx-auto w-full max-w-5xl p-12">
+            <article className="w-full max-w-5xl p-12 mx-auto">
               <h2 className="text-2xl font-bold underline decoration-sfred-200 underline-offset-4">
                 💽 履歴データ
               </h2>

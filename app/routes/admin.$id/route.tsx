@@ -127,9 +127,9 @@ export default function AdminIdPage() {
   return (
     <section
       data-name="admin.$id.tsx"
-      className="grid h-full w-full grid-cols-1 place-content-center p-8"
+      className="grid w-full h-full grid-cols-1 p-8 place-content-center"
     >
-      <article className="mx-auto h-full w-full max-w-sm rounded-md border-4 border-sfgreen-200 bg-slate-50 p-8 shadow-md">
+      <article className="w-full h-full max-w-sm p-8 mx-auto border-4 rounded-md shadow-md border-sfgreen-200 bg-slate-50">
         <div className="grid grid-cols-1 place-content-center">
           {user && <AdminForm user={user} />}
         </div>

@@ -31,14 +31,14 @@ export default function FilesLayout() {
   const [hr, setHr] = React.useState<Hr>("ALL")
   return (
     <TasksProvider>
-      <section data-name="files.tsx_(Layout)" className="mx-auto h-full">
+      <section data-name="files.tsx_(Layout)" className="h-full mx-auto">
         <div
           data-name="__overflow-wrapper h-full"
           className="h-full overflow-x-auto "
         >
           <div
             data-name="__wrapper"
-            className="container mx-auto h-full p-8 pt-14 sm:pt-8"
+            className="container h-full p-8 mx-auto pt-14 sm:pt-8"
           >
             <Outlet context={{ setGakunen, gakunen, hr, setHr }} />
           </div>

@@ -28,14 +28,14 @@ export default function FilesPage() {
   return (
     <div
       data-name="files._index"
-      className="flex h-full flex-col items-center justify-center"
+      className="flex flex-col items-center justify-center h-full"
     >
-      <div className="mb-4 flex border-b-4 border-sfred-400 text-4xl font-semibold decoration-sfred-400 underline-offset-4">
+      <div className="flex mb-4 text-4xl font-semibold border-b-4 border-sfred-400 decoration-sfred-400 underline-offset-4">
         <h2>ファイルを検索</h2>
       </div>
       <div
         id="__border-wrapper"
-        className="rounded-2xl border-2 border-sfgreen-400 bg-slate-100 p-4 shadow-lg"
+        className="p-4 border-2 shadow-lg rounded-2xl border-sfgreen-400 bg-slate-100"
       >
         <div
           id="__flex-wrapper"
@@ -56,7 +56,7 @@ export default function FilesPage() {
               gakunen === "ALL" || hr === "ALL" ? "btn-disabled" : null
             }`}
           >
-            <LogoIcon className="h-7 w-4" />
+            <LogoIcon className="w-4 h-7" />
             <span className="ml-2 sm:ml-4 sm:inline">GO</span>
           </NavLink>
         </div>

@@ -9,7 +9,7 @@ export default function RenameLayout() {
       <RenamePageProvider>
         <section
           data-name="admin.rename"
-          className="grid h-full w-full grid-cols-1 place-content-center gap-4 p-8"
+          className="grid w-full h-full grid-cols-1 gap-4 p-8 place-content-center"
         >
           <Outlet />
         </section>

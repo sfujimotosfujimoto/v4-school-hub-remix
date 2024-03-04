@@ -8,8 +8,8 @@ export default function FileCount({
   return (
     <>
       {driveFiles && (
-        <div data-name="file count" className="ml-1 inline-block">
-          <span className="text-md rounded-md bg-slate-300 px-2 py-1">
+        <div data-name="file count" className="inline-block ml-1">
+          <span className="px-2 py-1 rounded-md text-md bg-slate-300">
             {driveFiles.length} files
           </span>
         </div>

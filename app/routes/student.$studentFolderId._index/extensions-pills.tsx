@@ -35,7 +35,7 @@ export default function ExtensionPills({
     <>
       {extensions && (
         <select
-          className="select select-primary select-sm w-48 max-w-sm "
+          className="w-48 max-w-sm select select-primary select-sm "
           onChange={handleClick}
           disabled={isNavigating}
           value={"ファイルタイプで検索"}

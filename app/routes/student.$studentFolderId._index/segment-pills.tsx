@@ -41,7 +41,7 @@ export default function SegmentPills({
     <>
       {segments && (
         <select
-          className="select select-primary select-sm w-48 max-w-sm "
+          className="w-48 max-w-sm select select-primary select-sm "
           onChange={handleClick}
           disabled={isNavigating}
           value={"単語で検索"}

@@ -96,7 +96,7 @@ export default function FilesGakunenHrLayout() {
     <div data-name="files.$gakunen.$hr_(Layout)" className="relative">
       <div
         data-name="GakunenHeader"
-        className="mb-4 flex items-center border-b-4 border-sfred-400 text-4xl font-semibold decoration-sfred-400 underline-offset-4"
+        className="flex items-center mb-4 text-4xl font-semibold border-b-4 border-sfred-400 decoration-sfred-400 underline-offset-4"
       >
         <h1>{gakunen === "ALL" ? "" : gakunen}</h1>
         <h1>{hr === "ALL" ? "" : hr}</h1>
@@ -105,7 +105,7 @@ export default function FilesGakunenHrLayout() {
         </h1>
       </div>
 
-      <div className="mb-4 flex items-center gap-4">
+      <div className="flex items-center gap-4 mb-4">
         {/* Back Button */}
         <BackButton isLink={true} to={`/files`} />
         {/* GO button */}
@@ -116,7 +116,7 @@ export default function FilesGakunenHrLayout() {
           }`}
           size="sm"
         >
-          <LogoIcon className="h-7 w-4" />
+          <LogoIcon className="w-4 h-7" />
           <span className="ml-2 sm:ml-4 sm:inline">GO</span>
         </NavLinkButton>
       </div>
@@ -178,7 +178,7 @@ function Segments({
                 type="checkbox"
                 name="segment"
                 id={segment}
-                className="segmentInput peer hidden"
+                className="hidden segmentInput peer"
                 value={segment}
                 onChange={(e) => {
                   if (e.target.checked) {
@@ -195,7 +195,7 @@ function Segments({
 
               <label
                 htmlFor={segment}
-                className="btn btn-warning btn-xs m-1 cursor-pointer select-none border-none peer-checked:bg-sfred-300"
+                className="m-1 border-none cursor-pointer select-none btn btn-warning btn-xs peer-checked:bg-sfred-300"
               >
                 {segment}
               </label>

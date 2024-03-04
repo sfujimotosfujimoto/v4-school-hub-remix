@@ -32,7 +32,7 @@ export default function CsvUndoFileInput() {
 
   return (
     <>
-      <div className="rounded-lg bg-slate-500 p-4 text-white">
+      <div className="p-4 text-white rounded-lg bg-slate-500">
         <Form
           data-name="Form"
           className="space-y-4"
@@ -42,7 +42,7 @@ export default function CsvUndoFileInput() {
           {/* <!-- FILE INPUT --> */}
           <div className="w-full">
             <label className="label" htmlFor="jsonInput">
-              <h2 className="label-text font-semibold text-white">
+              <h2 className="font-semibold text-white label-text">
                 🖌️ 元に戻すCSVファイルを選択
               </h2>
             </label>
@@ -54,7 +54,7 @@ export default function CsvUndoFileInput() {
               type="file"
               accept=".csv, application/json"
               placeholder="CSVファイルを選択"
-              className="file-input file-input-bordered file-input-success w-full border-2 text-sfblue-300"
+              className="w-full border-2 file-input file-input-bordered file-input-success text-sfblue-300"
             />
             <small>ex. SCHOOL-HUB_MOVE_1689827123771.csv</small>
           </div>
