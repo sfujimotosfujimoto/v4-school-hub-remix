@@ -26,6 +26,7 @@ import SegmentPills from "./segment-pills"
 import { SearchIcon } from "~/components/icons"
 import { Suspense } from "react"
 import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
+import { CACHE_MAX_AGE } from "~/config"
 
 // const CACHE_MAX_AGE = 60 * 10 // 10 minutes
 
@@ -37,6 +38,7 @@ import ErrorBoundaryDocument from "~/components/util/error-boundary-document"
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student.$studentFolderId ${request.url}`)
+  console.log("✅ request.headers", request.headers)
 
   const { studentFolderId } = params
   if (!studentFolderId) {
@@ -109,19 +111,36 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     })
   })
 
-  // const headers = new Headers()
+  const headers = new Headers()
 
   // @todo student.$studentFolderId._index/route.tsx: Maybe use Etags?
-  // headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
+  headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
 
-  return defer({
-    tagString,
-    url: request.url,
-    studentFolderId,
-    nendoString,
-    role: user.role,
-    promiseData,
-  })
+  if (request.headers.get("Location")) {
+    console.log("✅ in redirect", request.headers.get("Location"))
+    return defer({
+      tagString,
+      url: request.url,
+      studentFolderId,
+      nendoString,
+      role: user.role,
+      promiseData,
+    })
+  }
+
+  return defer(
+    {
+      tagString,
+      url: request.url,
+      studentFolderId,
+      nendoString,
+      role: user.role,
+      promiseData,
+    },
+    {
+      headers,
+    },
+  )
 }
 
 /**
@@ -143,7 +162,7 @@ export default function StudentFolderIdIndexPage() {
 
   // JSX -------------------------
   return (
-    <section className="flex flex-col h-full space-y-4">
+    <section className="flex h-full flex-col space-y-4">
       <Suspense fallback={<SkeletonUI />} key={Math.random()}>
         <Await
           resolve={promiseData}
@@ -159,11 +178,11 @@ export default function StudentFolderIdIndexPage() {
 
             return (
               <>
-                <div className="flex items-center justify-between flex-none">
+                <div className="flex flex-none items-center justify-between">
                   <div className="flex items-center gap-2">
                     <BackButton />
                     <AllPill url={url} studentFolderId={studentFolderId} />
-                    <div className="self-end dropdown">
+                    <div className="dropdown self-end">
                       <div
                         tabIndex={0}
                         role="button"
@@ -189,9 +208,9 @@ export default function StudentFolderIdIndexPage() {
                   <FileCount driveFiles={dfd} />
                 </div>
                 {/* TODO: Need to implement this */}
-                <div className="flex flex-wrap flex-none gap-1">
+                <div className="flex flex-none flex-wrap gap-1">
                   {nendos.length > 0 && (
-                    <div className="mx-0 divider divider-horizontal"></div>
+                    <div className="divider divider-horizontal mx-0"></div>
                   )}
                   <AllCheckButtons role={role} driveFiles={dfd} />
                 </div>
@@ -213,7 +232,7 @@ export default function StudentFolderIdIndexPage() {
                   </div>
                 )}
                 {/* STUDENTCARDS */}
-                <div className="px-2 mb-12 overflow-x-auto">
+                <div className="mb-12 overflow-x-auto px-2">
                   <StudentCards
                     role={role}
                     driveFiles={dfd}
@@ -378,24 +397,24 @@ function parseAppProperties(appProperties: string | object) {
 function SkeletonUI() {
   return (
     <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
-      <div className="flex items-center w-full gap-4">
-        <div className="w-16 h-16 rounded-full skeleton shrink-0"></div>
+      <div className="flex w-full items-center gap-4">
+        <div className="skeleton h-16 w-16 shrink-0 rounded-full"></div>
         <div className="flex flex-col gap-4">
-          <div className="h-4 skeleton w-60"></div>
-          <div className="w-64 h-4 skeleton"></div>
+          <div className="skeleton h-4 w-60"></div>
+          <div className="skeleton h-4 w-64"></div>
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full skeleton shrink-0"></div>
+        <div className="skeleton h-16 w-16 shrink-0 rounded-full"></div>
         <div className="flex flex-col gap-4">
-          <div className="h-4 skeleton w-60"></div>
-          <div className="w-64 h-4 skeleton"></div>
+          <div className="skeleton h-4 w-60"></div>
+          <div className="skeleton h-4 w-64"></div>
         </div>
       </div>
-      <div className="h-64 skeleton"></div>
-      <div className="h-64 skeleton"></div>
-      <div className="h-64 skeleton"></div>
-      <div className="h-64 skeleton"></div>
+      <div className="skeleton h-64"></div>
+      <div className="skeleton h-64"></div>
+      <div className="skeleton h-64"></div>
+      <div className="skeleton h-64"></div>
     </div>
   )
 }

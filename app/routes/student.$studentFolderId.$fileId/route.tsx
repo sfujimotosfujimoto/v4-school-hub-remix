@@ -6,7 +6,13 @@ import type {
   SerializeFrom,
 } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
-import { useLoaderData, useParams, useRouteLoaderData } from "@remix-run/react"
+import {
+  useActionData,
+  useLoaderData,
+  useParams,
+  useRevalidator,
+  useRouteLoaderData,
+} from "@remix-run/react"
 import { z } from "zod"
 import BackButton from "~/components/ui/buttons/back-button"
 import BaseNameButton from "~/components/ui/buttons/base-name-button"
@@ -31,8 +37,7 @@ import { logger } from "~/logger"
 import PermissionTags from "./permission-tags"
 import ToFolderButton from "./to-folder-button"
 import DeleteButton from "./delete-button"
-
-const CACHE_MAX_AGE = 60 * 10 // 10 minutes
+import { CACHE_MAX_AGE } from "~/config"
 
 /**
  * Loader Function
@@ -107,7 +112,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
     case "property": {
       logger.debug(`✅ action: property`)
 
-      return await propertyExecuteAction(request, formData)
+      try {
+        await propertyExecuteAction(request, formData)
+
+        return redirect(
+          `/student/${params.studentFolderId}?${Math.floor(Math.random() * 100000000000)}`,
+          {
+            headers: {
+              "Cache-Control": "no-cache, max-age=0",
+            },
+          },
+        )
+      } catch (error) {
+        throw errorResponses.server()
+      }
     }
     case "rename": {
       logger.debug(`✅ action: rename`)
@@ -129,9 +147,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
           "Cache-Control": "no-store, max-age=0",
         },
       })
-      // logger.debug(`✅ action: "delete": ${fileIdsString}`)
-      // return json({ ok: true })
-      // return json({ ok: true, data: { fileIds } })
     }
 
     case "undo": {
@@ -161,21 +176,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 export default function StudentFolderIdFileIdPage() {
   const { driveFile, permissions, tags } =
     useLoaderData<SerializeFrom<typeof loader>>()
-  // console.log("✅ student.$studentFolderId.$fileId/route.tsx")
-  // const actionData = useActionData<typeof action>()
-  // const { studentFolderId } = useParams()
-  // const navigate = useNavigate()
-
-  // if (actionData) {
-  //   if (actionData.ok) {
-  //     navigate(`/student/${studentFolderId}`)
-  //   } else {
-  //     toast.error(`データ処理に問題が発生しました。`)
-  //   }
-  // }
 
   const { role } = useRouteLoaderData("routes/student.$studentFolderId") as {
     role: Role
+  }
+  const data = useActionData<typeof action>()
+  const revalidator = useRevalidator()
+
+  if (data?.ok === true && revalidator.state === "idle") {
+    revalidator.revalidate()
   }
 
   const df = convertDriveFiles([driveFile])[0]
@@ -184,7 +193,7 @@ export default function StudentFolderIdFileIdPage() {
   return (
     <>
       <div className="flex items-center gap-4">
-        <BackButton />
+        <BackButton replace={true} />
         {df && df.parents && <ToFolderButton parentId={df.parents[0]} />}
         {/* PROPERTY BUTTON */}
         {role && ["ADMIN", "SUPER"].includes(role) && (
