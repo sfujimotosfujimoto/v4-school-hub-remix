@@ -1,8 +1,8 @@
 import { captureRemixErrorBoundaryError, withSentry } from "@sentry/remix"
 import { Toaster } from "react-hot-toast"
 
-import sharedStyles from "~/styles/shared.css?url"
-import tailwindStyles from "~/styles/tailwind.css?url"
+import sharedStyles from "~/styles/shared.css"
+import tailwindStyles from "~/styles/tailwind.css"
 import { Analytics } from "@vercel/analytics/react"
 import { logger } from "./logger"
 
@@ -15,7 +15,7 @@ import { json } from "@remix-run/node"
 import {
   Link,
   Links,
-  // LiveReload,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -200,7 +200,7 @@ function Document({ children }: { children: React.ReactNode }) {
           }}
         />
         <ScrollRestoration />
-        {/* <LiveReload /> */}
+        <LiveReload />
         <Scripts />
         <Analytics />
       </body>
@@ -256,7 +256,7 @@ export function ErrorBoundary() {
         </ErrorDocument>
         <ScrollRestoration />
         <Scripts />
-        {/* <LiveReload /> */}
+        <LiveReload />
         <Analytics />
       </body>
     </html>
