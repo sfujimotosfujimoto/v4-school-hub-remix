@@ -135,12 +135,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     case "delete": {
       logger.debug(`✅ action: delete`)
-      const res = await deleteExecuteAction(request, formData)
-
-      console.log(
-        "✅ student.$studentFolderId.$fileId/route.tsx ~ 	🌈 res ✅ ",
-        res,
-      )
+      await deleteExecuteAction(request, formData)
 
       return redirect(`/student/${params.studentFolderId}?intent=delete`, {
         headers: {

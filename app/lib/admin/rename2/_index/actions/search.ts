@@ -479,21 +479,21 @@ function getDriveFileIfLastFirstExists(
     // regex for searching student last and first name
     const reg = /`${student.last}`[\s-_]?`${student.first}`/
 
-    console.log(
-      "✅ includes",
-      "last",
-      student.last,
-      "first",
-      student.first,
-      "joinedSegments",
-      joinedSegments,
-      "includes last",
-      joinedSegments.includes(student.last),
-      "includes first",
-      joinedSegments.includes(student.first),
-      "match reg",
-      joinedSegments.match(reg),
-    )
+    // console.log(
+    //   "✅ includes",
+    //   "last",
+    //   student.last,
+    //   "first",
+    //   student.first,
+    //   "joinedSegments",
+    //   joinedSegments,
+    //   "includes last",
+    //   joinedSegments.includes(student.last),
+    //   "includes first",
+    //   joinedSegments.includes(student.first),
+    //   "match reg",
+    //   joinedSegments.match(reg),
+    // )
 
     // check if segments include student last and first name
     if (
@@ -502,7 +502,7 @@ function getDriveFileIfLastFirstExists(
       segments.includes(`${student.last}${student.first}`) ||
       joinedSegments.match(reg)
     ) {
-      console.log("✅ found student", student.last, student.first)
+      // console.log("✅ found student", student.last, student.first)
       const newName = createNewName(
         student,
         segments,

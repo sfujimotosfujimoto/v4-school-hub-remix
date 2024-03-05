@@ -81,8 +81,6 @@ export async function executeAction(request: Request, formData: FormData) {
       }
     })
 
-    console.log("✅ rename successFiles", successFiles.length)
-
     return json<ActionTypeGoogle>({
       ok: true,
       intent: "execute",

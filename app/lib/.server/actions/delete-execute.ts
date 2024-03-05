@@ -41,7 +41,6 @@ export async function deleteExecuteAction(
   }
 
   let { fileIdsString } = result.data
-  console.log("✅ action: fileIdsString: ", fileIdsString)
 
   const fileIds = JSON.parse(fileIdsString || "[]")
   const fileIdsChunks = arrayIntoChunks<string>(fileIds, CHUNK_SIZE)

@@ -79,16 +79,6 @@ export async function executeAction2(request: Request, formData: FormData) {
     // because the original data has "meta" data in them
     // and we need the data for undo task data
     let successFiles: DriveFile[] = []
-    // res.successFiles.forEach((sf) => {
-    //   const found = driveFiles.find((df) => {
-    //     return df.id === sf.id
-    //   })
-    //   if (found) {
-    //     successFiles.push(found)
-    //   }
-    // })
-
-    console.log("✅ rename successFiles", successFiles.length)
 
     return json<ActionTypeGoogle>({
       ok: true,
@@ -142,39 +132,32 @@ export async function renameDriveFiles(
           },
         })
 
-        console.log("✅ actions/execute.ts ~ 	😀 before .watch()")
         const channelId = `file-move-sub-${d.id}`
         channelIds.push(channelId)
-        const res = await fetch(
-          `https://www.googleapis.com/drive/v3/files/${d.id}/watch`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + user.credential?.accessToken,
-            },
-            body: JSON.stringify({
-              id: channelId,
-              type: "web_hook",
-              address: `${WEB_HOOK_URL}/webhook`,
-              kind: "api#channel",
-              token: `fileId=${d.id}`,
-              // @todo actions/execute.ts: !! TIME !!
-              expiration: Date.now() + 1000 * 60 * 3, // 1 minutes
-            }),
+        await fetch(`https://www.googleapis.com/drive/v3/files/${d.id}/watch`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + user.credential?.accessToken,
           },
-        )
+          body: JSON.stringify({
+            id: channelId,
+            type: "web_hook",
+            address: `${WEB_HOOK_URL}/webhook`,
+            kind: "api#channel",
+            token: `fileId=${d.id}`,
+            // @todo actions/execute.ts: !! TIME !!
+            expiration: Date.now() + 1000 * 60 * 3, // 1 minutes
+          }),
+        })
           .then((res) => res.json())
           .catch((err) => console.log(err))
-
-        console.log("✅ actions/execute.ts ~ 	🌈 res ✅ ", res)
       }
     } catch (error) {
       console.error("renameDriveFiles ~ error", error)
       continue
     }
   }
-  console.log("✅ actions/execute.ts ~ 	🌈 channelIds ✅ ", channelIds)
 }
 // const driveFilesChunks = arrayIntoChunks<DriveFile>(driveFiles, CHUNK_SIZE)
 

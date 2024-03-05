@@ -38,7 +38,6 @@ import { CACHE_MAX_AGE } from "~/config"
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   logger.debug(`🍿 loader: student.$studentFolderId ${request.url}`)
-  console.log("✅ request.headers", request.headers)
 
   const { studentFolderId } = params
   if (!studentFolderId) {
@@ -115,18 +114,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   // @todo student.$studentFolderId._index/route.tsx: Maybe use Etags?
   headers.set("Cache-Control", `private, max-age=${CACHE_MAX_AGE}`) // 10 minutes
-
-  if (request.headers.get("Location")) {
-    console.log("✅ in redirect", request.headers.get("Location"))
-    return defer({
-      tagString,
-      url: request.url,
-      studentFolderId,
-      nendoString,
-      role: user.role,
-      promiseData,
-    })
-  }
 
   return defer(
     {

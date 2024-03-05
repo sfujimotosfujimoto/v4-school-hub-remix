@@ -10,7 +10,6 @@ import {
 // const movedFiles = new Set<string>()
 
 export async function action({ request }: ActionFunctionArgs) {
-  console.log("✅ webhook/route.tsx ~ 	😀 called")
   // const { user, credential } = await getUserFromSessionOrRedirect(request)
   // await requireAdminRole(request, user)
   // const res = await request.json()
