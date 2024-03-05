@@ -8,6 +8,7 @@ import { logger } from "~/logger"
 import { arrayIntoChunks, getSchoolYear } from "~/lib/utils/utils"
 import { CHUNK_SIZE } from "~/config"
 import { updateAppProperties } from "~/lib/app-properties"
+import { errorResponses } from "~/lib/error-responses"
 
 // Zod Data Type
 const FormDataScheme = z.object({
@@ -59,15 +60,20 @@ export async function propertyExecuteAction(
 
   logger.debug(`✅ action: promises: ${promises.length} `)
 
-  await Promise.all([...promises])
+  try {
+    const r = await Promise.all([...promises])
+    return json<ActionTypeGoogle>({
+      ok: true,
+      intent: "execute",
+      type: "property",
+    })
+  } catch (error) {
+    logger.error(`action: propertyExecuteAction -- error: ${error}`)
+    throw errorResponses.server()
+  }
+
   // const resArr = await Promise.all([...promises])
   // const res = resArr.filter((d) => d).flat()
-
-  return json<ActionTypeGoogle>({
-    ok: true,
-    intent: "execute",
-    type: "property",
-  })
 }
 
 async function _updateAppProperties(

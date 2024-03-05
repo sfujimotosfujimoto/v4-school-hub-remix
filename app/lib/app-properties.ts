@@ -5,6 +5,7 @@ export async function updateAppProperties(
   fileId: string,
   appProperties: { [key: string]: string | null },
 ) {
+  console.log("✅ updateAppProperties: fileId: ", fileId)
   try {
     return fetch(
       `https://www.googleapis.com/drive/v3/files/${fileId}?fields=${QUERY_FILE_FIELDS}`,
@@ -15,9 +16,7 @@ export async function updateAppProperties(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          appProperties: {
-            ...appProperties,
-          },
+          appProperties,
         }),
       },
     ).then((response) => response.json())

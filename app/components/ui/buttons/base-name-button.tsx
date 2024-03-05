@@ -85,9 +85,7 @@ export default function BaseNameButton({
           <input
             type="hidden"
             name="fileIdsString"
-            value={JSON.stringify(
-              driveFiles.filter((df) => df.meta?.selected).map((df) => df.id),
-            )}
+            value={JSON.stringify(driveFiles.map((df) => df.id))}
           />
 
           <button

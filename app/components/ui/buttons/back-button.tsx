@@ -6,9 +6,11 @@ import { Button, LinkButton } from "~/components/buttons/button"
 export default function BackButton({
   isLink = false,
   to,
+  replace = false,
 }: {
   isLink?: boolean
   to?: string
+  replace?: boolean
 }) {
   const navigate = useNavigate()
   if (!isLink && to) {
@@ -25,7 +27,12 @@ export default function BackButton({
   } else {
     return (
       <Button
-        onClick={() => navigate(-1)}
+        onClick={() => {
+          if (replace) {
+            return navigate("..", { replace: true })
+          }
+          return navigate(-1)
+        }}
         size="sm"
         className="btn btn-success border-none text-sfblue-400"
       >

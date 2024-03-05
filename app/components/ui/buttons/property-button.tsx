@@ -110,9 +110,7 @@ export default function PropertyButton({
           <input
             type="hidden"
             name="fileIdsString"
-            value={JSON.stringify(
-              driveFiles.filter((df) => df.meta?.selected).map((df) => df.id),
-            )}
+            value={JSON.stringify(driveFiles.map((d) => d.id))}
           />
 
           <button
